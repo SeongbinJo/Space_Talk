@@ -9,6 +9,8 @@ import Foundation
 import SwiftUI
 
 struct LoginPage: View {
+    @State var navigationLinkActive: Bool = false
+    
     @State var userEmail: String = ""
     @State var userPassword: String = ""
     @State var isCheckboxOn: Bool = false
@@ -54,8 +56,8 @@ struct LoginPage: View {
                     .cornerRadius(20)
                 }//zstack
                 .padding()
-                NavigationLink("회원가입"){
-                    SignUpPage()
+                NavigationLink("회원가입", isActive: $navigationLinkActive){
+                    SignUpPage(loginViewModel: LoginViewModel(), navigationLinkActive: $navigationLinkActive)
                 }
                     .foregroundColor(.black)
                     .padding(-15)
