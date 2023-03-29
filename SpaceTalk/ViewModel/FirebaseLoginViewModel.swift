@@ -13,6 +13,7 @@ class LoginViewModel: ObservableObject{
     @Published var password: String = ""
     @Published var passwordCheck: String = ""
     
+    
     //combine 메모리 누수 방지?
     private var cancellables: Set<AnyCancellable> = []
     
@@ -22,6 +23,7 @@ class LoginViewModel: ObservableObject{
                 let emailPredicate = NSPredicate(format:"SELF MATCHES %@", emailRegex)
                 return emailPredicate.evaluate(with: email)
     }
+    
     
     //비밀번호 유효성 검사
     func isValidPassword(password: String) -> Bool {

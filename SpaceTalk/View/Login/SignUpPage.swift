@@ -18,9 +18,9 @@ struct SignUpPage: View {
     @State var signUpPassword: String = ""
     @State var signUpPasswordCheck: String = ""
     
-    @State var emailCheck: Bool = false
-    @State var passwordIsValidCheck: Bool = false
-    @State var passwordSameCheck: Bool = false
+    @State var emailCheck = false
+    @State var pwdCheck = false
+    @State var pwdSecondCheck = false
     
     var body: some View {
         NavigationView{
@@ -45,7 +45,6 @@ struct SignUpPage: View {
                             .background(.blue)
                             .cornerRadius(11)
                             .padding(.trailing, 15)
-                        
                     }
                     HStack{
                         Text("이메일")
@@ -63,7 +62,10 @@ struct SignUpPage: View {
                                 .background(.blue)
                                 .cornerRadius(11)
                                 .padding(.trailing, 15)
-                            
+                        }
+                        .onChange(of: signUpEmail){ signUpEmail in
+                            emailCheck = loginViewModel.isValidEmail(email: signUpEmail)
+                            print(emailCheck)
                         }
                         if signUpEmail.count > 0 {
                             if loginViewModel.isValidEmail(email: signUpEmail) == false{
@@ -87,6 +89,9 @@ struct SignUpPage: View {
                                 .padding(.leading, 15)
                                 .padding(.trailing, 114)
                         }
+                        .onChange(of: signUpPassword){ signUpPassword in
+                            pwdCheck = loginViewModel.isValidPassword(password: signUpPassword)
+                        }
                         if signUpPassword.count > 0 {
                             if loginViewModel.isValidPassword(password: signUpPassword) == false{
                                 Text("8자리 이상 입력해주세요.")
@@ -109,7 +114,9 @@ struct SignUpPage: View {
                                 .padding(.leading, 15)
                                 .padding(.trailing, 114)
                         }
-                        
+                        .onChange(of: signUpPasswordCheck){ signUpPasswordCheck in
+                            pwdSecondCheck = loginViewModel.isSamePassword(password: signUpPassword, passwordCheck: signUpPasswordCheck)
+                        }
                         //비밀번호 확인 -> 1자라도 입력시 비밀번호 일치, 불일치 여부 출력
                         if signUpPasswordCheck.count > 0 {
                             if loginViewModel.isSamePassword(password: signUpPassword, passwordCheck: signUpPasswordCheck){
@@ -127,13 +134,15 @@ struct SignUpPage: View {
                     }
                 }
                 Button("회원가입"){
+                    //false -> 첫 화면으로 돌아감.
                     navigationLinkActive = false
                 }
                     .padding(10)
-                    .background(.blue)
+                    .background(emailCheck&&pwdCheck&&pwdSecondCheck ? .blue : .gray)
                     .foregroundColor(.white)
                     .cornerRadius(15)
                     .padding(.top, 20)
+                    .disabled(emailCheck&&pwdCheck&&pwdSecondCheck ? false : true)
                 Spacer()
             }
 
