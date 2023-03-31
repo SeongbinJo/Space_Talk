@@ -11,7 +11,7 @@ import SwiftUI
 struct SignUpPage: View {
     @ObservedObject var loginViewModel: LoginViewModel
     
-    @Binding var navigationLinkActive: Bool
+    @Binding var loginToSignUpPageActive: Bool
     
     @State var signUpNickname: String = ""
     @State var signUpEmail: String = ""
@@ -133,9 +133,13 @@ struct SignUpPage: View {
                         }
                     }
                 }
-                Button("회원가입"){
-                    //false -> 첫 화면으로 돌아감.
-                    navigationLinkActive = false
+//                Button("회원가입"){
+//                    //false -> 첫 화면으로 돌아감.
+//                    loginViewModel.registerUser(email: signUpEmail, password: signUpPasswordCheck)
+//                }
+                Button("가입하기"){
+                    loginViewModel.registerUser(email: signUpEmail, password: signUpPasswordCheck)
+                    loginToSignUpPageActive = false
                 }
                     .padding(10)
                     .background(emailCheck&&pwdCheck&&pwdSecondCheck ? .blue : .gray)
@@ -153,6 +157,6 @@ struct SignUpPage: View {
 
 struct SignUpPage_Previews: PreviewProvider {
     static var previews: some View {
-        SignUpPage(loginViewModel: LoginViewModel(), navigationLinkActive: .constant(true))
+        SignUpPage(loginViewModel: LoginViewModel(), loginToSignUpPageActive: .constant(true))
     }
 }
