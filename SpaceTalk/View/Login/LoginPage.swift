@@ -83,7 +83,9 @@ struct LoginPage: View {
             }//vstack
             .onAppear{
                 //로그인 화면은 '로그아웃' 이던 '계정탈퇴' 이던 로그인 여부는 무조건 false이기 때문
-                loginViewModel.currentUser = nil
+//                loginViewModel.currentUser = nil
+                userEmail = ""
+                userPassword = ""
             }
         }
     }

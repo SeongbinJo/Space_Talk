@@ -28,7 +28,7 @@ struct LoginSuccess: View {
                 Text("uid : \(loginViewModel.currentUser?.uid ?? "비로그인")")
             }
         }
-//        .navigationBarBackButtonHidden(true)
+        .navigationBarBackButtonHidden(true)
     }
 }
 

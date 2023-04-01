@@ -16,10 +16,11 @@ class LoginViewModel: ObservableObject{
     @Published var passwordCheck: String = ""
     
     @Published var currentUser: User?
+    @Published var emailCertifyCheck: Bool = false
     
-    init() {
-        currentUser = Auth.auth().currentUser
-    }
+//    init() {
+//        currentUser = Auth.auth().currentUser
+//    }
     
     //combine 메모리 누수 방지?
     private var cancellables: Set<AnyCancellable> = []
@@ -43,14 +44,24 @@ class LoginViewModel: ObservableObject{
     }
     
     //firebase User 등록(회원가입)
-    func registerUser(email: String, password: String) {
+    func registerUser(email: String, password: String, completion: @escaping (Bool) -> Void) {
         Auth.auth().createUser(withEmail: email, password: password) { registerResult, error in
             //등록 성공시 result에 값이 담기고, error엔 nil이 ,, 등록 실패시 result에 nil이 error엔 에러값이 담긴다.
             guard let newUser = registerResult?.user else {return}
             guard error == nil else {
+                completion(false)
                 print("Error : \(error!.localizedDescription)")
                 return
             }
+            
+            newUser.sendEmailVerification{ error in
+                if let error = error {
+                    print("이메일 전송 에러 : \(error.localizedDescription)")
+                }else{
+                    print("이메일 전송 성공!!")
+                }
+            }
+            completion(true)
             print("계정 등록 성공, 유저UID = \(newUser.uid)")
         }
     }
@@ -62,25 +73,47 @@ class LoginViewModel: ObservableObject{
         Auth.auth().signIn(withEmail: email, password: password) { loginResult, error in
             if error == nil {
                 self.currentUser = loginResult?.user
-                completion(true)
-                print("로그인 성공")
+                if self.currentUser!.isEmailVerified {
+                    completion(true)
+                    print("이메일 인증을 완료한 이용자 입니다. 로그인 합니다.")
+                }else{
+                    print("이메일 인증을 하지않은 이용자 입니다.")
+                }
             }else{
                 completion(false)
                 print("Error : \(error!.localizedDescription)")
+                print("ID 또는 PASSWORD가 잘못되었습니다.")
             }
         }
     }
     
+    //로그아웃
     func logoutUser(){
         try? Auth.auth().signOut()
         self.currentUser = nil
-    
     }
     
-    func updateCurrentUser() {
-        if let user = Auth.auth().currentUser {
-            self.currentUser = user
+    //인증 이메일 보내는 함수
+    func sendCertifyEmail(){
+        guard self.currentUser == Auth.auth().currentUser else {
+            print("현재 유저 : \(self.currentUser?.uid)")
+            print("Firebase에 등록된 유저가 아님.")
+            return
+        }
+        
+//        self.currentUser?.sendEmailVerification{ error in
+//            if let error = error {
+//                print("이메일 전송 에러 : \(error.localizedDescription)")
+//            }else{
+//                print("이메일 전송 성공!!")
+//            }
+//        }
+//        self.currentUser?.sendEmailVerification{ error in
+//            if let error = error {
+//                            print("Error sending email verification: \(error.localizedDescription)")
+//                        } else {
+//                            print("인증 메일 전송!")
+//                        }
+//        }
         }
     }
-    
-}

@@ -44,7 +44,7 @@ struct SignUpPage: View {
                             .foregroundColor(.white)
                             .background(.blue)
                             .cornerRadius(11)
-                            .padding(.trailing, 15)
+                            .padding(.trailing, 8)
                     }
                     HStack{
                         Text("이메일")
@@ -56,12 +56,7 @@ struct SignUpPage: View {
                             TextField("사용할 이메일을 입력하세요.", text: $signUpEmail)
                                 .textFieldStyle(.roundedBorder)
                                 .padding(.leading, 15)
-                            Button("이메일 인증"){}
-                                .padding(6)
-                                .foregroundColor(.white)
-                                .background(.blue)
-                                .cornerRadius(11)
-                                .padding(.trailing, 15)
+                                .padding(.trailing, 87)
                         }
                         .onChange(of: signUpEmail){ signUpEmail in
                             emailCheck = loginViewModel.isValidEmail(email: signUpEmail)
@@ -87,7 +82,7 @@ struct SignUpPage: View {
                             TextField("비밀번호를 입력하세요.(8자 이상)", text: $signUpPassword)
                                 .textFieldStyle(.roundedBorder)
                                 .padding(.leading, 15)
-                                .padding(.trailing, 114)
+                                .padding(.trailing, 87)
                         }
                         .onChange(of: signUpPassword){ signUpPassword in
                             pwdCheck = loginViewModel.isValidPassword(password: signUpPassword)
@@ -112,7 +107,7 @@ struct SignUpPage: View {
                             TextField("다시 한 번 입력하세요.", text: $signUpPasswordCheck)
                                 .textFieldStyle(.roundedBorder)
                                 .padding(.leading, 15)
-                                .padding(.trailing, 114)
+                                .padding(.trailing, 90)
                         }
                         .onChange(of: signUpPasswordCheck){ signUpPasswordCheck in
                             pwdSecondCheck = loginViewModel.isSamePassword(password: signUpPassword, passwordCheck: signUpPasswordCheck)
@@ -133,13 +128,12 @@ struct SignUpPage: View {
                         }
                     }
                 }
-//                Button("회원가입"){
-//                    //false -> 첫 화면으로 돌아감.
-//                    loginViewModel.registerUser(email: signUpEmail, password: signUpPasswordCheck)
-//                }
                 Button("가입하기"){
-                    loginViewModel.registerUser(email: signUpEmail, password: signUpPasswordCheck)
-                    loginToSignUpPageActive = false
+                    loginViewModel.registerUser(email: signUpEmail, password: signUpPasswordCheck){ success in
+                        if success {
+                            loginToSignUpPageActive = false
+                        }
+                    }
                 }
                     .padding(10)
                     .background(emailCheck&&pwdCheck&&pwdSecondCheck ? .blue : .gray)
