@@ -31,6 +31,7 @@ struct LoginPage: View {
                         TextField("Enter your Email", text: $userEmail)
                             .padding(.horizontal, 17.0)
                             .textFieldStyle(.roundedBorder)
+                            .autocapitalization(.none)
                         Text("Password")
                             .padding(.top, 10)
                             .padding(.leading, 17)
@@ -38,6 +39,7 @@ struct LoginPage: View {
                             .padding(.horizontal, 17.0)
                             .padding(.bottom, 13)
                             .textFieldStyle(.roundedBorder)
+                            .autocapitalization(.none)
                         VStack(alignment: .trailing){
                             HStack{
                                 Spacer()
@@ -52,7 +54,7 @@ struct LoginPage: View {
                                 .background(.white)
                                 .cornerRadius(15)
                                 .foregroundColor(.black)
-                                NavigationLink(destination: LoginSuccess(loginViewModel: LoginViewModel(), loginToMainPageActive: $loginToMainPageActive), isActive: $loginToMainPageActive, label: {EmptyView()})
+                                NavigationLink(destination: Mainpage(loginViewModel: LoginViewModel(), loginToMainPageActive: $loginToMainPageActive), isActive: $loginToMainPageActive, label: {EmptyView()})
                                 Spacer()
                             }
                             .padding(-5)

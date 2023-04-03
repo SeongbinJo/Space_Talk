@@ -18,9 +18,11 @@ class LoginViewModel: ObservableObject{
     @Published var currentUser: User?
     @Published var emailCertifyCheck: Bool = false
     
-//    init() {
-//        currentUser = Auth.auth().currentUser
-//    }
+    @Published var sendText: String = ""
+    
+    init() {
+        currentUser = Auth.auth().currentUser
+    }
     
     //combine 메모리 누수 방지?
     private var cancellables: Set<AnyCancellable> = []
@@ -96,24 +98,15 @@ class LoginViewModel: ObservableObject{
     //인증 이메일 보내는 함수
     func sendCertifyEmail(){
         guard self.currentUser == Auth.auth().currentUser else {
-            print("현재 유저 : \(self.currentUser?.uid)")
             print("Firebase에 등록된 유저가 아님.")
             return
         }
         
-//        self.currentUser?.sendEmailVerification{ error in
-//            if let error = error {
-//                print("이메일 전송 에러 : \(error.localizedDescription)")
-//            }else{
-//                print("이메일 전송 성공!!")
-//            }
-//        }
-//        self.currentUser?.sendEmailVerification{ error in
-//            if let error = error {
-//                            print("Error sending email verification: \(error.localizedDescription)")
-//                        } else {
-//                            print("인증 메일 전송!")
-//                        }
-//        }
         }
+    
+    func textFieldPlaceHolder(sendText: String) -> Bool {
+        return sendText.count == 0
     }
+    
+    
+    }//LoginViewModel

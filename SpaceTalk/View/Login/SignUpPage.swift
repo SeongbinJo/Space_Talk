@@ -39,6 +39,7 @@ struct SignUpPage: View {
                         TextField("사용할 닉네임을 입력하세요.", text: $signUpNickname)
                             .textFieldStyle(.roundedBorder)
                             .padding(.leading, 15)
+                            .autocapitalization(.none)
                         Button("중복확인"){}
                             .padding(6)
                             .foregroundColor(.white)
@@ -57,6 +58,7 @@ struct SignUpPage: View {
                                 .textFieldStyle(.roundedBorder)
                                 .padding(.leading, 15)
                                 .padding(.trailing, 87)
+                                .autocapitalization(.none)
                         }
                         .onChange(of: signUpEmail){ signUpEmail in
                             emailCheck = loginViewModel.isValidEmail(email: signUpEmail)
@@ -83,6 +85,7 @@ struct SignUpPage: View {
                                 .textFieldStyle(.roundedBorder)
                                 .padding(.leading, 15)
                                 .padding(.trailing, 87)
+                                .autocapitalization(.none)
                         }
                         .onChange(of: signUpPassword){ signUpPassword in
                             pwdCheck = loginViewModel.isValidPassword(password: signUpPassword)
@@ -108,6 +111,7 @@ struct SignUpPage: View {
                                 .textFieldStyle(.roundedBorder)
                                 .padding(.leading, 15)
                                 .padding(.trailing, 90)
+                                .autocapitalization(.none)
                         }
                         .onChange(of: signUpPasswordCheck){ signUpPasswordCheck in
                             pwdSecondCheck = loginViewModel.isSamePassword(password: signUpPassword, passwordCheck: signUpPasswordCheck)

@@ -9,7 +9,7 @@ import Foundation
 import SwiftUI
 import FirebaseAuth
 
-struct LoginSuccess: View {
+struct Mainpage: View {
     
     @ObservedObject var loginViewModel: LoginViewModel
     
@@ -19,25 +19,25 @@ struct LoginSuccess: View {
     
     var body: some View{
         NavigationView{
-            TabView{
-                HomePage(loginViewModel: LoginViewModel(), loginToMainPageActive: $loginToMainPageActive)
-                    .tabItem{
-                        Image(systemName: isTabCliked ? "bubble.left.fill" : "house.fill")
-                        Text("Home")
-                    }
-                    .tag(0)
-                Text("Chat List")
-                    .tabItem{
-                        Image(systemName: "bubble.left.fill")
-                        Text("Chat List")
-                    }
-                    .tag(1)
-                Text("Setting Page")
-                    .tabItem{
-                        Image(systemName: "ellipsis")
-                        Text("Setting")
-                    }
-                    .tag(2)
+            VStack{
+                TabView{
+                    HomePage(loginViewModel: LoginViewModel(), loginToMainPageActive: $loginToMainPageActive)
+                        .tabItem{
+                            Image(systemName: "house.fill")
+                            Text("Home")
+                        }
+                    ChatListpage(loginViewModel: LoginViewModel())
+                        .tabItem{
+                            Image(systemName: "bubble.left.fill")
+                            Text("Chat List")
+                        }
+                    Text("Setting Page")
+                        .tabItem{
+                            Image(systemName: "ellipsis")
+                            Text("Setting")
+                        }
+                }
+                .accentColor(.brown)
             }
         }
         .navigationBarBackButtonHidden(true)
@@ -46,7 +46,7 @@ struct LoginSuccess: View {
 
 struct LoginSuccess_Previews: PreviewProvider {
     static var previews: some View {
-        LoginSuccess(loginViewModel: LoginViewModel(), loginToMainPageActive: .constant(true))
+        Mainpage(loginViewModel: LoginViewModel(), loginToMainPageActive: .constant(true))
     }
 }
 

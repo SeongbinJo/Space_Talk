@@ -41,8 +41,12 @@
 		586CBA1C29D5C8850034A210 /* FirebaseStorageCombine-Community in Frameworks */ = {isa = PBXBuildFile; productRef = 586CBA1B29D5C8850034A210 /* FirebaseStorageCombine-Community */; };
 		58892F8B29D2FAFC00BD402D /* LoginPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58892F8A29D2FAFC00BD402D /* LoginPage.swift */; };
 		58892F8E29D3141D00BD402D /* SignUpPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58892F8D29D3141D00BD402D /* SignUpPage.swift */; };
-		589E522329D3A5020074AE16 /* LoginSuccess.swift in Sources */ = {isa = PBXBuildFile; fileRef = 589E522229D3A5020074AE16 /* LoginSuccess.swift */; };
+		589E522329D3A5020074AE16 /* Mainpage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 589E522229D3A5020074AE16 /* Mainpage.swift */; };
 		589E522729D3A6260074AE16 /* FirebaseLoginViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 589E522629D3A6260074AE16 /* FirebaseLoginViewModel.swift */; };
+		58C7D15529DAF9B30094C597 /* HomePage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58C7D15429DAF9B30094C597 /* HomePage.swift */; };
+		58C7D15829DAFC750094C597 /* ViewExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58C7D15729DAFC750094C597 /* ViewExtension.swift */; };
+		58C7D15A29DAFD700094C597 /* RgbExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58C7D15929DAFD700094C597 /* RgbExtension.swift */; };
+		58C7D15C29DB1BBE0094C597 /* ChatListpage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58C7D15B29DB1BBE0094C597 /* ChatListpage.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -54,8 +58,12 @@
 		586CB9E129D5BAA20034A210 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		58892F8A29D2FAFC00BD402D /* LoginPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginPage.swift; sourceTree = "<group>"; };
 		58892F8D29D3141D00BD402D /* SignUpPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpPage.swift; sourceTree = "<group>"; };
-		589E522229D3A5020074AE16 /* LoginSuccess.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginSuccess.swift; sourceTree = "<group>"; };
+		589E522229D3A5020074AE16 /* Mainpage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mainpage.swift; sourceTree = "<group>"; };
 		589E522629D3A6260074AE16 /* FirebaseLoginViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseLoginViewModel.swift; sourceTree = "<group>"; };
+		58C7D15429DAF9B30094C597 /* HomePage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomePage.swift; sourceTree = "<group>"; };
+		58C7D15729DAFC750094C597 /* ViewExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewExtension.swift; sourceTree = "<group>"; };
+		58C7D15929DAFD700094C597 /* RgbExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RgbExtension.swift; sourceTree = "<group>"; };
+		58C7D15B29DB1BBE0094C597 /* ChatListpage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatListpage.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -115,6 +123,7 @@
 		582E172329CF1EB800B47BAA /* SpaceTalk */ = {
 			isa = PBXGroup;
 			children = (
+				58C7D15629DAFC540094C597 /* Extension */,
 				582E172429CF1EB800B47BAA /* SpaceTalkApp.swift */,
 				582E172629CF1EB800B47BAA /* ContentView.swift */,
 				589E522529D3A5A80074AE16 /* ViewModel */,
@@ -146,7 +155,9 @@
 		589E522129D3A4CF0074AE16 /* Main */ = {
 			isa = PBXGroup;
 			children = (
-				589E522229D3A5020074AE16 /* LoginSuccess.swift */,
+				589E522229D3A5020074AE16 /* Mainpage.swift */,
+				58C7D15429DAF9B30094C597 /* HomePage.swift */,
+				58C7D15B29DB1BBE0094C597 /* ChatListpage.swift */,
 			);
 			path = Main;
 			sourceTree = "<group>";
@@ -166,6 +177,15 @@
 				589E522629D3A6260074AE16 /* FirebaseLoginViewModel.swift */,
 			);
 			path = ViewModel;
+			sourceTree = "<group>";
+		};
+		58C7D15629DAFC540094C597 /* Extension */ = {
+			isa = PBXGroup;
+			children = (
+				58C7D15729DAFC750094C597 /* ViewExtension.swift */,
+				58C7D15929DAFD700094C597 /* RgbExtension.swift */,
+			);
+			path = Extension;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -272,10 +292,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				582E172729CF1EB800B47BAA /* ContentView.swift in Sources */,
-				589E522329D3A5020074AE16 /* LoginSuccess.swift in Sources */,
+				589E522329D3A5020074AE16 /* Mainpage.swift in Sources */,
 				58892F8B29D2FAFC00BD402D /* LoginPage.swift in Sources */,
 				589E522729D3A6260074AE16 /* FirebaseLoginViewModel.swift in Sources */,
 				58892F8E29D3141D00BD402D /* SignUpPage.swift in Sources */,
+				58C7D15529DAF9B30094C597 /* HomePage.swift in Sources */,
+				58C7D15C29DB1BBE0094C597 /* ChatListpage.swift in Sources */,
+				58C7D15829DAFC750094C597 /* ViewExtension.swift in Sources */,
+				58C7D15A29DAFD700094C597 /* RgbExtension.swift in Sources */,
 				582E172529CF1EB800B47BAA /* SpaceTalkApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
