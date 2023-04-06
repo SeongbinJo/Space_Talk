@@ -13,9 +13,8 @@ struct ChatListpage: View {
     
     var body: some View{
         List{
-            ZStack{
-                
-            }
+            Text("chat 1")
+            Text("chat 2")
         }
     }//body
 }

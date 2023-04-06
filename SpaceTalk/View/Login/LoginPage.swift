@@ -43,18 +43,20 @@ struct LoginPage: View {
                         VStack(alignment: .trailing){
                             HStack{
                                 Spacer()
-                                Button("로그인"){
+                                Button(action:{
                                     loginViewModel.loginUser(email: userEmail, password: userPassword){ success in
                                         if success {
                                             loginToMainPageActive = true
                                         }
                                     }
+                                }){
+                                    Text("로그인")
+                                        .padding(10)
+                                        .background(.white)
+                                        .cornerRadius(15)
+                                        .foregroundColor(.black)
                                 }
-                                .padding(10)
-                                .background(.white)
-                                .cornerRadius(15)
-                                .foregroundColor(.black)
-                                NavigationLink(destination: Mainpage(loginViewModel: LoginViewModel(), loginToMainPageActive: $loginToMainPageActive), isActive: $loginToMainPageActive, label: {EmptyView()})
+                                NavigationLink(destination: MainPage(loginViewModel: LoginViewModel(), loginToMainPageActive: $loginToMainPageActive),isActive: $loginToMainPageActive, label: {EmptyView()})
                                 Spacer()
                             }
                             .padding(-5)
@@ -89,7 +91,8 @@ struct LoginPage: View {
                 userEmail = ""
                 userPassword = ""
             }
-        }
+        }//navigationview
+        .navigationBarBackButtonHidden(true)
     }
 }
 

@@ -9,6 +9,9 @@ import Combine
 import Firebase
 import FirebaseAuth
 import FirebaseDatabase
+import SwiftUI
+
+
 
 class LoginViewModel: ObservableObject{
     @Published var email: String = ""
@@ -23,7 +26,7 @@ class LoginViewModel: ObservableObject{
     init() {
         currentUser = Auth.auth().currentUser
     }
-    
+
     //combine 메모리 누수 방지?
     private var cancellables: Set<AnyCancellable> = []
     
@@ -93,6 +96,7 @@ class LoginViewModel: ObservableObject{
     func logoutUser(){
         try? Auth.auth().signOut()
         self.currentUser = nil
+        print("파이어베이스 로그아웃 처리 완료")
     }
     
     //인증 이메일 보내는 함수
@@ -104,9 +108,24 @@ class LoginViewModel: ObservableObject{
         
         }
     
+    //메인화면 텍스트 에디터 placeholder 위함. 텍스트.count 0일 경우. 보이게끔.
     func textFieldPlaceHolder(sendText: String) -> Bool {
         return sendText.count == 0
     }
     
+    
+    //String 값에 따라 다른 화면이 호출됨. -> 메인화면의 커스텀 탭뷰 기능임.
+    func changeTabView(tabindex: String, loginToMainPageActive: Binding<Bool>) -> some View{
+        switch tabindex{
+        case "home":
+            return AnyView(HomePage(loginViewModel: LoginViewModel(), loginToMainPageActive: loginToMainPageActive))
+        case "chatList":
+            return AnyView(ChatListpage(loginViewModel: LoginViewModel()))
+        case "setting":
+            return AnyView(SettingPage(loginViewModel: LoginViewModel(), loginToMainPageActive: loginToMainPageActive))
+        default:
+            return AnyView(HomePage(loginViewModel: LoginViewModel(), loginToMainPageActive: loginToMainPageActive))
+        }
+    }
     
     }//LoginViewModel
