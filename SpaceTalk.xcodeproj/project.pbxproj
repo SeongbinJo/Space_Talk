@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5808E40929DEFA25008A72BB /* ChatPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5808E40829DEFA25008A72BB /* ChatPage.swift */; };
 		582E172529CF1EB800B47BAA /* SpaceTalkApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 582E172429CF1EB800B47BAA /* SpaceTalkApp.swift */; };
 		582E172729CF1EB800B47BAA /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 582E172629CF1EB800B47BAA /* ContentView.swift */; };
 		582E172929CF1EB900B47BAA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 582E172829CF1EB900B47BAA /* Assets.xcassets */; };
@@ -51,6 +52,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		5808E40829DEFA25008A72BB /* ChatPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatPage.swift; sourceTree = "<group>"; };
 		582E172129CF1EB800B47BAA /* SpaceTalk.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SpaceTalk.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		582E172429CF1EB800B47BAA /* SpaceTalkApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpaceTalkApp.swift; sourceTree = "<group>"; };
 		582E172629CF1EB800B47BAA /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -161,6 +163,7 @@
 				58C7D15429DAF9B30094C597 /* HomePage.swift */,
 				58C7D15B29DB1BBE0094C597 /* ChatListpage.swift */,
 				583E964429DEC57200A21595 /* SettingPage.swift */,
+				5808E40829DEFA25008A72BB /* ChatPage.swift */,
 			);
 			path = Main;
 			sourceTree = "<group>";
@@ -296,6 +299,7 @@
 			files = (
 				582E172729CF1EB800B47BAA /* ContentView.swift in Sources */,
 				589E522329D3A5020074AE16 /* MainPage.swift in Sources */,
+				5808E40929DEFA25008A72BB /* ChatPage.swift in Sources */,
 				58892F8B29D2FAFC00BD402D /* LoginPage.swift in Sources */,
 				589E522729D3A6260074AE16 /* FirebaseLoginViewModel.swift in Sources */,
 				58892F8E29D3141D00BD402D /* SignUpPage.swift in Sources */,

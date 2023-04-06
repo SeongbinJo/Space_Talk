@@ -11,10 +11,37 @@ import SwiftUI
 struct ChatListpage: View {
     @ObservedObject var loginViewModel: LoginViewModel
     
+    @State private var offset = CGSize.zero
+    
+    @State var chatListToChatPageActive: Bool = false
+
+    
     var body: some View{
-        List{
-            Text("chat 1")
-            Text("chat 2")
+        NavigationView{
+            GeometryReader{ geometry in
+                ZStack{
+                    Color.gray.ignoresSafeArea()
+                    List{
+                        //틀 만들어서 찍어내야지.
+                        Button(action: {
+                            chatListToChatPageActive = true
+                        }){
+                            HStack{
+                                Text("Chat Room 1")
+                                    .padding(20)
+                                Spacer()
+                            }
+                        }
+                        .frame(width: geometry.size.width * 0.9, height: geometry.size.height * 0.1)
+                        .background(.green)
+                        .listRowBackground(Color.clear)
+                        .cornerRadius(17)
+                    }
+                    .scrollContentBackground(.hidden)
+                    .listStyle(.plain)
+                    NavigationLink(destination: ChatPage(loginViewModel: LoginViewModel()), isActive: $chatListToChatPageActive, label: {EmptyView()})
+                }
+            }
         }
     }//body
 }

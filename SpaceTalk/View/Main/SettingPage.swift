@@ -23,7 +23,7 @@ struct SettingPage: View {
             }){
                 Text("로그아웃")
             }
-            .alert("Alert Title", isPresented: $showLogoutAlert) {
+            .alert("로그아웃", isPresented: $showLogoutAlert) {
                 Button("취소", role: .cancel) {}
                 Button("로그아웃") {
                     loginViewModel.logoutUser()
