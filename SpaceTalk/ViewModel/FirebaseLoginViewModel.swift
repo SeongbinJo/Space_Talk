@@ -23,6 +23,9 @@ class LoginViewModel: ObservableObject{
     
     @Published var sendText: String = ""
     
+    //채팅방이 열리면 MainPage의 하단 바가 사라지게 하기위한 변수.
+    @Published var isChatRoomOpen: Bool = false
+    
     init() {
         currentUser = Auth.auth().currentUser
     }

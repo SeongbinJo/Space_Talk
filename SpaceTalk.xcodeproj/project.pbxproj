@@ -12,6 +12,8 @@
 		582E172729CF1EB800B47BAA /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 582E172629CF1EB800B47BAA /* ContentView.swift */; };
 		582E172929CF1EB900B47BAA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 582E172829CF1EB900B47BAA /* Assets.xcassets */; };
 		582E172C29CF1EB900B47BAA /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 582E172B29CF1EB900B47BAA /* Preview Assets.xcassets */; };
+		58358CEC29FAB9F900F14F97 /* Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58358CEB29FAB9F900F14F97 /* Message.swift */; };
+		58358CEE29FABAC900F14F97 /* MessageBubble.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58358CED29FABAC900F14F97 /* MessageBubble.swift */; };
 		583E964529DEC57200A21595 /* SettingPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 583E964429DEC57200A21595 /* SettingPage.swift */; };
 		586CB9E229D5BAA20034A210 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 586CB9E129D5BAA20034A210 /* GoogleService-Info.plist */; };
 		586CB9E829D5C8850034A210 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 586CB9E729D5C8850034A210 /* FirebaseAnalytics */; };
@@ -58,6 +60,8 @@
 		582E172629CF1EB800B47BAA /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		582E172829CF1EB900B47BAA /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		582E172B29CF1EB900B47BAA /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		58358CEB29FAB9F900F14F97 /* Message.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Message.swift; sourceTree = "<group>"; };
+		58358CED29FABAC900F14F97 /* MessageBubble.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBubble.swift; sourceTree = "<group>"; };
 		583E964429DEC57200A21595 /* SettingPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingPage.swift; sourceTree = "<group>"; };
 		586CB9E129D5BAA20034A210 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		58892F8A29D2FAFC00BD402D /* LoginPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginPage.swift; sourceTree = "<group>"; };
@@ -127,6 +131,8 @@
 		582E172329CF1EB800B47BAA /* SpaceTalk */ = {
 			isa = PBXGroup;
 			children = (
+				58358CEA29FAB9E700F14F97 /* Model */,
+				58358CE729FAB85500F14F97 /* Components */,
 				58C7D15629DAFC540094C597 /* Extension */,
 				582E172429CF1EB800B47BAA /* SpaceTalkApp.swift */,
 				582E172629CF1EB800B47BAA /* ContentView.swift */,
@@ -145,6 +151,22 @@
 				582E172B29CF1EB900B47BAA /* Preview Assets.xcassets */,
 			);
 			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		58358CE729FAB85500F14F97 /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				58358CED29FABAC900F14F97 /* MessageBubble.swift */,
+			);
+			path = Components;
+			sourceTree = "<group>";
+		};
+		58358CEA29FAB9E700F14F97 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				58358CEB29FAB9F900F14F97 /* Message.swift */,
+			);
+			path = Model;
 			sourceTree = "<group>";
 		};
 		58892F8C29D313D800BD402D /* Login */ = {
@@ -300,12 +322,14 @@
 				582E172729CF1EB800B47BAA /* ContentView.swift in Sources */,
 				589E522329D3A5020074AE16 /* MainPage.swift in Sources */,
 				5808E40929DEFA25008A72BB /* ChatPage.swift in Sources */,
+				58358CEE29FABAC900F14F97 /* MessageBubble.swift in Sources */,
 				58892F8B29D2FAFC00BD402D /* LoginPage.swift in Sources */,
 				589E522729D3A6260074AE16 /* FirebaseLoginViewModel.swift in Sources */,
 				58892F8E29D3141D00BD402D /* SignUpPage.swift in Sources */,
 				58C7D15529DAF9B30094C597 /* HomePage.swift in Sources */,
 				58C7D15C29DB1BBE0094C597 /* ChatListpage.swift in Sources */,
 				58C7D15829DAFC750094C597 /* ViewExtension.swift in Sources */,
+				58358CEC29FAB9F900F14F97 /* Message.swift in Sources */,
 				583E964529DEC57200A21595 /* SettingPage.swift in Sources */,
 				58C7D15A29DAFD700094C597 /* RgbExtension.swift in Sources */,
 				582E172529CF1EB800B47BAA /* SpaceTalkApp.swift in Sources */,

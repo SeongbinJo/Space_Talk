@@ -11,11 +11,8 @@ import SwiftUI
 struct ChatListpage: View {
     @ObservedObject var loginViewModel: LoginViewModel
     
-    @State private var offset = CGSize.zero
-    
     @State var chatListToChatPageActive: Bool = false
 
-    
     var body: some View{
         NavigationView{
             GeometryReader{ geometry in

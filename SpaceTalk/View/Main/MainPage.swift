@@ -26,7 +26,6 @@ struct MainPage: View {
                     loginViewModel.changeTabView(tabindex: str, loginToMainPageActive: $loginToMainPageActive)
                     HStack(spacing: 0){
                         Button(action:{
-                            print("홈 버튼 클릭됨")
                             withAnimation{
                                 str = "home"
                             }
@@ -37,9 +36,7 @@ struct MainPage: View {
                                 .scaleEffect(str == "home" ? 1.2 : 0.9)
                         }
                         .frame(width: geometry.size.width / 3)
-                        
                         Button(action:{
-                            print("채팅 리스트 버튼 클릭됨")
                             withAnimation{
                                 str = "chatList"
                             }
@@ -50,9 +47,7 @@ struct MainPage: View {
                                 .scaleEffect(str == "chatList" ? 1.2 : 0.9)
                         }
                         .frame(width: geometry.size.width / 3)
-                        
                         Button(action:{
-                            print("설정 버튼 클릭됨")
                             withAnimation{
                                 str = "setting"
                             }
@@ -64,7 +59,7 @@ struct MainPage: View {
                         }
                         .frame(width: geometry.size.width / 3)
                     }//hstack
-                    .frame(height: 70)
+                    .frame(height: geometry.size.height * 0.1)
                     .background(Color(UIColor(r: 132, g: 141, b: 136, a: 1.0)))
                     .padding(.bottom, 9)
                     .overlay(alignment: .top){

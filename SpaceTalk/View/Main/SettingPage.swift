@@ -16,21 +16,24 @@ struct SettingPage: View {
     @State var showLogoutAlert: Bool = false
     
     var body: some View{
-        List{
-            Button(action: {
-                print("로그아웃됨.")
-                showLogoutAlert = true
-            }){
-                Text("로그아웃")
-            }
-            .alert("로그아웃", isPresented: $showLogoutAlert) {
-                Button("취소", role: .cancel) {}
-                Button("로그아웃") {
-                    loginViewModel.logoutUser()
-                    loginToMainPageActive = false
+        ZStack{
+//            Color.gray.ignoresSafeArea()
+            List{
+                Button(action: {
+                    print("로그아웃됨.")
+                    showLogoutAlert = true
+                }){
+                    Text("로그아웃")
                 }
-            } message: {
-                Text("정말로 로그아웃 하시겠습니까?")
+                .alert("로그아웃", isPresented: $showLogoutAlert) {
+                    Button("취소", role: .cancel) {}
+                    Button("로그아웃") {
+                        loginViewModel.logoutUser()
+                        loginToMainPageActive = false
+                    }
+                } message: {
+                    Text("정말로 로그아웃 하시겠습니까?")
+                }
             }
         }
     }//body
