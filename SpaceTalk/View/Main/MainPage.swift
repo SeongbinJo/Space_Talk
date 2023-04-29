@@ -18,12 +18,14 @@ struct MainPage: View {
     
     @State var str: String = "home"
     
+    var isChatRoomOpen: Bool = false
+    
     var body: some View{
         NavigationView{
             GeometryReader{ geometry in
                 ZStack{
                     //버튼을 클릭하여 str값이 변경되면, 하단의 버튼은 남고 화면만 바뀐다. zstack 덕분!
-                    loginViewModel.changeTabView(tabindex: str, loginToMainPageActive: $loginToMainPageActive)
+                    loginViewModel.changeTabView(tabindex: str, loginViewModel: loginViewModel, loginToMainPageActive: $loginToMainPageActive)
                     HStack(spacing: 0){
                         Button(action:{
                             withAnimation{
@@ -68,12 +70,18 @@ struct MainPage: View {
                             .foregroundColor(Color(UIColor(r: 79, g: 88, b: 83, a: 1.0)))
                     }
                     .position(CGPoint(x: geometry.frame(in: .local).midX, y: geometry.frame(in: .local).maxY))
+                    //여부에 따라 커스텀 탭뷰 숨김.
+                    .zIndex(loginViewModel.isChatRoomOpened ? -1 : 1)
                 }//ztack
             }//geometry
         }
         .navigationBarBackButtonHidden(true)
+        .onAppear{
+            
+        }
     }
-    
+}
+
     struct LoginSuccess_Previews: PreviewProvider {
         static var previews: some View {
             MainPage(loginViewModel: LoginViewModel(), loginToMainPageActive: .constant(true))
@@ -81,4 +89,4 @@ struct MainPage: View {
     }
     
     
-}
+

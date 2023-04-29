@@ -56,7 +56,7 @@ struct LoginPage: View {
                                         .cornerRadius(15)
                                         .foregroundColor(.black)
                                 }
-                                NavigationLink(destination: MainPage(loginViewModel: LoginViewModel(), loginToMainPageActive: $loginToMainPageActive),isActive: $loginToMainPageActive, label: {EmptyView()})
+                                NavigationLink(destination: MainPage(loginViewModel: loginViewModel, loginToMainPageActive: $loginToMainPageActive),isActive: $loginToMainPageActive, label: {EmptyView()})
                                 Spacer()
                             }
                             .padding(-5)
@@ -79,7 +79,7 @@ struct LoginPage: View {
                 .foregroundColor(.black)
                 .padding(-15)
                 .padding(.trailing, 40)
-                NavigationLink(destination: SignUpPage(loginViewModel: LoginViewModel(), loginToSignUpPageActive: $loginToSignUpPageActive), isActive: $loginToSignUpPageActive, label: {EmptyView()})
+                NavigationLink(destination: SignUpPage(loginViewModel: loginViewModel, loginToSignUpPageActive: $loginToSignUpPageActive), isActive: $loginToSignUpPageActive, label: {EmptyView()})
                 //쓸모없는 부분. 나중에 지워야함!!
                 Text("로그인 여부(User uid) : \(loginViewModel.currentUser?.uid ?? "비 로그인")")
                     .padding()
@@ -101,4 +101,3 @@ struct LoginPage_Previews: PreviewProvider {
         LoginPage(loginViewModel: LoginViewModel())
     }
 }
-

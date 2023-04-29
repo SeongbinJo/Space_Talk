@@ -72,9 +72,8 @@ struct HomePage: View {
                             }
                         }
                         Button(action:{
-                            loginViewModel.logoutUser()
-                            print("로그아웃!!")
-                            loginToMainPageActive = false
+                            loginViewModel.isChatRoomOpenedToggle()
+                            print("토글 완료 : \(loginViewModel.isChatRoomOpened)")
                         }){
                             Text("로그아웃")
                                 .padding()
@@ -86,7 +85,7 @@ struct HomePage: View {
         }//navigationview
         .navigationBarBackButtonHidden(true)
         .onAppear{
-            print("open home Page")
+            
         }
     }
 }

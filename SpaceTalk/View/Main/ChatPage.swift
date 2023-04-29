@@ -9,9 +9,11 @@ import Foundation
 import SwiftUI
 
 struct ChatPage: View {
+    
     @ObservedObject var loginViewModel: LoginViewModel
     
-    var messageArray = ["hello!", "hi!", "how are you?", "i'm gooood!", "what are you doing now? 123123", "i'm studying SwiftU123123123123I.", "wow! isn't it hard?", "yeah, but it's fun", "oh, that's cool", "when will you123123123123123 go to home?", "hmm.. i don't k12312312312213now", "oh, okay ha123123123ve fun!", " a;slkdfja;lkwje;fl12;3"]
+    
+    var messageArray = ["hello!", "hi!", "how are you?", "i'm gooood!", "what are you doing now? 123123", "i'm studying SwiftU123123123123I.", "wow! isn't it hard?", "yeah, but it's fun", "oh, that's cool", "when will you123123123123123 go to home?", "hmm.. i don't k12312312312213now", "oh, okay ha123123123ve fun!", " a;slkdfja;lkwje;fl12;3","asdf","asdlkfjas","a;lkwje;f123","al;skjef;al"]
     
     var body: some View{
         NavigationView{
@@ -27,12 +29,10 @@ struct ChatPage: View {
             }
         }
         .onAppear{
-            loginViewModel.isChatRoomOpen = true
-            print(loginViewModel.isChatRoomOpen)
+            loginViewModel.isChatRoomOpenedToggle()
         }
         .onDisappear{
-            loginViewModel.isChatRoomOpen = false
-            print(loginViewModel.isChatRoomOpen)
+            loginViewModel.isChatRoomOpenedToggle()
         }
         .toolbarBackground(
                         Color(UIColor(r: 132, g: 141, b: 136, a: 1.0)),

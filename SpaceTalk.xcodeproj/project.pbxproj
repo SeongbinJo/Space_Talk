@@ -15,6 +15,7 @@
 		58358CEC29FAB9F900F14F97 /* Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58358CEB29FAB9F900F14F97 /* Message.swift */; };
 		58358CEE29FABAC900F14F97 /* MessageBubble.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58358CED29FABAC900F14F97 /* MessageBubble.swift */; };
 		583E964529DEC57200A21595 /* SettingPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 583E964429DEC57200A21595 /* SettingPage.swift */; };
+		5868D90C29FD647500C0A363 /* MessageTextBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5868D90B29FD647500C0A363 /* MessageTextBox.swift */; };
 		586CB9E229D5BAA20034A210 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 586CB9E129D5BAA20034A210 /* GoogleService-Info.plist */; };
 		586CB9E829D5C8850034A210 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 586CB9E729D5C8850034A210 /* FirebaseAnalytics */; };
 		586CB9EA29D5C8850034A210 /* FirebaseAnalyticsOnDeviceConversion in Frameworks */ = {isa = PBXBuildFile; productRef = 586CB9E929D5C8850034A210 /* FirebaseAnalyticsOnDeviceConversion */; };
@@ -63,6 +64,7 @@
 		58358CEB29FAB9F900F14F97 /* Message.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Message.swift; sourceTree = "<group>"; };
 		58358CED29FABAC900F14F97 /* MessageBubble.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBubble.swift; sourceTree = "<group>"; };
 		583E964429DEC57200A21595 /* SettingPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingPage.swift; sourceTree = "<group>"; };
+		5868D90B29FD647500C0A363 /* MessageTextBox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageTextBox.swift; sourceTree = "<group>"; };
 		586CB9E129D5BAA20034A210 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		58892F8A29D2FAFC00BD402D /* LoginPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginPage.swift; sourceTree = "<group>"; };
 		58892F8D29D3141D00BD402D /* SignUpPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpPage.swift; sourceTree = "<group>"; };
@@ -157,6 +159,7 @@
 			isa = PBXGroup;
 			children = (
 				58358CED29FABAC900F14F97 /* MessageBubble.swift */,
+				5868D90B29FD647500C0A363 /* MessageTextBox.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -326,6 +329,7 @@
 				58892F8B29D2FAFC00BD402D /* LoginPage.swift in Sources */,
 				589E522729D3A6260074AE16 /* FirebaseLoginViewModel.swift in Sources */,
 				58892F8E29D3141D00BD402D /* SignUpPage.swift in Sources */,
+				5868D90C29FD647500C0A363 /* MessageTextBox.swift in Sources */,
 				58C7D15529DAF9B30094C597 /* HomePage.swift in Sources */,
 				58C7D15C29DB1BBE0094C597 /* ChatListpage.swift in Sources */,
 				58C7D15829DAFC750094C597 /* ViewExtension.swift in Sources */,

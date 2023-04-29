@@ -14,17 +14,29 @@ import SwiftUI
 
 
 class LoginViewModel: ObservableObject{
-    @Published var email: String = ""
-    @Published var password: String = ""
-    @Published var passwordCheck: String = ""
+//    @Published var email: String = ""
+//    @Published var password: String = ""
+//    @Published var passwordCheck: String = ""
     
     @Published var currentUser: User?
-    @Published var emailCertifyCheck: Bool = false
+//    @Published var emailCertifyCheck: Bool = false
     
-    @Published var sendText: String = ""
+//    @Published var sendText: String = ""
+    
+//    @Published var signUpNickname: String = ""
+//    @Published var signUpEmail: String = ""
+//    @Published var signUpPassword: String = ""
+//    @Published var signUpPasswordCheck: String = ""
+//    
+//    @Published var emailCheck = false
+//    @Published var pwdCheck = false
+//    @Published var pwdSecondCheck = false
+    
+    @Published var chatMassageText: String = ""
     
     //채팅방이 열리면 MainPage의 하단 바가 사라지게 하기위한 변수.
-    @Published var isChatRoomOpen: Bool = false
+    @Published var isChatRoomOpened: Bool = false
+    
     
     init() {
         currentUser = Auth.auth().currentUser
@@ -118,17 +130,22 @@ class LoginViewModel: ObservableObject{
     
     
     //String 값에 따라 다른 화면이 호출됨. -> 메인화면의 커스텀 탭뷰 기능임.
-    func changeTabView(tabindex: String, loginToMainPageActive: Binding<Bool>) -> some View{
+    func changeTabView(tabindex: String, loginViewModel: LoginViewModel,loginToMainPageActive: Binding<Bool>) -> some View{
         switch tabindex{
         case "home":
-            return AnyView(HomePage(loginViewModel: LoginViewModel(), loginToMainPageActive: loginToMainPageActive))
+            return AnyView(HomePage(loginViewModel: loginViewModel, loginToMainPageActive: loginToMainPageActive))
         case "chatList":
-            return AnyView(ChatListpage(loginViewModel: LoginViewModel()))
+            return AnyView(ChatListpage(loginViewModel: loginViewModel))
         case "setting":
-            return AnyView(SettingPage(loginViewModel: LoginViewModel(), loginToMainPageActive: loginToMainPageActive))
+            return AnyView(SettingPage(loginViewModel: loginViewModel, loginToMainPageActive: loginToMainPageActive))
         default:
-            return AnyView(HomePage(loginViewModel: LoginViewModel(), loginToMainPageActive: loginToMainPageActive))
+            return AnyView(HomePage(loginViewModel: loginViewModel, loginToMainPageActive: loginToMainPageActive))
         }
+    }
+    
+    //isChatRoomOpened 변수를 toggle하기위한 함수.
+    func isChatRoomOpenedToggle() {
+        isChatRoomOpened.toggle()
     }
     
     }//LoginViewModel
