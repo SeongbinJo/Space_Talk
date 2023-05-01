@@ -13,20 +13,24 @@ struct ChatPage: View {
     @ObservedObject var loginViewModel: LoginViewModel
     
     
-    var messageArray = ["hello!", "hi!", "how are you?", "i'm gooood!", "what are you doing now? 123123", "i'm studying SwiftU123123123123I.", "wow! isn't it hard?", "yeah, but it's fun", "oh, that's cool", "when will you123123123123123 go to home?", "hmm.. i don't k12312312312213now", "oh, okay ha123123123ve fun!", " a;slkdfja;lkwje;fl12;3","asdf","asdlkfjas","a;lkwje;f123","al;skjef;al"]
+    var messageArray = ["hello!hello!hello!hello!hello!hello!hello!hello!hello!hello!hello!hello!hello!hello!hello!hello!hello!hello!hello!", "hi!", "how are you?", "i'm gooood!", "what are you doing now? 123123", "i'm studying SwiftU123123123123I.", "wow! isn't it hard?", "yeah, but it's fun", "oh, that's cool", "when will you123123123123123 go to home?", "hmm.. i don't k12312312312213now", "oh, okay ha123123123ve fun!", " a;slkdfja;lkwje;fl12;3","asdf","asdlkfjas","a;lkwje;f123","al;skjef;al","asdfasdf","a;sldkfja;sldf","ㅁ;ㅣ낭럼;ㅣㄴ","123asdasdfasdf","hi! nice to meet you!asdfasdfasdf"]
     
     var body: some View{
         NavigationView{
-            GeometryReader{ geometry in
-                VStack{
-                    ScrollView{
-                        ForEach(messageArray, id: \.self){
-                            text in MessageBubble(message: Message(id: "1234", msgText: text, isMsgReceived: false, timeStamp: Date()))
+                ZStack{
+                    VStack{
+                        GeometryReader{ geometry in
+                            ScrollView{
+                                ForEach(messageArray, id: \.self){
+                                    text in MessageBubble(message: Messages(id: "1234", msgText: text, isMsgReceived: false, timeStamp: Date()))
+                                }
+                            }
+                            MessageTextBox(loginViewModel: loginViewModel)
                         }
+                        
                     }
+                    .background(.gray)
                 }
-                .background(.gray)
-            }
         }
         .onAppear{
             loginViewModel.isChatRoomOpenedToggle()
@@ -60,5 +64,6 @@ struct ChatPage_Previews: PreviewProvider {
         NavigationView{
             ChatPage(loginViewModel: LoginViewModel())
         }
+
     }
 }

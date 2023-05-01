@@ -8,40 +8,66 @@
 import SwiftUI
 
 struct MessageBubble: View {
+
+    var message: Messages
     
-    var message: Message
+    @State var geoHeight: CGFloat = 0
     
     var body: some View {
-            VStack(alignment: message.isMsgReceived ? .leading : .trailing){
+        
+//        GeometryReader{ geo in
+//            Text(message.msgText)
+//            .padding(10)
+//            .background{
+//                GeometryReader{ geo1 in
+//                    Text("")
+//                        .onAppear{
+//                            hight = geo1.size.height
+//                        }
+//                }
+//            }
+//            .cornerRadius(20, corners: .allCorners)
+//            .fixedSize(horizontal: false, vertical: true)
+//            .frame(maxWidth: .infinity)
+//        }
+//        .frame(height: self.hight)
+        
+        GeometryReader{ geometry in
+            VStack{
                 HStack(alignment: .bottom){
-                    //수신과 발신의 차이에 따라 시간표시를 달리하기 위해서 메시지 Hstack 앞뒤로 숨긴 시간과 숨기지 않은 시간 두 개를 추가함.
                     Text(message.formattedTime)
-                        .foregroundColor(.black)
-                        .font(.system(size: 12))
-                        .frame(width: message.isMsgReceived ? 0 : 80, height: message.isMsgReceived ? 0 : 25)
-                        .padding(.horizontal, -5)
-                    HStack{
-                        Text(message.msgText)
-                            .font(.system(size: 17))
-                            .padding(10)
-                            .background(message.isMsgReceived ? .pink : .yellow)
-                            .cornerRadius(12, corners: .allCorners)
-                    }
+                        .font(.system(size: geometry.size.width * 0.03))
+                        .frame(width: message.isMsgReceived ? 0 : geometry.size.width * 0.2)
+                    Text(message.msgText)
+                        .font(.system(size: geometry.size.width * 0.05))
+                        .padding(7)
+                        .background{
+                            message.isMsgReceived ? Color.pink : Color.yellow
+                            GeometryReader{ geo in
+                                Text("")
+                                    .onAppear{
+                                        geoHeight = geo.size.height
+                                    }
+                            }
+                        }
+                        .cornerRadius(12, corners: .allCorners)
+                        .fixedSize(horizontal: false, vertical: true)
                     Text(message.formattedTime)
-                        .foregroundColor(.black)
-                        .font(.system(size: 15))
-                        .frame(width: message.isMsgReceived ? 80 : 0, height: message.isMsgReceived ? 25 : 0)
-                        .padding(.horizontal, -5)
+                        .font(.system(size: geometry.size.width * 0.03))
+                        .frame(width: message.isMsgReceived ? geometry.size.width * 0.2 : 0)
                 }
-                .frame(maxWidth: 400, alignment: message.isMsgReceived ? .leading : .trailing)
+                .frame(maxWidth: geometry.size.width * 0.9, maxHeight: .infinity, alignment: message.isMsgReceived ? .leading : .trailing)
             }
-            .frame(maxWidth: .infinity, alignment: message.isMsgReceived ? .leading : .trailing)
+            .padding(.vertical, geometry.size.height * 0.1)
+            .frame(maxWidth: .infinity, maxHeight: .infinity,alignment: message.isMsgReceived ? .leading : .trailing)
+        }
+        .frame(height: geoHeight)
 
     }
 }
 
 struct MessageBubble_Previews: PreviewProvider {
     static var previews: some View {
-        MessageBubble(message: Message(id: "123", msgText: "hi, this is my first message bubble. i feel so good!", isMsgReceived: false, timeStamp: Date()))
+        MessageBubble(message: Messages(id: "123", msgText: "가나다라마바사아자차가나다라마바사아자차가나다라마바사아자차가나다라마바사아자차가나다라마바사아자차가나다라마바사아자차가나다라마바사아자차가나다라마바사아자차가나다라마바사아자차가나다라마바사아자차", isMsgReceived: false, timeStamp: Date()))
     }
 }

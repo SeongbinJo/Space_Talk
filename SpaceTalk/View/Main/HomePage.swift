@@ -36,7 +36,13 @@ struct HomePage: View {
                             Rectangle()
                                 .frame(width: geometry.size.width * 0.8, height: geometry.size.height * 0.63)
                                 .cornerRadius(20)
-                                .foregroundColor(Color(uiColor: UIColor(r: 49, g: 49, b: 49, a: 1)))
+                                .foregroundColor(Color(UIColor(r: 49, g: 49, b: 49, a: 1)))
+                                .overlay(alignment: .bottomTrailing){
+                                    Text("홍길동 무전기")
+                                        .foregroundColor(Color(UIColor(r: 132, g: 141, b: 136, a: 1.0)))
+                                        .padding(.trailing)
+                                        .padding(.bottom)
+                                }
                             VStack{
                                 TextEditor(text: $sendTextField)
                                     .scrollContentBackground(.hidden)
@@ -52,34 +58,36 @@ struct HomePage: View {
                                             .padding(.leading, 7)
                                             .foregroundColor(.black)
                                             .opacity(0.4)
+                                            .font(.system(size: geometry.size.width * 0.05))
                                     }
-                                    .overlay(alignment: .top){
-                                        Rectangle()
-                                            .frame(width: geometry.size.width * 0.66, height: 1)
-                                            .foregroundColor(.black)
-                                            .opacity(sendTextField.isEmpty ? 0.4 : 0.0)
+                                    .overlay(alignment: .bottomTrailing){
+                                        Button(action: {}){
+                                            //새롭게 받은 메시지가 존재할 경우
+                                            //true, false 대체해야함.
+                                            Image(systemName: false ? "envelope.fill" : "envelope")
+                                                .foregroundColor(false ? Color(UIColor(r: 49, g: 49, b: 49, a: 1.0)) : Color(UIColor(r: 79, g: 88, b: 83, a: 1.0)))
+                                                .font(.system(size: geometry.size.width * 0.06))
+                                                .padding(.trailing, 10)
+                                                .padding(.bottom, 30)
+                                        }
                                     }
                                 Button(action:{}){
-                                    Text("PUSH")
-                                        .fontWeight(.bold)
-                                        .font(.system(size: 25))
+                                    Circle()
                                         .frame(width: geometry.size.width * 0.6, height: geometry.size.height * 0.3)
-                                        .foregroundColor(Color(UIColor(r: 211, g: 78, b: 78, a: 1.0)))
+                                        .foregroundColor(Color(UIColor(r: 79, g: 88, b: 83, a: 1.0)))
+                                        .overlay(alignment: .center){
+                                            Text("PUSH")
+                                                .fontWeight(.bold)
+                                                .font(.system(size: geometry.size.width * 0.07))
+                                                .foregroundColor(Color(UIColor(r: 211, g: 78, b: 78, a: 1.0)))
+                                        }
                                 }
-                                .background(Color(UIColor(r: 79, g: 88, b: 83, a: 1.0)))
-                                .clipShape(Circle())
+                                .contentShape(Circle())
                                 .padding(.bottom, -20)
-                            }
-                        }
-                        Button(action:{
-                            loginViewModel.isChatRoomOpenedToggle()
-                            print("토글 완료 : \(loginViewModel.isChatRoomOpened)")
-                        }){
-                            Text("로그아웃")
-                                .padding()
-                                .foregroundColor(.black)
-                        }
+                            }//vstack
+                        }//텍스트에디터, 푸시버튼 zstack
                     }//vstack
+                    .position(x: geometry.frame(in: .local).midX, y: geometry.frame(in: .local).midY)
                 }//zstack
             }
         }//navigationview

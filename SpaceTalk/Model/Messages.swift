@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Message: Identifiable, Codable{
+struct Messages: Identifiable, Codable{
     var id: String
     var msgText: String
     var isMsgReceived: Bool
