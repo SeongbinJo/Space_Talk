@@ -8,13 +8,20 @@
 import SwiftUI
 
 struct ContentView: View {
+    
+    @StateObject var loginViewModel: LoginViewModel
+    
     var body: some View {
-        LoginPage(loginViewModel: LoginViewModel())
+        if loginViewModel.currentUser == nil {
+            LoginPage(loginViewModel: LoginViewModel())
+        }else{
+            MainPage(loginViewModel: loginViewModel, loginToMainPageActive: .constant(true))
+        }
     }
 }
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        ContentView()
+        ContentView(loginViewModel: LoginViewModel())
     }
 }

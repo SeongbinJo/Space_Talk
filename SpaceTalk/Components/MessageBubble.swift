@@ -46,11 +46,11 @@ struct MessageBubble: View {
                             GeometryReader{ geo in
                                 Text("")
                                     .onAppear{
-                                        geoHeight = geo.size.height
+                                        geoHeight = geo.size.height + 5
                                     }
                             }
                         }
-                        .cornerRadius(12, corners: .allCorners)
+                        .cornerRadius(5, corners: .allCorners)
                         .fixedSize(horizontal: false, vertical: true)
                     Text(message.formattedTime)
                         .font(.system(size: geometry.size.width * 0.03))
@@ -58,7 +58,6 @@ struct MessageBubble: View {
                 }
                 .frame(maxWidth: geometry.size.width * 0.9, maxHeight: .infinity, alignment: message.isMsgReceived ? .leading : .trailing)
             }
-            .padding(.vertical, geometry.size.height * 0.1)
             .frame(maxWidth: .infinity, maxHeight: .infinity,alignment: message.isMsgReceived ? .leading : .trailing)
         }
         .frame(height: geoHeight)

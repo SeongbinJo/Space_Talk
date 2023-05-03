@@ -9,28 +9,33 @@ import Combine
 import Firebase
 import FirebaseAuth
 import FirebaseDatabase
+import FirebaseFirestore
 import SwiftUI
 
 
 class LoginViewModel: ObservableObject{
+    
+    let db = Firestore.firestore()
+    
 //    @Published var email: String = ""
 //    @Published var password: String = ""
 //    @Published var passwordCheck: String = ""
 //    @Published var messageArray: [Messages] = []
+    
     @Published var currentUser: User?
     
 //    @Published var emailCertifyCheck: Bool = false
     
 //    @Published var sendText: String = ""
     
-//    @Published var signUpNickname: String = ""
-//    @Published var signUpEmail: String = ""
-//    @Published var signUpPassword: String = ""
-//    @Published var signUpPasswordCheck: String = ""
-//    
-//    @Published var emailCheck = false
-//    @Published var pwdCheck = false
-//    @Published var pwdSecondCheck = false
+    @Published var signUpNickname: String = ""
+    @Published var signUpEmail: String = ""
+    @Published var signUpPassword: String = ""
+    @Published var signUpPasswordCheck: String = ""
+    
+    @Published var emailCheck = false
+    @Published var pwdCheck = false
+    @Published var pwdSecondCheck = false
     
     @Published var chatMassageText: String = ""
     
@@ -46,26 +51,26 @@ class LoginViewModel: ObservableObject{
     private var cancellables: Set<AnyCancellable> = []
     
     //이메일 유효성 검사
-    func isValidEmail(email: String) -> Bool {
+    func isValidEmail() -> Bool {
         let emailRegex = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
                 let emailPredicate = NSPredicate(format:"SELF MATCHES %@", emailRegex)
-                return emailPredicate.evaluate(with: email)
+                return emailPredicate.evaluate(with: signUpEmail)
     }
     
     
     //비밀번호 유효성 검사
-    func isValidPassword(password: String) -> Bool {
-        return password.count >= 8
+    func isValidPassword() -> Bool {
+        return signUpPassword.count >= 8
     }
     
     //비밀번호 일치 불일치
-    func isSamePassword(password: String, passwordCheck: String) -> Bool {
-        return password == passwordCheck
+    func isSamePassword() -> Bool {
+        return signUpPassword == signUpPasswordCheck
     }
     
     //firebase User 등록(회원가입)
-    func registerUser(email: String, password: String, completion: @escaping (Bool) -> Void) {
-        Auth.auth().createUser(withEmail: email, password: password) { registerResult, error in
+    func registerUser(completion: @escaping (Bool) -> Void) {
+        Auth.auth().createUser(withEmail: signUpEmail, password: signUpPasswordCheck) { registerResult, error in
             //등록 성공시 result에 값이 담기고, error엔 nil이 ,, 등록 실패시 result에 nil이 error엔 에러값이 담긴다.
             guard let newUser = registerResult?.user else {return}
             guard error == nil else {
@@ -73,6 +78,9 @@ class LoginViewModel: ObservableObject{
                 print("Error : \(error!.localizedDescription)")
                 return
             }
+//            self.db.collection("users").document(newUser.uid).setData(["uid" : newUser.uid, "email" : newUser.email!, "nickname" : self.signUpNickname, "registerDate" : Date()])
+            self.logoutUser()
+            print("오예아~~")
             
             newUser.sendEmailVerification{ error in
                 if let error = error {
@@ -85,6 +93,7 @@ class LoginViewModel: ObservableObject{
             print("계정 등록 성공, 유저UID = \(newUser.uid)")
         }
     }
+
     
     //로그인
     //로그인 성공시 현재 유저 정보(uid)가 저장되고 성공여부가 bool값으로 return 됨.
@@ -96,6 +105,7 @@ class LoginViewModel: ObservableObject{
                 if self.currentUser!.isEmailVerified {
                     completion(true)
                     print("이메일 인증을 완료한 이용자 입니다. 로그인 합니다.")
+                    
                 }else{
                     print("이메일 인증을 하지않은 이용자 입니다.")
                 }
@@ -112,7 +122,20 @@ class LoginViewModel: ObservableObject{
         try? Auth.auth().signOut()
         self.currentUser = nil
         print("파이어베이스 로그아웃 처리 완료")
+        print("내 현재정보 : \(self.currentUser?.uid ?? "정보없음")")
     }
+    
+    //회원탈퇴
+    func deleteUser(){
+        if currentUser != nil {
+//            db.collection("users").document(self.currentUser!.uid).delete()
+//            self.currentUser?.delete()
+        }
+        logoutUser()
+        print("계정삭제 완료")
+        print("내 현재정보 : \(self.currentUser?.uid ?? "정보없음")")
+    }
+    
     
     //인증 이메일 보내는 함수
     func sendCertifyEmail(){
@@ -120,7 +143,6 @@ class LoginViewModel: ObservableObject{
             print("Firebase에 등록된 유저가 아님.")
             return
         }
-        
         }
     
     //메인화면 텍스트 에디터 placeholder 위함. 텍스트.count 0일 경우. 보이게끔.

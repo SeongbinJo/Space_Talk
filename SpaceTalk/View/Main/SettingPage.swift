@@ -14,13 +14,13 @@ struct SettingPage: View {
     @Binding var loginToMainPageActive: Bool
     
     @State var showLogoutAlert: Bool = false
+    @State var showDeleteAlert: Bool = false
     
     var body: some View{
         ZStack{
 //            Color.gray.ignoresSafeArea()
             List{
                 Button(action: {
-                    print("로그아웃됨.")
                     showLogoutAlert = true
                 }){
                     Text("로그아웃")
@@ -30,10 +30,28 @@ struct SettingPage: View {
                     Button("로그아웃") {
                         loginViewModel.logoutUser()
                         loginToMainPageActive = false
+                        print(loginToMainPageActive)
                     }
                 } message: {
                     Text("정말로 로그아웃 하시겠습니까?")
                 }
+                .foregroundColor(.black)
+                Button(action: {
+                    showDeleteAlert = true
+                }){
+                    Text("계정탈퇴")
+                }
+                .alert("주의!", isPresented: $showDeleteAlert) {
+                    Button("취소", role: .cancel) {}
+                    Button("계정탈퇴") {
+                        loginViewModel.deleteUser()
+                        loginToMainPageActive = false
+                        print(loginToMainPageActive)
+                    }
+                } message: {
+                    Text("정말로 계정탈퇴 하시겠습니까?")
+                }
+                .foregroundColor(.red)
             }
         }
     }//body

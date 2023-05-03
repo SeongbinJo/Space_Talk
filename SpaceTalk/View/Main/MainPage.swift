@@ -74,6 +74,9 @@ struct MainPage: View {
                     .zIndex(loginViewModel.isChatRoomOpened ? -1 : 1)
                 }//ztack
             }//geometry
+            .onAppear{
+                print("내 정보(uid) : \(loginViewModel.currentUser?.uid ?? "정보없음")")
+            }
         }
         .navigationBarBackButtonHidden(true)
         .onAppear{
