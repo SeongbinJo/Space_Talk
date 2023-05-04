@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		5808E40929DEFA25008A72BB /* ChatPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5808E40829DEFA25008A72BB /* ChatPage.swift */; };
+		581F03792A0425670075F645 /* FirestoreViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 581F03782A0425660075F645 /* FirestoreViewModel.swift */; };
 		582379E229FE826C006D1079 /* Users.swift in Sources */ = {isa = PBXBuildFile; fileRef = 582379E129FE826C006D1079 /* Users.swift */; };
 		582E172529CF1EB800B47BAA /* SpaceTalkApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 582E172429CF1EB800B47BAA /* SpaceTalkApp.swift */; };
 		582E172729CF1EB800B47BAA /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 582E172629CF1EB800B47BAA /* ContentView.swift */; };
@@ -57,6 +58,7 @@
 
 /* Begin PBXFileReference section */
 		5808E40829DEFA25008A72BB /* ChatPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatPage.swift; sourceTree = "<group>"; };
+		581F03782A0425660075F645 /* FirestoreViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreViewModel.swift; sourceTree = "<group>"; };
 		582379E129FE826C006D1079 /* Users.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Users.swift; sourceTree = "<group>"; };
 		582E172129CF1EB800B47BAA /* SpaceTalk.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SpaceTalk.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		582E172429CF1EB800B47BAA /* SpaceTalkApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpaceTalkApp.swift; sourceTree = "<group>"; };
@@ -209,6 +211,7 @@
 			isa = PBXGroup;
 			children = (
 				589E522629D3A6260074AE16 /* LoginViewModel.swift */,
+				581F03782A0425660075F645 /* FirestoreViewModel.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -337,6 +340,7 @@
 				58C7D15529DAF9B30094C597 /* HomePage.swift in Sources */,
 				58C7D15C29DB1BBE0094C597 /* ChatListpage.swift in Sources */,
 				58C7D15829DAFC750094C597 /* ViewExtension.swift in Sources */,
+				581F03792A0425670075F645 /* FirestoreViewModel.swift in Sources */,
 				58358CEC29FAB9F900F14F97 /* Messages.swift in Sources */,
 				583E964529DEC57200A21595 /* SettingPage.swift in Sources */,
 				58C7D15A29DAFD700094C597 /* RgbExtension.swift in Sources */,

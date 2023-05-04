@@ -9,12 +9,13 @@ import Combine
 import Firebase
 import FirebaseAuth
 import FirebaseDatabase
+import FirebaseCore
 import FirebaseFirestore
 import SwiftUI
 
 
 class LoginViewModel: ObservableObject{
-    
+
     let db = Firestore.firestore()
     
 //    @Published var email: String = ""
@@ -28,16 +29,26 @@ class LoginViewModel: ObservableObject{
     
 //    @Published var sendText: String = ""
     
+    //회원가입 페이지 텍스트필드
     @Published var signUpNickname: String = ""
     @Published var signUpEmail: String = ""
     @Published var signUpPassword: String = ""
     @Published var signUpPasswordCheck: String = ""
-    
+    //회원가입 페이지 '가입' 버튼 비/활성화
     @Published var emailCheck = false
     @Published var pwdCheck = false
     @Published var pwdSecondCheck = false
+    @Published var nickNameCheck = false
     
     @Published var chatMassageText: String = ""
+    
+    //회원가입 페이지 - 닉네임/이메일 중복확인 alert창 bool
+    @Published var showNickNameResult: Bool = false
+    @Published var showEmailResult: Bool = false
+    
+    //회원가입 페이지 - 닉네임/이메일 중복확인 bool
+    @Published var isAlreadyNickName: Bool = false
+    @Published var isAlreadyEmail: Bool = false
     
     //채팅방이 열리면 MainPage의 하단 바가 사라지게 하기위한 변수.
     @Published var isChatRoomOpened: Bool = false
@@ -53,10 +64,16 @@ class LoginViewModel: ObservableObject{
     //이메일 유효성 검사
     func isValidEmail() -> Bool {
         let emailRegex = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
-                let emailPredicate = NSPredicate(format:"SELF MATCHES %@", emailRegex)
+                let emailPredicate = NSPredicate(format: "SELF MATCHES %@", emailRegex)
                 return emailPredicate.evaluate(with: signUpEmail)
     }
     
+    //닉네임 유효성 검사
+    func isValidNickName() -> Bool {
+        let nickNameRegex = "[A-Z0-9a-z가-힣]{1,10}"
+        let nickNamePredicate = NSPredicate(format: "SELF MATCHES %@", nickNameRegex)
+        return nickNamePredicate.evaluate(with: signUpNickname)
+    }
     
     //비밀번호 유효성 검사
     func isValidPassword() -> Bool {
@@ -78,10 +95,8 @@ class LoginViewModel: ObservableObject{
                 print("Error : \(error!.localizedDescription)")
                 return
             }
-//            self.db.collection("users").document(newUser.uid).setData(["uid" : newUser.uid, "email" : newUser.email!, "nickname" : self.signUpNickname, "registerDate" : Date()])
-            self.logoutUser()
-            print("오예아~~")
-            
+            self.currentUser = newUser
+            self.writeFirestoreUser()
             newUser.sendEmailVerification{ error in
                 if let error = error {
                     print("이메일 전송 에러 : \(error.localizedDescription)")
@@ -91,6 +106,18 @@ class LoginViewModel: ObservableObject{
             }
             completion(true)
             print("계정 등록 성공, 유저UID = \(newUser.uid)")
+        }
+    }
+    
+    func writeFirestoreUser(){
+        db.collection("users").document(currentUser?.uid ?? "정보없음").setData(["uid" : currentUser?.uid ?? "정보없음", "email" : self.signUpEmail, "nickname" : self.signUpNickname, "registerDate" : Date()]) { err in
+            if let err = err {
+                print("Error writing document: \(err)")
+            } else {
+                print("Firestore 쓰기 완료!!")
+                //회원가입 후, 로그아웃 처리를 해주지 않으면 앱 재시작 또는 앱 재설치 했을 때 회원가입했던 정보로 자동 로그인 되어 버린다.
+                self.logoutUser()
+            }
         }
     }
 
@@ -128,10 +155,16 @@ class LoginViewModel: ObservableObject{
     //회원탈퇴
     func deleteUser(){
         if currentUser != nil {
-//            db.collection("users").document(self.currentUser!.uid).delete()
-//            self.currentUser?.delete()
+            db.collection("users").document(self.currentUser!.uid).delete(){ error in
+                if let error = error{
+                    print("Delete Error : \(error.localizedDescription)")
+                }else{
+                    print("해당 유저 Firestore 정보 삭제완료!")
+                    self.currentUser?.delete()
+                    self.logoutUser()
+                }
+            }
         }
-        logoutUser()
         print("계정삭제 완료")
         print("내 현재정보 : \(self.currentUser?.uid ?? "정보없음")")
     }
@@ -166,8 +199,45 @@ class LoginViewModel: ObservableObject{
     }
     
     //isChatRoomOpened 변수를 toggle하기위한 함수.
-    func isChatRoomOpenedToggle() {
+    func isChatRoomOpenedToggle(){
         isChatRoomOpened.toggle()
+    }
+    
+//    닉네임 중복 확인해주는 함수.
+    func isNickNameAlreadyUsed(completion: @escaping (Bool) -> Void){
+        db.collection("users").whereField("nickname", isEqualTo: self.signUpNickname).getDocuments(){ snapshot, error in
+            guard error == nil else {
+                print("닉네임 중복 Error : \(error!)")
+                completion(false)
+                return
+            }
+            if snapshot!.isEmpty{
+                print("해당 닉네임이 중복되지 않음.")
+                completion(false)
+            }else{
+                print("해당 닉네임이 이미 존재함.")
+                completion(true)
+            }
+        }
+    }
+
+    
+    //이메일 중복 확인해주는 함수.
+    func isEmailAlreadyUsed(completion: @escaping (Bool) -> Void){
+        db.collection("users").whereField("email", isEqualTo: self.signUpEmail).getDocuments(){ snapshot, error in
+            guard error == nil else {
+                print("이메일 중복 Error : \(error!)")
+                completion(false)
+                return
+            }
+            if snapshot!.isEmpty{
+                print("해당 이메일이 중복되지 않음.")
+                completion(false)
+            }else{
+                print("해당 이메일이 이미 존재함.")
+                completion(true)
+            }
+        }
     }
     
     }//LoginViewModel

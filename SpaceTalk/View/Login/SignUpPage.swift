@@ -20,7 +20,7 @@ struct SignUpPage: View {
                     .foregroundColor(.blue)
                     .frame(height: 1)
                     .padding(.vertical, 15)
-                VStack(){
+                VStack(alignment: .leading){
                     HStack{
                         Text("닉네임")
                             .padding(.leading, 15)
@@ -31,12 +31,41 @@ struct SignUpPage: View {
                             .textFieldStyle(.roundedBorder)
                             .padding(.leading, 15)
                             .autocapitalization(.none)
-                        Button("중복확인"){}
+                        Button(action: {
+                            loginViewModel.isNickNameAlreadyUsed(){ isComplete in
+                                loginViewModel.isAlreadyNickName = isComplete
+                                loginViewModel.showNickNameResult = true
+                            }
+                        }){
+                            Text("중복확인")
+                        }
                             .padding(6)
                             .foregroundColor(.white)
-                            .background(.blue)
+                            .background(loginViewModel.signUpNickname.count == 0 || loginViewModel.isValidNickName() == false ? .gray : .blue)
                             .cornerRadius(11)
                             .padding(.trailing, 8)
+                            .disabled(loginViewModel.signUpNickname.count == 0 || loginViewModel.isValidNickName() == false ? true : false)
+                            .alert("확인", isPresented: $loginViewModel.showNickNameResult){
+                                Button("확인", role: .cancel){
+                                    if loginViewModel.isAlreadyNickName{
+                                        loginViewModel.signUpNickname = ""
+                                    }
+                                }
+                            } message: {
+                                Text(loginViewModel.isAlreadyNickName ? "이미 사용중인 닉네임 입니다." : "사용가능한 닉네임 입니다.")
+                            }
+                    }
+                    .onChange(of: loginViewModel.signUpNickname){ signUpNickName in
+                        loginViewModel.nickNameCheck = loginViewModel.isValidNickName()
+                    }
+                    if loginViewModel.signUpNickname.count > 0 {
+                        if loginViewModel.isValidNickName() == false{
+                            Text("공백과 특수문자를 제외한 1-10 글자를 입력해주세요.")
+                                .padding(.leading, 15)
+                                .font(.system(size: 13))
+                                .foregroundColor(.red)
+                                .padding(.bottom, 1)
+                        }
                     }
                     HStack{
                         Text("이메일")
@@ -49,12 +78,29 @@ struct SignUpPage: View {
                                 .textFieldStyle(.roundedBorder)
                                 .padding(.leading, 15)
                                 .autocapitalization(.none)
-                            Button("중복확인"){}
+                            Button(action: {
+                                loginViewModel.isEmailAlreadyUsed(){ isComplete in
+                                    loginViewModel.isAlreadyEmail = isComplete
+                                    loginViewModel.showEmailResult = true
+                                }
+                            }){
+                                Text("중복확인")
+                            }
                                 .padding(6)
                                 .foregroundColor(.white)
-                                .background(.blue)
+                                .background(loginViewModel.signUpEmail.count == 0 || loginViewModel.isValidEmail() == false ? .gray : .blue)
                                 .cornerRadius(11)
                                 .padding(.trailing, 8)
+                                .disabled(loginViewModel.signUpEmail.count == 0 || loginViewModel.isValidEmail() == false ? true : false)
+                                .alert("확인", isPresented: $loginViewModel.showEmailResult){
+                                    Button("확인", role: .cancel){
+                                        if loginViewModel.isAlreadyEmail{
+                                            loginViewModel.signUpEmail = ""
+                                        }
+                                    }
+                                } message: {
+                                    Text(loginViewModel.isAlreadyEmail ? "이미 사용중인 이메일 입니다." : "사용가능한 이메일 입니다.")
+                                }
                         }
                         .onChange(of: loginViewModel.signUpEmail){ signUpEmail in
                             loginViewModel.emailCheck = loginViewModel.isValidEmail()
@@ -133,6 +179,7 @@ struct SignUpPage: View {
                             loginToSignUpPageActive = false
                         }
                     }
+//                    loginViewModel.writeFirestoreUser()
                 }
                     .padding(10)
                     .background(loginViewModel.emailCheck&&loginViewModel.pwdCheck&&loginViewModel.pwdSecondCheck ? .blue : .gray)
@@ -142,7 +189,12 @@ struct SignUpPage: View {
                     .disabled(loginViewModel.emailCheck&&loginViewModel.pwdCheck&&loginViewModel.pwdSecondCheck ? false : true)
                 Spacer()
             }
-
+            .onAppear{
+                loginViewModel.signUpNickname = ""
+                loginViewModel.signUpEmail = ""
+                loginViewModel.signUpPassword = ""
+                loginViewModel.signUpPasswordCheck = ""
+            }
         }
         .navigationBarTitle("회원가입")
     }
