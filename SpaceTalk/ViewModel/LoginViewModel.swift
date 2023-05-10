@@ -18,16 +18,7 @@ class LoginViewModel: ObservableObject{
 
     let db = Firestore.firestore()
     
-//    @Published var email: String = ""
-//    @Published var password: String = ""
-//    @Published var passwordCheck: String = ""
-//    @Published var messageArray: [Messages] = []
-    
     @Published var currentUser: User?
-    
-//    @Published var emailCertifyCheck: Bool = false
-    
-//    @Published var sendText: String = ""
     
     //회원가입 페이지 텍스트필드
     @Published var signUpNickname: String = ""
@@ -39,8 +30,6 @@ class LoginViewModel: ObservableObject{
     @Published var pwdCheck = false
     @Published var pwdSecondCheck = false
     @Published var nickNameCheck = false
-    
-    @Published var chatMassageText: String = ""
     
     //회원가입 페이지 - 닉네임/이메일 중복확인 alert창 bool
     @Published var showNickNameResult: Bool = false
@@ -185,16 +174,16 @@ class LoginViewModel: ObservableObject{
     
     
     //String 값에 따라 다른 화면이 호출됨. -> 메인화면의 커스텀 탭뷰 기능임.
-    func changeTabView(tabindex: String, loginViewModel: LoginViewModel,loginToMainPageActive: Binding<Bool>) -> some View{
+    func changeTabView(tabindex: String, loginViewModel: LoginViewModel, firestoreViewModel: FirestoreViewModel, loginToMainPageActive: Binding<Bool>) -> some View{
         switch tabindex{
         case "home":
-            return AnyView(HomePage(loginViewModel: loginViewModel, loginToMainPageActive: loginToMainPageActive))
+            return AnyView(HomePage(loginViewModel: loginViewModel, firestoreViewModel: firestoreViewModel, loginToMainPageActive: loginToMainPageActive))
         case "chatList":
             return AnyView(ChatListpage(loginViewModel: loginViewModel))
         case "setting":
             return AnyView(SettingPage(loginViewModel: loginViewModel, loginToMainPageActive: loginToMainPageActive))
         default:
-            return AnyView(HomePage(loginViewModel: loginViewModel, loginToMainPageActive: loginToMainPageActive))
+            return AnyView(HomePage(loginViewModel: loginViewModel, firestoreViewModel: firestoreViewModel, loginToMainPageActive: loginToMainPageActive))
         }
     }
     

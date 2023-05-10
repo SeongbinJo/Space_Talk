@@ -10,6 +10,7 @@ import SwiftUI
 
 struct HomePage: View {
     @ObservedObject var loginViewModel: LoginViewModel
+    @ObservedObject var firestoreViewModel: FirestoreViewModel
     
     @Binding var loginToMainPageActive: Bool
     
@@ -38,7 +39,7 @@ struct HomePage: View {
                                 .cornerRadius(20)
                                 .foregroundColor(Color(UIColor(r: 49, g: 49, b: 49, a: 1)))
                                 .overlay(alignment: .bottomTrailing){
-                                    Text("홍길동 무전기")
+                                    Text("\(firestoreViewModel.currentUserNickName())의 무전기")
                                         .foregroundColor(Color(UIColor(r: 132, g: 141, b: 136, a: 1.0)))
                                         .padding(.trailing)
                                         .padding(.bottom)
@@ -100,6 +101,6 @@ struct HomePage: View {
 
 struct HomePage_Previews: PreviewProvider {
     static var previews: some View {
-        HomePage(loginViewModel: LoginViewModel(), loginToMainPageActive: .constant(true))
+        HomePage(loginViewModel: LoginViewModel(), firestoreViewModel: FirestoreViewModel(loginViewModel: LoginViewModel()), loginToMainPageActive: .constant(true))
     }
 }

@@ -21,7 +21,7 @@ struct LoginPage: View {
     var body: some View {
         NavigationView{
             ZStack{
-                Color(UIColor(r: 79, g: 88, b: 83, a: 1.0)).ignoresSafeArea()
+//                Color(UIColor(r: 79, g: 88, b: 83, a: 1.0)).ignoresSafeArea()
                 VStack(alignment: .trailing){
                     Spacer()
                     Spacer()
@@ -59,7 +59,7 @@ struct LoginPage: View {
                                             .foregroundColor(.black)
                                     }
                                     .padding()
-                                    NavigationLink(destination: MainPage(loginViewModel: loginViewModel, loginToMainPageActive: $loginToMainPageActive),isActive: $loginToMainPageActive, label: {EmptyView()})
+                                    NavigationLink(destination: MainPage(loginViewModel: loginViewModel, firestoreViewModel: FirestoreViewModel(loginViewModel: loginViewModel), loginToMainPageActive: $loginToMainPageActive),isActive: $loginToMainPageActive, label: {EmptyView()})
                                     Spacer()
                                 }
                             }

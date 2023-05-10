@@ -14,35 +14,20 @@ struct MessageBubble: View {
     @State var geoHeight: CGFloat = 0
     
     var body: some View {
-        
-//        GeometryReader{ geo in
-//            Text(message.msgText)
-//            .padding(10)
-//            .background{
-//                GeometryReader{ geo1 in
-//                    Text("")
-//                        .onAppear{
-//                            hight = geo1.size.height
-//                        }
-//                }
-//            }
-//            .cornerRadius(20, corners: .allCorners)
-//            .fixedSize(horizontal: false, vertical: true)
-//            .frame(maxWidth: .infinity)
-//        }
-//        .frame(height: self.hight)
-        
         GeometryReader{ geometry in
             VStack{
                 HStack(alignment: .bottom){
+                    Text(message.isRead ? " " : "1")
+                        .foregroundColor(.yellow)
                     Text(message.formattedTime)
                         .font(.system(size: geometry.size.width * 0.03))
-                        .frame(width: message.isMsgReceived ? 0 : geometry.size.width * 0.2)
-                    Text(message.msgText)
-                        .font(.system(size: geometry.size.width * 0.05))
+                    // 나중에 currentuser의 uid와 senderid/receiverid를 비교해서 width = 0으로 정함.
+                        .frame(width: geometry.size.width * 0.2)
+                    Text(message.messageText)
+                        .font(.system(size: geometry.size.width * 0.04))
                         .padding(7)
                         .background{
-                            message.isMsgReceived ? Color.pink : Color.yellow
+                            Color.yellow
                             GeometryReader{ geo in
                                 Text("")
                                     .onAppear{
@@ -54,19 +39,23 @@ struct MessageBubble: View {
                         .fixedSize(horizontal: false, vertical: true)
                     Text(message.formattedTime)
                         .font(.system(size: geometry.size.width * 0.03))
-                        .frame(width: message.isMsgReceived ? geometry.size.width * 0.2 : 0)
+                    // 나중에 currentuser의 uid와 senderid/receiverid를 비교해서 width = 0으로 정함.
+                        .frame(width: 0)
                 }
-                .frame(maxWidth: geometry.size.width * 0.9, maxHeight: .infinity, alignment: message.isMsgReceived ? .leading : .trailing)
+                // 나중에 currentuser의 uid와 senderid/receiverid를 비교해서 .trailing, .leading 정함.
+                .frame(maxWidth: geometry.size.width * 0.9, maxHeight: .infinity, alignment: .trailing)
             }
-            .frame(maxWidth: .infinity, maxHeight: .infinity,alignment: message.isMsgReceived ? .leading : .trailing)
+            // 나중에 currentuser의 uid와 senderid/receiverid를 비교해서 .trailing, .leading 정함.
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .trailing)
         }
         .frame(height: geoHeight)
-
+        
+        
     }
 }
 
-struct MessageBubble_Previews: PreviewProvider {
-    static var previews: some View {
-        MessageBubble(message: Messages(id: "123", msgText: "가나다라마바사아자차가나다라마바사아자차가나다라마바사아자차가나다라마바사아자차가나다라마바사아자차가나다라마바사아자차가나다라마바사아자차가나다라마바사아자차가나다라마바사아자차가나다라마바사아자차", isMsgReceived: false, timeStamp: Date()))
-    }
-}
+//struct MessageBubble_Previews: PreviewProvider {
+//    static var previews: some View {
+////        MessageBubble(message: Messages(document: .data()))
+//    }
+//}

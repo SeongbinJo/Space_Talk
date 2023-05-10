@@ -12,6 +12,7 @@ import FirebaseAuth
 struct MainPage: View {
     
     @ObservedObject var loginViewModel: LoginViewModel
+    @ObservedObject var firestoreViewModel: FirestoreViewModel
     
     //LoginPage의 네비게이션 링크
     @Binding var loginToMainPageActive: Bool
@@ -25,7 +26,7 @@ struct MainPage: View {
             GeometryReader{ geometry in
                 ZStack{
                     //버튼을 클릭하여 str값이 변경되면, 하단의 버튼은 남고 화면만 바뀐다. zstack 덕분!
-                    loginViewModel.changeTabView(tabindex: str, loginViewModel: loginViewModel, loginToMainPageActive: $loginToMainPageActive)
+                    loginViewModel.changeTabView(tabindex: str, loginViewModel: loginViewModel, firestoreViewModel: firestoreViewModel, loginToMainPageActive: $loginToMainPageActive)
                     HStack(spacing: 0){
                         Button(action:{
                             withAnimation{
@@ -87,7 +88,7 @@ struct MainPage: View {
 
     struct LoginSuccess_Previews: PreviewProvider {
         static var previews: some View {
-            MainPage(loginViewModel: LoginViewModel(), loginToMainPageActive: .constant(true))
+            MainPage(loginViewModel: LoginViewModel(), firestoreViewModel: FirestoreViewModel(loginViewModel: LoginViewModel()), loginToMainPageActive: .constant(true))
         }
     }
     

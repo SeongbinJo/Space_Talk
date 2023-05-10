@@ -11,9 +11,7 @@ import SwiftUI
 struct ChatPage: View {
     
     @ObservedObject var loginViewModel: LoginViewModel
-    
-    
-    var messageArray = ["가나다라마바사아자차가나다라마바사아자차가나다라마바사아자차가나다라마바사아자차가나다라마바사아자차가나다라마바사아자차가나다라마바사아자차가나다라마바사아자차가나다라마바사아자차가나다라마바사아자차", "hi!", "how are you?", "i'm gooood!", "what are you doing now? 123123", "i'm studying SwiftU123123123123I.", "wow! isn't it hard?", "yeah, but it's fun", "oh, that's cool", "when will you123123123123123 go to home?", "hmm.. i don't k12312312312213now", "oh, okay ha123123123ve fun!", " a;slkdfja;lkwje;fl12;3","asdf","asdlkfjas","a;lkwje;f123","al;skjef;al","asdfasdf","a;sldkfja;sldf","ㅁ;ㅣ낭럼;ㅣㄴ","123asdasdfasdf","hi! nice to meet you!asdfasdfasdf"]
+    @ObservedObject var firestoreViewModel: FirestoreViewModel
     
     var body: some View{
         NavigationView{
@@ -22,13 +20,12 @@ struct ChatPage: View {
                         Spacer()
                         GeometryReader{ geometry in
                             ScrollView{
-                                ForEach(messageArray, id: \.self){
-                                    text in MessageBubble(message: Messages(id: "1234", msgText: text, isMsgReceived: false, timeStamp: Date()))
+                                ForEach(firestoreViewModel.messages, id: \.roomId){ message in
+                                    MessageBubble(message: message)
                                 }
-                            }
-                            MessageTextBox(loginViewModel: loginViewModel)
+                            }.frame(height: geometry.size.height * 0.9)
+                            MessageTextBox(loginViewModel: loginViewModel, firestoreViewModel: FirestoreViewModel(loginViewModel: loginViewModel))
                         }
-//                        Spacer()
                     }
                     .background(.gray)
                 }
@@ -49,7 +46,9 @@ struct ChatPage: View {
                 Label("신고하기", systemImage: "exclamationmark.bubble.fill")
             }
             .foregroundColor(.red)
-            Button(action: {}) {
+            Button(action: {
+                firestoreViewModel.deleteMessagesFromFirestore()
+            }) {
                 Label("채팅방 나가기", systemImage: "trash")
             }
         } label: {
@@ -63,7 +62,7 @@ struct ChatPage: View {
 struct ChatPage_Previews: PreviewProvider {
     static var previews: some View {
         NavigationView{
-            ChatPage(loginViewModel: LoginViewModel())
+            ChatPage(loginViewModel: LoginViewModel(), firestoreViewModel: FirestoreViewModel(loginViewModel: LoginViewModel()))
         }
 
     }

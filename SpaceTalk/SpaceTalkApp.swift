@@ -25,7 +25,7 @@ struct SpaceTalkApp: App {
     
     var body: some Scene {
         WindowGroup {
-            ContentView(loginViewModel: LoginViewModel())
+            ContentView(loginViewModel: LoginViewModel(), firestoreViewModel: FirestoreViewModel(loginViewModel: LoginViewModel()))
         }
     }
 }
