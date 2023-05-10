@@ -45,10 +45,43 @@ class FirestoreViewModel: ObservableObject{
     }
     
     ///////////////////////////////////////////////////메시지 관련/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //중복없이 roomId 만드는 함수.(채팅방 생성시 사용)
+    //안됨. 다른 방법 찾아볼것!
+    
+//    func notDuplicateRoomId(){
+//        var tf: Bool = true
+//        while(tf){
+//            var uniqueRoomId = db.collection("chatroom").document()
+//            uniqueRoomId.getDocument{ document, error in
+//                guard let error = error else {
+//                    print("에러났어~~ : \(String(describing: error))")
+//                    return
+//                }
+//                guard let document = document else {
+//                    print("에러 또 났어~~ : \(error)")
+//                    return
+//                }
+//                if !document.exists{
+//                    //중복 아님.
+//                    uniqueRoomId.collection(document.documentID)
+//                    print("생성된 roomId가 중복되지 않아 사용가능합니다.")
+//                    tf = false
+//                }else{
+//                    //중복.
+//                }
+//            }
+//        }
+//    }
+    
+    
     //메시지 전송 버튼시 firestore에 저장하는 함수.
     func writeMessageToFirestore(){
+        guard let currentUser = loginViewModel.currentUser?.uid else {
+            print("currentUser.uid 가 비어있습니다.")
+            return
+        }
         let chatroomDoc = db.collection("chatroom").document()
-        chatroomDoc.setData(["messageId" : "메시지 id", "roomId" : chatroomDoc.documentID, "messageText" : self.sendMessageText, "sendTime" : Date(), "senderId" : loginViewModel.currentUser!.uid, "receiverId" : "YWYO0UsL6SSASrXl43iKJNYOX0x1", "isRead" : false]){ err in
+        chatroomDoc.setData(["messageId" : "메시지 id", "roomId" : chatroomDoc.documentID, "messageText" : self.sendMessageText, "sendTime" : Date(), "senderId" : currentUser, "receiverId" : "YWYO0UsL6SSASrXl43iKJNYOX0x1", "isRead" : false]){ err in
             if let err = err {
                 print("메시지 전송 에러: \(err)")
             } else {
@@ -58,15 +91,16 @@ class FirestoreViewModel: ObservableObject{
         }
     }
     
-    //현재 접속중인 유저의 uid와 일치하는 senderid 또는 receiverid를 가진 메시지들만 조회하여 messages 배열에 시간 순서대로 집어넣는다.
-    //시간 순서대로 -> ex) .order(by: timestamp)
-    
     //문제있다~~~~~
     func getMessages() {
         //chatroom 콜렉션에서 현재 유저의 uid와 같은 senderId를 갖는 메시지들만 나타내기.
         //appsnapshotListener를 사용해서 데이터에 업데이트가 있을시 바로바로 뷰에서 변경된다.
-        //whereField와 order를 같이 사용하면 error가 난다. -> firestore 색인 문제?
-        db.collection("chatroom").whereField("senderId", isEqualTo: loginViewModel.currentUser!.uid).addSnapshotListener { snapshot, error in
+        //지금은 senderId로 구분하지만, 나중에 roomId로 구분하게되면  roomId값으로 데이터들을 담은 후, senderId가 현재유저 uid와 동일하면 뷰 우측에, 아니면 좌측에 붙게 만들면 될 듯함.
+        guard let currentUser = loginViewModel.currentUser?.uid else {
+            print("currentUser.uid 가 비어있습니다.")
+            return
+        }
+        db.collection("chatroom").whereField("senderId", isEqualTo: currentUser).order(by: "sendTime").addSnapshotListener { snapshot, error in
             guard error == nil else {
                 print("에러다! 에러!!11 : \(String(describing: error))")
                 return
@@ -87,12 +121,6 @@ class FirestoreViewModel: ObservableObject{
                     return nil
                 }
             }
-            
-            //sendTime에 따른 오름차순 정렬.
-            self.messages.sort{
-                $0.sendTime < $1.sendTime
-            }
-            
         }
     }
     

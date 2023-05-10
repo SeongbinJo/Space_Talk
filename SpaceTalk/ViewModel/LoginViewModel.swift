@@ -179,7 +179,7 @@ class LoginViewModel: ObservableObject{
         case "home":
             return AnyView(HomePage(loginViewModel: loginViewModel, firestoreViewModel: firestoreViewModel, loginToMainPageActive: loginToMainPageActive))
         case "chatList":
-            return AnyView(ChatListpage(loginViewModel: loginViewModel))
+            return AnyView(ChatListpage(loginViewModel: loginViewModel, firestoreViewModel: firestoreViewModel))
         case "setting":
             return AnyView(SettingPage(loginViewModel: loginViewModel, loginToMainPageActive: loginToMainPageActive))
         default:

@@ -10,6 +10,7 @@ import SwiftUI
 
 struct ChatListpage: View {
     @ObservedObject var loginViewModel: LoginViewModel
+    @ObservedObject var firestoreViewModel: FirestoreViewModel
     
     @State var chatListToChatPageActive: Bool = false
 
@@ -33,6 +34,11 @@ struct ChatListpage: View {
                         .background(.green)
                         .listRowBackground(Color.clear)
                         .cornerRadius(17)
+//                        Button(action: {
+//                            firestoreViewModel.notDuplicateRoomId()
+//                        }){
+//                            Text("중복 없는 RoomId 생성 버튼")
+//                        }
                     }
                     .scrollContentBackground(.hidden)
                     .listStyle(.plain)
@@ -48,6 +54,6 @@ struct ChatListpage: View {
 
 struct ChatListpage_Previews: PreviewProvider {
     static var previews: some View {
-        ChatListpage(loginViewModel: LoginViewModel())
+        ChatListpage(loginViewModel: LoginViewModel(), firestoreViewModel: FirestoreViewModel(loginViewModel: LoginViewModel()))
     }
 }
