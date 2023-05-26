@@ -101,7 +101,7 @@ class FirestoreViewModel: ObservableObject{
             return
         }
         //룸id가 같은 데이터들을 전부다 불러와서 MessageBubble파일에서 senderId가 currentuser.uid인지에 따라 왼쪽 오른쪽 구분.!!
-        db.collection("chatroom1").document("document1").collection("subcollection").whereField("roomId", isEqualTo: "testroomid").order(by: "sendTime").addSnapshotListener { snapshot, error in
+        db.collection("chatroom1").document("document1").collection("subcollection").whereField("roomId", isEqualTo: "testroomid").addSnapshotListener { snapshot, error in
             guard error == nil else {
                 print("에러다! 에러!!11 : \(String(describing: error))")
                 return
@@ -122,6 +122,9 @@ class FirestoreViewModel: ObservableObject{
                     return nil
                 }
             }
+            
+            self.messages.sort { $0.sendTime < $1.sendTime }
+            
         }
     }
     
