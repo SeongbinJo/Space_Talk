@@ -36,8 +36,8 @@ class LoginViewModel: ObservableObject{
     @Published var showEmailResult: Bool = false
     
     //회원가입 페이지 - 닉네임/이메일 중복확인 bool
-    @Published var isAlreadyNickName: Bool = false
-    @Published var isAlreadyEmail: Bool = false
+    @Published var isAlreadyNickName: Bool = true
+    @Published var isAlreadyEmail: Bool = true
     
     //채팅방이 열리면 MainPage의 하단 바가 사라지게 하기위한 변수.
     @Published var isChatRoomOpened: Bool = false

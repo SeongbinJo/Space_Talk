@@ -80,8 +80,9 @@ class FirestoreViewModel: ObservableObject{
             print("currentUser.uid 가 비어있습니다.")
             return
         }
-        let chatroomDoc = db.collection("chatroom").document()
-        chatroomDoc.setData(["messageId" : "메시지 id", "roomId" : chatroomDoc.documentID, "messageText" : self.sendMessageText, "sendTime" : Date(), "senderId" : currentUser, "receiverId" : "YWYO0UsL6SSASrXl43iKJNYOX0x1", "isRead" : false]){ err in
+        let chatroomDoc = db.collection("chatroom1").document("document1")
+        let chatRoomDoc = chatroomDoc.collection("subcollection").document()
+        chatRoomDoc.setData(["roomId" : "testroomid", "messageId" : chatRoomDoc.documentID, "messageText" : self.sendMessageText, "sendTime" : Date(), "senderId" : currentUser, "receiverId" : "fa4QWpAbzqeWUUJbMZAqpo2OdRq1", "isRead" : false]){ err in
             if let err = err {
                 print("메시지 전송 에러: \(err)")
             } else {
@@ -90,17 +91,17 @@ class FirestoreViewModel: ObservableObject{
             }
         }
     }
-    
-    //문제있다~~~~~
+
     func getMessages() {
         //chatroom 콜렉션에서 현재 유저의 uid와 같은 senderId를 갖는 메시지들만 나타내기.
         //appsnapshotListener를 사용해서 데이터에 업데이트가 있을시 바로바로 뷰에서 변경된다.
         //지금은 senderId로 구분하지만, 나중에 roomId로 구분하게되면  roomId값으로 데이터들을 담은 후, senderId가 현재유저 uid와 동일하면 뷰 우측에, 아니면 좌측에 붙게 만들면 될 듯함.
         guard let currentUser = loginViewModel.currentUser?.uid else {
-            print("currentUser.uid 가 비어있습니다.")
+            print("getMessages() 에러 = currentUser.uid 가 비어있습니다.")
             return
         }
-        db.collection("chatroom").whereField("senderId", isEqualTo: currentUser).order(by: "sendTime").addSnapshotListener { snapshot, error in
+        //룸id가 같은 데이터들을 전부다 불러와서 MessageBubble파일에서 senderId가 currentuser.uid인지에 따라 왼쪽 오른쪽 구분.!!
+        db.collection("chatroom1").document("document1").collection("subcollection").whereField("roomId", isEqualTo: "testroomid").order(by: "sendTime").addSnapshotListener { snapshot, error in
             guard error == nil else {
                 print("에러다! 에러!!11 : \(String(describing: error))")
                 return
@@ -123,6 +124,58 @@ class FirestoreViewModel: ObservableObject{
             }
         }
     }
+    
+    
+//    //메시지 전송 버튼시 firestore에 저장하는 함수.
+//    func writeMessageToFirestore(){
+//        guard let currentUser = loginViewModel.currentUser?.uid else {
+//            print("currentUser.uid 가 비어있습니다.")
+//            return
+//        }
+//        let chatroomDoc = db.collection("chatroom").document()
+//        chatroomDoc.setData(["messageId" : "메시지 id", "roomId" : chatroomDoc.documentID, "messageText" : self.sendMessageText, "sendTime" : Date(), "senderId" : currentUser, "receiverId" : "fa4QWpAbzqeWUUJbMZAqpo2OdRq1", "isRead" : false]){ err in
+//            if let err = err {
+//                print("메시지 전송 에러: \(err)")
+//            } else {
+//                print("메시지 성공적으로 저장완료!")
+//                //메시지를 저장하고 저장된 메시지를 가져와야함.
+//            }
+//        }
+//    }
+//
+//    func getMessages() {
+//        //chatroom 콜렉션에서 현재 유저의 uid와 같은 senderId를 갖는 메시지들만 나타내기.
+//        //appsnapshotListener를 사용해서 데이터에 업데이트가 있을시 바로바로 뷰에서 변경된다.
+//        //지금은 senderId로 구분하지만, 나중에 roomId로 구분하게되면  roomId값으로 데이터들을 담은 후, senderId가 현재유저 uid와 동일하면 뷰 우측에, 아니면 좌측에 붙게 만들면 될 듯함.
+//        guard let currentUser = loginViewModel.currentUser?.uid else {
+//            print("getMessages() 에러 = currentUser.uid 가 비어있습니다.")
+//            return
+//        }
+//        //룸id가 같은 데이터들을 전부다 불러와서 MessageBubble파일에서 senderId가 currentuser.uid인지에 따라 왼쪽 오른쪽 구분.!!
+//        db.collection("chatroom").whereField("senderId", isEqualTo: currentUser).order(by: "sendTime").addSnapshotListener { snapshot, error in
+//            guard error == nil else {
+//                print("에러다! 에러!!11 : \(String(describing: error))")
+//                return
+//            }
+//            guard let documents = snapshot?.documents else {
+//                print("에러다! 에러!!22 : \(String(describing: error))")
+//                return
+//            }
+//            guard !documents.isEmpty else {
+//                print("메시지가 없음.")
+//                return
+//            }
+//            //messages 배열에 whereField로 걸러진 메시지 데이터들을 담는다.
+//            self.messages = documents.compactMap(){ document -> Messages? in
+//                do{
+//                    print(try document.data(as: Messages.self))
+//                    return try document.data(as: Messages.self)
+//                }catch{
+//                    return nil
+//                }
+//            }
+//        }
+//    }
     
     //메시지 삭제 -> ex) 방 나가기, 신고 및 차단, 계정 삭제 등
 //    func deleteMessage() {

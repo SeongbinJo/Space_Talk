@@ -42,12 +42,12 @@ struct ChatListpage: View {
                     }
                     .scrollContentBackground(.hidden)
                     .listStyle(.plain)
-                    NavigationLink(destination: ChatPage(loginViewModel: loginViewModel, firestoreViewModel: FirestoreViewModel(loginViewModel: loginViewModel)), isActive: $chatListToChatPageActive, label: {EmptyView()})
+                    NavigationLink(destination: ChatPage(loginViewModel: loginViewModel, firestoreViewModel: FirestoreViewModel(loginViewModel: loginViewModel), chatListToChatPageActive: $chatListToChatPageActive), isActive: $chatListToChatPageActive, label: {EmptyView()})
                 }//zstack
             }
         }
         .onAppear{
-
+            
         }
     }//body
 }

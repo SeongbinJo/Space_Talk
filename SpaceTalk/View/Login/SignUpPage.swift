@@ -70,7 +70,9 @@ struct SignUpPage: View {
                     HStack{
                         Text("이메일")
                             .padding(.leading, 15)
-                        Spacer()
+                        Text("(메일 인증을 위해 사용중인 이메일을 입력해주세요.)")
+                            .font(.system(size: 14))
+                            .foregroundColor(.blue)
                     }
                     VStack(alignment: .leading){
                         HStack{
@@ -182,11 +184,11 @@ struct SignUpPage: View {
 //                    loginViewModel.writeFirestoreUser()
                 }
                     .padding(10)
-                    .background(loginViewModel.emailCheck&&loginViewModel.pwdCheck&&loginViewModel.pwdSecondCheck ? .blue : .gray)
+                    .background(!loginViewModel.isAlreadyNickName && !loginViewModel.isAlreadyEmail&&loginViewModel.pwdCheck&&loginViewModel.pwdSecondCheck ? .blue : .gray)
                     .foregroundColor(.white)
                     .cornerRadius(15)
                     .padding(.top, 20)
-                    .disabled(loginViewModel.emailCheck&&loginViewModel.pwdCheck&&loginViewModel.pwdSecondCheck ? false : true)
+                    .disabled(!loginViewModel.isAlreadyNickName && !loginViewModel.isAlreadyEmail&&loginViewModel.pwdCheck&&loginViewModel.pwdSecondCheck ? false : true)
                 Spacer()
             }
             .onAppear{
@@ -197,6 +199,10 @@ struct SignUpPage: View {
             }
         }
         .navigationBarTitle("회원가입")
+        .onAppear{
+            loginViewModel.isAlreadyEmail = true
+            loginViewModel.isAlreadyNickName = true
+        }
     }
 }
 

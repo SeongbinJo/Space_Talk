@@ -8,7 +8,8 @@
 import Foundation
 import Firebase
 
-struct Messages: Codable{
+struct Messages: Identifiable, Codable{
+    var id: String { messageId }
     var messageId: String // 메시지 id
     var roomId: String // 채팅방 id
     var messageText: String // 메시지 내용
