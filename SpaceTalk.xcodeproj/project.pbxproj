@@ -50,6 +50,10 @@
 		589D57012A0BDEBA0007D511 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 589D57002A0BDEBA0007D511 /* GoogleService-Info.plist */; };
 		589E522329D3A5020074AE16 /* MainPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 589E522229D3A5020074AE16 /* MainPage.swift */; };
 		589E522729D3A6260074AE16 /* LoginViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 589E522629D3A6260074AE16 /* LoginViewModel.swift */; };
+		58B966112A2387B400B7D15E /* HomePagePostBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58B966102A2387B400B7D15E /* HomePagePostBox.swift */; };
+		58B966132A238B8C00B7D15E /* HomePageNewMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58B966122A238B8C00B7D15E /* HomePageNewMessage.swift */; };
+		58B966152A23A57800B7D15E /* PostBoxMessages.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58B966142A23A57800B7D15E /* PostBoxMessages.swift */; };
+		58B966172A23E09300B7D15E /* ChatListBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58B966162A23E09300B7D15E /* ChatListBox.swift */; };
 		58C7D15529DAF9B30094C597 /* HomePage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58C7D15429DAF9B30094C597 /* HomePage.swift */; };
 		58C7D15829DAFC750094C597 /* ViewExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58C7D15729DAFC750094C597 /* ViewExtension.swift */; };
 		58C7D15A29DAFD700094C597 /* RgbExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58C7D15929DAFD700094C597 /* RgbExtension.swift */; };
@@ -74,6 +78,10 @@
 		589D57002A0BDEBA0007D511 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../../../Downloads/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		589E522229D3A5020074AE16 /* MainPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainPage.swift; sourceTree = "<group>"; };
 		589E522629D3A6260074AE16 /* LoginViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewModel.swift; sourceTree = "<group>"; };
+		58B966102A2387B400B7D15E /* HomePagePostBox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomePagePostBox.swift; sourceTree = "<group>"; };
+		58B966122A238B8C00B7D15E /* HomePageNewMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomePageNewMessage.swift; sourceTree = "<group>"; };
+		58B966142A23A57800B7D15E /* PostBoxMessages.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostBoxMessages.swift; sourceTree = "<group>"; };
+		58B966162A23E09300B7D15E /* ChatListBox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatListBox.swift; sourceTree = "<group>"; };
 		58C7D15429DAF9B30094C597 /* HomePage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomePage.swift; sourceTree = "<group>"; };
 		58C7D15729DAFC750094C597 /* ViewExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewExtension.swift; sourceTree = "<group>"; };
 		58C7D15929DAFD700094C597 /* RgbExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RgbExtension.swift; sourceTree = "<group>"; };
@@ -164,6 +172,9 @@
 			children = (
 				58358CED29FABAC900F14F97 /* MessageBubble.swift */,
 				5868D90B29FD647500C0A363 /* MessageTextBox.swift */,
+				58B966102A2387B400B7D15E /* HomePagePostBox.swift */,
+				58B966122A238B8C00B7D15E /* HomePageNewMessage.swift */,
+				58B966162A23E09300B7D15E /* ChatListBox.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -173,6 +184,7 @@
 			children = (
 				58358CEB29FAB9F900F14F97 /* Messages.swift */,
 				582379E129FE826C006D1079 /* Users.swift */,
+				58B966142A23A57800B7D15E /* PostBoxMessages.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -333,18 +345,22 @@
 				5808E40929DEFA25008A72BB /* ChatPage.swift in Sources */,
 				58358CEE29FABAC900F14F97 /* MessageBubble.swift in Sources */,
 				58892F8B29D2FAFC00BD402D /* LoginPage.swift in Sources */,
+				58B966172A23E09300B7D15E /* ChatListBox.swift in Sources */,
 				589E522729D3A6260074AE16 /* LoginViewModel.swift in Sources */,
 				58892F8E29D3141D00BD402D /* SignUpPage.swift in Sources */,
 				5868D90C29FD647500C0A363 /* MessageTextBox.swift in Sources */,
 				582379E229FE826C006D1079 /* Users.swift in Sources */,
 				58C7D15529DAF9B30094C597 /* HomePage.swift in Sources */,
 				58C7D15C29DB1BBE0094C597 /* ChatListpage.swift in Sources */,
+				58B966152A23A57800B7D15E /* PostBoxMessages.swift in Sources */,
 				58C7D15829DAFC750094C597 /* ViewExtension.swift in Sources */,
 				581F03792A0425670075F645 /* FirestoreViewModel.swift in Sources */,
+				58B966112A2387B400B7D15E /* HomePagePostBox.swift in Sources */,
 				58358CEC29FAB9F900F14F97 /* Messages.swift in Sources */,
 				583E964529DEC57200A21595 /* SettingPage.swift in Sources */,
 				58C7D15A29DAFD700094C597 /* RgbExtension.swift in Sources */,
 				582E172529CF1EB800B47BAA /* SpaceTalkApp.swift in Sources */,
+				58B966132A238B8C00B7D15E /* HomePageNewMessage.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

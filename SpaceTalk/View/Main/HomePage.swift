@@ -14,8 +14,11 @@ struct HomePage: View {
     
     @Binding var loginToMainPageActive: Bool
     
-    @State var sendTextField: String = ""
+    @State var pushButtonAlert : Bool = false
     
+    //평소엔 우편함 안 보임.
+    @State var postBoxZindex: Double = -1
+
     var body: some View{
         NavigationView{
             GeometryReader{ geometry in
@@ -45,7 +48,7 @@ struct HomePage: View {
                                         .padding(.bottom)
                                 }
                             VStack{
-                                TextEditor(text: $sendTextField)
+                                TextEditor(text: $firestoreViewModel.firstSendText)
                                     .scrollContentBackground(.hidden)
                                     .background(Color(UIColor(r: 132, g: 141, b: 136, a: 1.0)))
                                     .frame(width: geometry.size.width * 0.715, height: geometry.size.height * 0.22)
@@ -54,7 +57,7 @@ struct HomePage: View {
                                     .padding(.bottom, 20)
                                     .autocapitalization(.none)
                                     .overlay(alignment: .topLeading){
-                                        Text(sendTextField.isEmpty ? "100자 이내" : "")
+                                        Text($firestoreViewModel.firstSendText.wrappedValue.count > 0 ? "" : "100자 이내")
                                             .padding(.top, -33)
                                             .padding(.leading, 7)
                                             .foregroundColor(.black)
@@ -62,7 +65,9 @@ struct HomePage: View {
                                             .font(.system(size: geometry.size.width * 0.05))
                                     }
                                     .overlay(alignment: .bottomTrailing){
-                                        Button(action: {}){
+                                        Button(action: {
+                                            postBoxZindex = 1
+                                        }){
                                             //새롭게 받은 메시지가 존재할 경우
                                             //true, false 대체해야함.
                                             Image(systemName: false ? "envelope.fill" : "envelope")
@@ -72,7 +77,14 @@ struct HomePage: View {
                                                 .padding(.bottom, 30)
                                         }
                                     }
-                                Button(action:{}){
+                                Button(action:{
+                                    firestoreViewModel.sendFirstMessageInHomePage(){ completion in
+                                        if completion{
+                                            pushButtonAlert = true
+                                            firestoreViewModel.firstSendText = ""
+                                        }
+                                    }
+                                }){
                                     Circle()
                                         .frame(width: geometry.size.width * 0.6, height: geometry.size.height * 0.3)
                                         .foregroundColor(Color(UIColor(r: 79, g: 88, b: 83, a: 1.0)))
@@ -85,10 +97,19 @@ struct HomePage: View {
                                 }
                                 .contentShape(Circle())
                                 .padding(.bottom, -20)
+                                .disabled(firestoreViewModel.firstSendText.count == 0 ? true : false)
+                                .alert("삐빅!",isPresented: $pushButtonAlert) {
+                                    Button("확인", role: .cancel) {}
+                                } message: {
+                                    Text("무전을 성공적으로 보냈습니다!")
+                                }
+                                
                             }//vstack
                         }//텍스트에디터, 푸시버튼 zstack
                     }//vstack
                     .position(x: geometry.frame(in: .local).midX, y: geometry.frame(in: .local).midY)
+                    HomePagePostBox(loginViewModel: loginViewModel, firestoreViewModel: firestoreViewModel, postBoxZindex: $postBoxZindex)
+                        .zIndex(postBoxZindex)
                 }//zstack
             }
         }//navigationview

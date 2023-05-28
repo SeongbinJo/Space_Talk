@@ -20,16 +20,20 @@ class FirestoreViewModel: ObservableObject{
     
     let db = Firestore.firestore()
     
+    //HomePage의 무전기 속 텍스트필드 변수.
+    @Published var firstSendText: String = ""
     //현재 유저의 닉네임이 담길 변수.
     @Published var currentNickName: String = ""
     //채팅 방의 메시지 입력 텍스트필드 변수.
     @Published var sendMessageText: String = ""
     //firestore의 메시지 배열
     @Published private(set) var messages: [Messages] = []
+    @Published private(set) var newmessages: [PostBoxMessages] = []
     
     init(loginViewModel: LoginViewModel) {
         self.loginViewModel = loginViewModel
         getMessages()
+        getFirstMessage()
     }
     
     //현재 유저의 닉네임 불러오는 함수.
@@ -45,34 +49,70 @@ class FirestoreViewModel: ObservableObject{
     }
     
     ///////////////////////////////////////////////////메시지 관련/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    //중복없이 roomId 만드는 함수.(채팅방 생성시 사용)
-    //안됨. 다른 방법 찾아볼것!
+    //homepage의 무전기 PUSH버튼 함수.
+    //해당 버튼으로 메시지를 전송하는 경우는 isFirstMsg필드가 true로 새로 추가되어 저장되어야한다.
+    func sendFirstMessageInHomePage(completion: @escaping (Bool) -> Void){
+        guard let currentUser = loginViewModel.currentUser?.uid else {
+            print("현재 유저의 uid가 비어있습니다.")
+            return
+        }
+        let chatroomDoc = db.collection("postbox").document()
+        chatroomDoc.setData(["roomId" : chatroomDoc.documentID, "messageId" : UUID().uuidString, "messageText" : self.firstSendText, "sendTime" : Date(), "senderId" : currentUser, "receiverId" : "fa4QWpAbzqeWUUJbMZAqpo2OdRq1", "isRead" : false, "isFirstMessage" : true, "senderNickName" : self.currentUserNickName()]){ error in
+            if let error = error {
+                print("무전기 메시지 발송 에러 : \(error)")
+                completion(false)
+            }else{
+                print("무전기 메시지 발송 성공!")
+                completion(true)
+            }
+        }
+    }
     
-//    func notDuplicateRoomId(){
-//        var tf: Bool = true
-//        while(tf){
-//            var uniqueRoomId = db.collection("chatroom").document()
-//            uniqueRoomId.getDocument{ document, error in
-//                guard let error = error else {
-//                    print("에러났어~~ : \(String(describing: error))")
-//                    return
-//                }
-//                guard let document = document else {
-//                    print("에러 또 났어~~ : \(error)")
-//                    return
-//                }
-//                if !document.exists{
-//                    //중복 아님.
-//                    uniqueRoomId.collection(document.documentID)
-//                    print("생성된 roomId가 중복되지 않아 사용가능합니다.")
-//                    tf = false
-//                }else{
-//                    //중복.
-//                }
-//            }
-//        }
-//    }
+    func getFirstMessage(){
+        guard let currentUser = loginViewModel.currentUser?.uid else {
+            print("getFirstMessage() 에러 = currentUser.uid 가 비어있습니다.")
+            return
+        }
+        db.collection("postbox").whereField("isFirstMessage", isEqualTo: true).whereField("receiverId", isEqualTo: currentUser).addSnapshotListener{ snapshot, error in
+            guard error == nil else {
+                print("getFirstMessage 에러1 : \(String(describing: error))")
+                return
+            }
+            guard let documents = snapshot?.documents else {
+                print("getFirstMessage 에러2 : \(String(describing: error))")
+                return
+            }
+            guard !documents.isEmpty else {
+                print("신규 메시지가 없음.")
+                return
+            }
+            print(documents)
+            self.newmessages = documents.compactMap(){ document -> PostBoxMessages? in
+                do{
+                    return try document.data(as: PostBoxMessages.self)
+                }catch{
+                    return nil
+                }
+            }
+            
+            self.newmessages.sort { $0.sendTime < $1.sendTime }
+            
+        }
+    }
     
+    //수신자가 postbox에서 'o'버튼을 눌렀을경우.
+    func acceptNewMessage(roomid: String, messageText: String, sendtime: Date, isread: Bool, senderid: String, receiverid: String, sendernickname: String){
+        guard let currentUser = loginViewModel.currentUser?.uid else {
+            print("currentUser.uid 가 비어있습니다.")
+            return
+        }
+        //선택한 메시지를 chatroom으로 옮겨 해당 메시지들만 모으기 위해서 HomePageNewMessage에서 받아오는 데이터로 setdata.
+        let postboxDoc = db.collection("chatroom").document(roomid).collection(currentUser).document()
+        postboxDoc.setData(["roomId" : roomid, "messageId" : postboxDoc.documentID, "messageText" : messageText, "sendTime" : sendtime, "isRead" : isread, "senderId" : senderid, "receiverId" : receiverid, "senderNickName" : sendernickname])
+        
+        //해당 메시지 데이터 정보를 토대로 해당 채팅방 목록 생성.
+        
+    }
     
     //메시지 전송 버튼시 firestore에 저장하는 함수.
     func writeMessageToFirestore(){
@@ -82,12 +122,11 @@ class FirestoreViewModel: ObservableObject{
         }
         let chatroomDoc = db.collection("chatroom1").document("document1")
         let chatRoomDoc = chatroomDoc.collection("subcollection").document()
-        chatRoomDoc.setData(["roomId" : "testroomid", "messageId" : chatRoomDoc.documentID, "messageText" : self.sendMessageText, "sendTime" : Date(), "senderId" : currentUser, "receiverId" : "fa4QWpAbzqeWUUJbMZAqpo2OdRq1", "isRead" : false]){ err in
+        chatRoomDoc.setData(["roomId" : "testroomid", "messageText" : self.sendMessageText, "sendTime" : Date(), "senderId" : currentUser, "receiverId" : "fa4QWpAbzqeWUUJbMZAqpo2OdRq1", "isRead" : false]){ err in
             if let err = err {
                 print("메시지 전송 에러: \(err)")
             } else {
                 print("메시지 성공적으로 저장완료!")
-                //메시지를 저장하고 저장된 메시지를 가져와야함.
             }
         }
     }
@@ -101,19 +140,20 @@ class FirestoreViewModel: ObservableObject{
             return
         }
         //룸id가 같은 데이터들을 전부다 불러와서 MessageBubble파일에서 senderId가 currentuser.uid인지에 따라 왼쪽 오른쪽 구분.!!
-        db.collection("chatroom1").document("document1").collection("subcollection").whereField("roomId", isEqualTo: "testroomid").addSnapshotListener { snapshot, error in
+        db.collection("chatroom").document("document1").collection("subcollection").whereField("roomId", isEqualTo: "testroomid").addSnapshotListener { snapshot, error in
             guard error == nil else {
-                print("에러다! 에러!!11 : \(String(describing: error))")
+                print("getMessages() 에러1 : \(String(describing: error))")
                 return
             }
             guard let documents = snapshot?.documents else {
-                print("에러다! 에러!!22 : \(String(describing: error))")
+                print("getMessages() 에러2 : \(String(describing: error))")
                 return
             }
             guard !documents.isEmpty else {
                 print("메시지가 없음.")
                 return
             }
+            print("메시지 개수 : \(documents.count)")
             //messages 배열에 whereField로 걸러진 메시지 데이터들을 담는다.
             self.messages = documents.compactMap(){ document -> Messages? in
                 do{
@@ -128,6 +168,58 @@ class FirestoreViewModel: ObservableObject{
         }
     }
     
+//    func sendFirstMessageInHomePage(completion: @escaping (Bool) -> Void){
+//        guard let currentUser = loginViewModel.currentUser?.uid else {
+//            print("현재 유저의 uid가 비어있습니다.")
+//            return
+//        }
+//        let chatroomDoc = db.collection("chatroom").document()
+//        let chatroomId = chatroomDoc.documentID
+//        let roomDoc = chatroomDoc.collection("fa4QWpAbzqeWUUJbMZAqpo2OdRq1").document()
+//        roomDoc.setData(["roomId" : chatroomId, "messageId" : roomDoc.documentID, "messageText" : self.firstSendText, "sendTime" : Date(), "senderId" : currentUser, "receiverId" : "fa4QWpAbzqeWUUJbMZAqpo2OdRq1", "isRead" : false, "isFirstMessage" : true, "senderNickName" : self.currentUserNickName()]){ error in
+//            if let error = error {
+//                print("무전기 메시지 발송 에러 : \(error)")
+//                completion(false)
+//            }else{
+//                print("무전기 메시지 발송 성공!")
+//                completion(true)
+//            }
+//        }
+//    }
+    
+    
+    //homepage의 무전기 버튼으로 첫 메시지를 발송하고 수신자 측에서 이를 캐치하여 우편함에 목록을 보여주는 함수.
+//    func getFirstMessage(){
+//        guard let currentUser = loginViewModel.currentUser?.uid else {
+//            print("getFirstMessage() 에러 = currentUser.uid 가 비어있습니다.")
+//            return
+//        }
+//        db.collection(currentUser).whereField("isFirstMessage", isEqualTo: true).addSnapshotListener{ snapshot, error in
+//            guard error == nil else {
+//                print("getFirstMessage 에러1 : \(String(describing: error))")
+//                return
+//            }
+//            guard let documents = snapshot?.documents else {
+//                print("getFirstMessage 에러2 : \(String(describing: error))")
+//                return
+//            }
+//            guard !documents.isEmpty else {
+//                print("신규 메시지가 없음.")
+//                return
+//            }
+//            print(documents)
+//            self.newmessages = documents.compactMap(){ document -> PostBoxMessages? in
+//                do{
+//                    return try document.data(as: PostBoxMessages.self)
+//                }catch{
+//                    return nil
+//                }
+//            }
+//
+//            self.newmessages.sort { $0.sendTime < $1.sendTime }
+//
+//        }
+//    }
     
 //    //메시지 전송 버튼시 firestore에 저장하는 함수.
 //    func writeMessageToFirestore(){
@@ -135,8 +227,66 @@ class FirestoreViewModel: ObservableObject{
 //            print("currentUser.uid 가 비어있습니다.")
 //            return
 //        }
-//        let chatroomDoc = db.collection("chatroom").document()
-//        chatroomDoc.setData(["messageId" : "메시지 id", "roomId" : chatroomDoc.documentID, "messageText" : self.sendMessageText, "sendTime" : Date(), "senderId" : currentUser, "receiverId" : "fa4QWpAbzqeWUUJbMZAqpo2OdRq1", "isRead" : false]){ err in
+//        let chatroomDoc = db.collection("chatroom1").document("document1")
+//        let chatRoomDoc = chatroomDoc.collection("subcollection").document()
+//        chatRoomDoc.setData(["roomId" : "testroomid", "messageId" : chatRoomDoc.documentID, "messageText" : self.sendMessageText, "sendTime" : Date(), "senderId" : currentUser, "receiverId" : "fa4QWpAbzqeWUUJbMZAqpo2OdRq1", "isRead" : false]){ err in
+//            if let err = err {
+//                print("메시지 전송 에러: \(err)")
+//            } else {
+//                print("메시지 성공적으로 저장완료!")
+//            }
+//        }
+//    }
+//
+//    func getMessages() {
+//        //chatroom 콜렉션에서 현재 유저의 uid와 같은 senderId를 갖는 메시지들만 나타내기.
+//        //appsnapshotListener를 사용해서 데이터에 업데이트가 있을시 바로바로 뷰에서 변경된다.
+//        //지금은 senderId로 구분하지만, 나중에 roomId로 구분하게되면  roomId값으로 데이터들을 담은 후, senderId가 현재유저 uid와 동일하면 뷰 우측에, 아니면 좌측에 붙게 만들면 될 듯함.
+//        guard let currentUser = loginViewModel.currentUser?.uid else {
+//            print("getMessages() 에러 = currentUser.uid 가 비어있습니다.")
+//            return
+//        }
+//        //룸id가 같은 데이터들을 전부다 불러와서 MessageBubble파일에서 senderId가 currentuser.uid인지에 따라 왼쪽 오른쪽 구분.!!
+//        db.collection("chatroom1").document("document1").collection("subcollection").whereField("roomId", isEqualTo: "testroomid").addSnapshotListener { snapshot, error in
+//            guard error == nil else {
+//                print("getMessages() 에러1 : \(String(describing: error))")
+//                return
+//            }
+//            guard let documents = snapshot?.documents else {
+//                print("getMessages() 에러2 : \(String(describing: error))")
+//                return
+//            }
+//            guard !documents.isEmpty else {
+//                print("메시지가 없음.")
+//                return
+//            }
+//            print("메시지 개수 : \(documents.count)")
+//            //messages 배열에 whereField로 걸러진 메시지 데이터들을 담는다.
+//            self.messages = documents.compactMap(){ document -> Messages? in
+//                do{
+//                    return try document.data(as: Messages.self)
+//                }catch{
+//                    return nil
+//                }
+//            }
+//
+//            self.messages.sort { $0.sendTime < $1.sendTime }
+//
+//        }
+//    }
+    
+    
+//    //임의의 유저간 메시지 통신 성공한 코드.
+    
+//    //메시지 전송 버튼시 firestore에 저장하는 함수.
+//    func writeMessageToFirestore(){
+//        guard let currentUser = loginViewModel.currentUser?.uid else {
+//            print("currentUser.uid 가 비어있습니다.")
+//            return
+//        }
+//        let chatroomDoc = db.collection("chatroom1").document("document1")
+//        let chatRoomDoc = chatroomDoc.collection("subcollection").document()
+//        chatRoomDoc.setData(["roomId" : "testroomid", "messageId" : chatRoomDoc.documentID, "messageText" : self.sendMessageText, "sendTime" : Date(), "senderId" : currentUser, "receiverId" : "fa4QWpAbzqeWUUJbMZAqpo2OdRq1", "isRead" : false]){ err in
 //            if let err = err {
 //                print("메시지 전송 에러: \(err)")
 //            } else {
@@ -155,7 +305,7 @@ class FirestoreViewModel: ObservableObject{
 //            return
 //        }
 //        //룸id가 같은 데이터들을 전부다 불러와서 MessageBubble파일에서 senderId가 currentuser.uid인지에 따라 왼쪽 오른쪽 구분.!!
-//        db.collection("chatroom").whereField("senderId", isEqualTo: currentUser).order(by: "sendTime").addSnapshotListener { snapshot, error in
+//        db.collection("chatroom1").document("document1").collection("subcollection").whereField("roomId", isEqualTo: "testroomid").addSnapshotListener { snapshot, error in
 //            guard error == nil else {
 //                print("에러다! 에러!!11 : \(String(describing: error))")
 //                return
@@ -168,15 +318,18 @@ class FirestoreViewModel: ObservableObject{
 //                print("메시지가 없음.")
 //                return
 //            }
+//            print("메시지 개수 : \(documents.count)")
 //            //messages 배열에 whereField로 걸러진 메시지 데이터들을 담는다.
 //            self.messages = documents.compactMap(){ document -> Messages? in
 //                do{
-//                    print(try document.data(as: Messages.self))
 //                    return try document.data(as: Messages.self)
 //                }catch{
 //                    return nil
 //                }
 //            }
+//
+//            self.messages.sort { $0.sendTime < $1.sendTime }
+//
 //        }
 //    }
     
