@@ -21,8 +21,8 @@ struct HomePagePostBox: View {
                         Text("새로 온 무전")
                             .padding(.top, geomtry.size.height * 0.015)
                     ScrollView{
-                        ForEach(firestoreViewModel.newmessages, id: \.id){ newmessage in
-                            HomePageNewMessage(loginViewModel: loginViewModel, firestoreViewModel: firestoreViewModel, newMessage: newmessage, width: geomtry.size.width * 0.8, height: geomtry.size.height * 0.1)
+                        ForEach(firestoreViewModel.newmessages, id: \.messageId){ newmessage in
+                            HomePageNewMessage(loginViewModel: loginViewModel, firestoreViewModel: FirestoreViewModel(loginViewModel: loginViewModel), newMessage: newmessage, width: geomtry.size.width * 0.8, height: geomtry.size.height * 0.1)
                         }
                     }
                 }

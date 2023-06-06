@@ -1,14 +1,14 @@
 //
-//  Message.swift
+//  ChatListLastMessage.swift
 //  SpaceTalk
 //
-//  Created by 조성빈 on 2023/04/27.
+//  Created by 조성빈 on 2023/06/07.
 //
 
 import Foundation
 import Firebase
 
-struct Messages: Identifiable, Codable{
+struct ChatListLastMessage: Identifiable, Codable{
     var id: String { messageId }
     var messageId: String // 메시지 id
     var roomId: String // 채팅방 id
@@ -24,13 +24,6 @@ struct Messages: Identifiable, Codable{
             let dateFormatter = DateFormatter()
             dateFormatter.locale = Locale(identifier: "ko")
             dateFormatter.dateFormat = "a h시 mm분"
-            return dateFormatter.string(from: sendTime)
-        }
-    
-    var formattedDay: String {
-            let dateFormatter = DateFormatter()
-            dateFormatter.locale = Locale(identifier: "ko")
-            dateFormatter.dateFormat = "yyyy년 mm월 d일"
             return dateFormatter.string(from: sendTime)
         }
 }

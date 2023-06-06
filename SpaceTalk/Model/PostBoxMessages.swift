@@ -18,4 +18,6 @@ struct PostBoxMessages: Identifiable, Codable{
     var isRead: Bool
     var roomId: String
     var sendTime: Date
+
 }
+

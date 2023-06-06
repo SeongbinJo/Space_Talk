@@ -7,10 +7,7 @@
 
 import Combine
 import Firebase
-//import FirebaseAuth
-//import FirebaseDatabase
-//import FirebaseCore
-//import FirebaseFirestore
+import FirebaseFirestore
 import SwiftUI
 import FirebaseFirestoreSwift
 
@@ -26,9 +23,17 @@ class FirestoreViewModel: ObservableObject{
     @Published var currentNickName: String = ""
     //채팅 방의 메시지 입력 텍스트필드 변수.
     @Published var sendMessageText: String = ""
-    //firestore의 메시지 배열
+    
+    //firestore에서 가져올 데이터들을 담을 배열.
+    //채팅방 안의 메시지들을 담을 배열 messages.
     @Published private(set) var messages: [Messages] = []
+    //무전기의 우편함에 첫 메시지 데이터들을 담을 배열 newmessages.
     @Published private(set) var newmessages: [PostBoxMessages] = []
+    //채팅방 목록 화면에서 상대방과의 마지막 메시지 데이터를 담을 배열 chatListBoxMessages.
+    @Published private(set) var chatListBoxMessages: [Messages] = []
+    
+    //acceptNewMessage()에서 roomid를 따로 담아두기위한 변수.
+    @Published var clickedRoomId: String = ""
     
     init(loginViewModel: LoginViewModel) {
         self.loginViewModel = loginViewModel
@@ -75,7 +80,7 @@ class FirestoreViewModel: ObservableObject{
         }
         db.collection("postbox").whereField("isFirstMessage", isEqualTo: true).whereField("receiverId", isEqualTo: currentUser).addSnapshotListener{ snapshot, error in
             guard error == nil else {
-                print("getFirstMessage 에러1 : \(String(describing: error))")
+                print("getFirstMessage firestore 인덱싱 에러 : \(String(describing: error))")
                 return
             }
             guard let documents = snapshot?.documents else {
@@ -84,34 +89,84 @@ class FirestoreViewModel: ObservableObject{
             }
             guard !documents.isEmpty else {
                 print("신규 메시지가 없음.")
+                self.newmessages.removeAll()
                 return
             }
-            print(documents)
-            self.newmessages = documents.compactMap(){ document -> PostBoxMessages? in
-                do{
-                    return try document.data(as: PostBoxMessages.self)
-                }catch{
-                    return nil
+            //try? -> 에러가 발생하면 nil을 반환.
+            for document in documents {
+                if let newMessage = try? document.data(as: PostBoxMessages.self) {
+                    self.newmessages.append(newMessage)
+                }else{
+                    print("123")
                 }
             }
             
             self.newmessages.sort { $0.sendTime < $1.sendTime }
             
+//            self.newmessages = documents.compactMap(){ document -> PostBoxMessages? in
+//                do{
+//                    return try document.data(as: PostBoxMessages.self)
+//                }catch{
+//                    return nil
+//                }
+//            }
+            
         }
     }
     
     //수신자가 postbox에서 'o'버튼을 눌렀을경우.
-    func acceptNewMessage(roomid: String, messageText: String, sendtime: Date, isread: Bool, senderid: String, receiverid: String, sendernickname: String){
+    func acceptNewMessage(roomid: String, messageText: String, sendtime: Date, isread: Bool, senderid: String, receiverid: String, sendernickname: String, messageid: String){
         guard let currentUser = loginViewModel.currentUser?.uid else {
             print("currentUser.uid 가 비어있습니다.")
             return
         }
         //선택한 메시지를 chatroom으로 옮겨 해당 메시지들만 모으기 위해서 HomePageNewMessage에서 받아오는 데이터로 setdata.
         let postboxDoc = db.collection("chatroom").document(roomid).collection(currentUser).document()
-        postboxDoc.setData(["roomId" : roomid, "messageId" : postboxDoc.documentID, "messageText" : messageText, "sendTime" : sendtime, "isRead" : isread, "senderId" : senderid, "receiverId" : receiverid, "senderNickName" : sendernickname])
-        
+        postboxDoc.setData(["roomId" : roomid, "messageId" : messageid, "messageText" : messageText, "sendTime" : sendtime, "isRead" : isread, "senderId" : senderid, "receiverId" : receiverid, "senderNickName" : sendernickname]){ error in
+                self.clickedRoomId = roomid
+                print("채팅 요청을 수락했습니다.")
+                self.db.collection("postbox").document(roomid).delete()
+        }
         //해당 메시지 데이터 정보를 토대로 해당 채팅방 목록 생성.
-        
+//        self.getLastMessage(roomid: roomid)
+    }
+    
+    //수신자가 postbox에서 'X'버튼을 눌렀을경우.
+    func refuseNewMessage(roomid: String){
+        self.db.collection("postbox").document(roomid).delete()
+    }
+    
+    //우편함에서 'O'를 눌러 생성된 채팅방의 마지막 메시지를 구하는 함수.
+    func getLastMessage(roomid: String){
+        guard let currentUser = loginViewModel.currentUser?.uid else {
+            print("currentUser.uid 가 비어있습니다.")
+            return
+        }
+        let lastMessageDoc = db.collection("chatroom").document(roomid).collection(currentUser)
+        lastMessageDoc.order(by: "sendTime").limit(to: 1).addSnapshotListener{ snapshot, error in
+            guard error == nil else {
+                print("getLastMessage firestore 인덱싱 에러 : \(String(describing: error))")
+                return
+            }
+            guard let documents = snapshot?.documents else {
+                print("getLastMessage 에러2 : \(String(describing: error))")
+                return
+            }
+            guard !documents.isEmpty else {
+                print("생성할 채팅방 없음.")
+//                self.chatListBoxMessages.removeAll()
+                return
+            }
+            for document in documents {
+                if let newChatList = try? document.data(as: Messages.self) {
+                    self.chatListBoxMessages.append(newChatList)
+                    print("생성될 chatList / 존재하는 마지막 메시지 : \(newChatList)")
+                }else{
+                    print("123")
+                }
+            }
+
+        }
     }
     
     //메시지 전송 버튼시 firestore에 저장하는 함수.
@@ -142,7 +197,7 @@ class FirestoreViewModel: ObservableObject{
         //룸id가 같은 데이터들을 전부다 불러와서 MessageBubble파일에서 senderId가 currentuser.uid인지에 따라 왼쪽 오른쪽 구분.!!
         db.collection("chatroom").document("document1").collection("subcollection").whereField("roomId", isEqualTo: "testroomid").addSnapshotListener { snapshot, error in
             guard error == nil else {
-                print("getMessages() 에러1 : \(String(describing: error))")
+                print("getMessages() firestore 인덱싱 에러 : \(String(describing: error))")
                 return
             }
             guard let documents = snapshot?.documents else {
@@ -151,19 +206,29 @@ class FirestoreViewModel: ObservableObject{
             }
             guard !documents.isEmpty else {
                 print("메시지가 없음.")
+                self.messages.removeAll()
                 return
             }
-            print("메시지 개수 : \(documents.count)")
+            print("documents 타입 : \(type(of: documents))")
             //messages 배열에 whereField로 걸러진 메시지 데이터들을 담는다.
-            self.messages = documents.compactMap(){ document -> Messages? in
-                do{
-                    return try document.data(as: Messages.self)
-                }catch{
-                    return nil
+            
+            for document in documents {
+                if let message = try? document.data(as: Messages.self) {
+                    self.messages.append(message)
                 }
             }
-            
             self.messages.sort { $0.sendTime < $1.sendTime }
+            
+            
+//            self.messages = documents.compactMap(){ document -> Messages? in
+//                do{
+//                    return try document.data(as: Messages.self)
+//                }catch{
+//                    return nil
+//                }
+//            }
+//
+//            self.messages.sort { $0.sendTime < $1.sendTime }
             
         }
     }

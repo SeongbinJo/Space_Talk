@@ -24,12 +24,14 @@ struct HomePageNewMessage: View {
                         .padding(.horizontal, 10)
                     Spacer()
                     Button(action: {
-                        firestoreViewModel.acceptNewMessage(roomid: newMessage.roomId, messageText: newMessage.messageText, sendtime: newMessage.sendTime, isread: newMessage.isRead, senderid: newMessage.senderId, receiverid: newMessage.receiverId, sendernickname: newMessage.senderNickName)
+                        firestoreViewModel.acceptNewMessage(roomid: newMessage.roomId, messageText: newMessage.messageText, sendtime: newMessage.sendTime, isread: newMessage.isRead, senderid: newMessage.senderId, receiverid: newMessage.receiverId, sendernickname: newMessage.senderNickName, messageid: newMessage.messageId)
                     }){
                         Text("O")
                             .foregroundColor(.black)
                     }
-                    Button(action: {}){
+                    Button(action: {
+                        firestoreViewModel.refuseNewMessage(roomid: newMessage.roomId)
+                    }){
                         Text("X")
                             .foregroundColor(.black)
                     }
