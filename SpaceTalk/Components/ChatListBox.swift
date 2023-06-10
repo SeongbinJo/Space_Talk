@@ -13,39 +13,58 @@ struct ChatListBox: View {
     @ObservedObject var loginViewModel: LoginViewModel
     @ObservedObject var firestoreViewModel: FirestoreViewModel
     
-    var chatListBoxMessage: Messages
+    var chatListBoxMessage: PushButtonMessages
     
-    @State var width: CGFloat
-    @State var height: CGFloat
+    @State var geometryHeight: CGFloat = 0
     
     var body: some View {
-        VStack{
-            Button(action: {}){
-                HStack{
-                    VStack(alignment: .leading){
-                        HStack{
-                            Text(chatListBoxMessage.senderNickName)
-                                .font(.system(size: 20))
-                                .fontWeight(.bold)
-                            Spacer()
-                            Text("마지막 대화날짜")
-                                .font(.system(size: 13))
+        GeometryReader{ geometry in
+            VStack{
+                Button(action: {
+                    print("지금 클릭한 채팅방의 정보입니다. roomid: \(chatListBoxMessage.roomId), messageid: \(chatListBoxMessage.messageId), senderid: \(chatListBoxMessage.senderId), receiverid: \(chatListBoxMessage.receiverId), messagetext: \(chatListBoxMessage.messageText), sendtime: \(chatListBoxMessage.sendTime), isread: \(chatListBoxMessage.isRead), sendernickname: \(chatListBoxMessage.senderNickName), firstSenderId: \(chatListBoxMessage.firstSenderId), firstReceiverId: \(chatListBoxMessage.firstReceiverId), isAvailable: \(chatListBoxMessage.isAvailable), senderNickName: \(chatListBoxMessage.senderNickName), receiverNickName: \(chatListBoxMessage.receiverNickName)")
+                }){
+                    //geometryreader 사용으로 겹침방지 위해 넣은 text
+                    Text("")
+                        .padding()
+                        .background{
+                            GeometryReader{ geo in
+                                Text("")
+                                    .onAppear{
+                                        geometryHeight = geo.size.height * 2.3
+                                    }
+                                    .frame(width: 0)
+                            }
                         }
+                        .frame(width: 0)
+                    Spacer()
                         HStack{
-                            Text(chatListBoxMessage.messageText)
-                            Spacer()
-                            Text("\(chatListBoxMessage.sendTime)")
-                                .font(.system(size: 13))
+                            VStack(alignment: .leading){
+                                HStack{
+                                    Text(loginViewModel.currentUser?.uid == chatListBoxMessage.senderId ? "\(chatListBoxMessage.receiverNickName)님과의 대화" : "\(chatListBoxMessage.senderNickName)님과의 대화")
+                                        .font(.system(size: 18))
+                                        .fontWeight(.semibold)
+                                    Spacer()
+                                    Text("\(chatListBoxMessage.formattedDay)")
+                                        .font(.system(size: 13))
+                                }
+                                HStack{
+                                    Text(chatListBoxMessage.messageText)
+                                    Spacer()
+                                    Text("\(chatListBoxMessage.formattedTime)")
+                                        .font(.system(size: 13))
+                                }
+                            }
+                            .foregroundColor(.black)
+                            .padding()
+                            .background(.white)
+                            .cornerRadius(15, corners: .allCorners)
+                            .frame(width: geometry.size.width * 0.95)
                         }
-                    }
-                    .foregroundColor(.black)
-                    .padding()
-                    .background(.yellow)
-                    .cornerRadius(15, corners: .allCorners)
-                    .frame(width: width, height: height)
+                    Spacer()
                 }
             }
         }
+        .frame(height: geometryHeight)
     }
 }
     

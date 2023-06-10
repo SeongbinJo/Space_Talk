@@ -52,7 +52,7 @@
 		589E522729D3A6260074AE16 /* LoginViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 589E522629D3A6260074AE16 /* LoginViewModel.swift */; };
 		58B966112A2387B400B7D15E /* HomePagePostBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58B966102A2387B400B7D15E /* HomePagePostBox.swift */; };
 		58B966132A238B8C00B7D15E /* HomePageNewMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58B966122A238B8C00B7D15E /* HomePageNewMessage.swift */; };
-		58B966152A23A57800B7D15E /* PostBoxMessages.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58B966142A23A57800B7D15E /* PostBoxMessages.swift */; };
+		58B966152A23A57800B7D15E /* PushButtonMessages.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58B966142A23A57800B7D15E /* PushButtonMessages.swift */; };
 		58B966172A23E09300B7D15E /* ChatListBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58B966162A23E09300B7D15E /* ChatListBox.swift */; };
 		58C7D15529DAF9B30094C597 /* HomePage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58C7D15429DAF9B30094C597 /* HomePage.swift */; };
 		58C7D15829DAFC750094C597 /* ViewExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58C7D15729DAFC750094C597 /* ViewExtension.swift */; };
@@ -80,7 +80,7 @@
 		589E522629D3A6260074AE16 /* LoginViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewModel.swift; sourceTree = "<group>"; };
 		58B966102A2387B400B7D15E /* HomePagePostBox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomePagePostBox.swift; sourceTree = "<group>"; };
 		58B966122A238B8C00B7D15E /* HomePageNewMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomePageNewMessage.swift; sourceTree = "<group>"; };
-		58B966142A23A57800B7D15E /* PostBoxMessages.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostBoxMessages.swift; sourceTree = "<group>"; };
+		58B966142A23A57800B7D15E /* PushButtonMessages.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PushButtonMessages.swift; sourceTree = "<group>"; };
 		58B966162A23E09300B7D15E /* ChatListBox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatListBox.swift; sourceTree = "<group>"; };
 		58C7D15429DAF9B30094C597 /* HomePage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomePage.swift; sourceTree = "<group>"; };
 		58C7D15729DAFC750094C597 /* ViewExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewExtension.swift; sourceTree = "<group>"; };
@@ -184,7 +184,7 @@
 			children = (
 				58358CEB29FAB9F900F14F97 /* Messages.swift */,
 				582379E129FE826C006D1079 /* Users.swift */,
-				58B966142A23A57800B7D15E /* PostBoxMessages.swift */,
+				58B966142A23A57800B7D15E /* PushButtonMessages.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -352,7 +352,7 @@
 				582379E229FE826C006D1079 /* Users.swift in Sources */,
 				58C7D15529DAF9B30094C597 /* HomePage.swift in Sources */,
 				58C7D15C29DB1BBE0094C597 /* ChatListpage.swift in Sources */,
-				58B966152A23A57800B7D15E /* PostBoxMessages.swift in Sources */,
+				58B966152A23A57800B7D15E /* PushButtonMessages.swift in Sources */,
 				58C7D15829DAFC750094C597 /* ViewExtension.swift in Sources */,
 				581F03792A0425670075F645 /* FirestoreViewModel.swift in Sources */,
 				58B966112A2387B400B7D15E /* HomePagePostBox.swift in Sources */,

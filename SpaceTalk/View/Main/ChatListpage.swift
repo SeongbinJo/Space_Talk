@@ -14,23 +14,35 @@ struct ChatListpage: View {
     @ObservedObject var firestoreViewModel: FirestoreViewModel
     
     @State var chatListToChatPageActive: Bool = false
-    
 
     var body: some View{
         NavigationView{
-            GeometryReader{ geometry in
                 ZStack{
                     Color.gray.ignoresSafeArea()
-                    ScrollView{
-                        ForEach(firestoreViewModel.chatListBoxMessages, id: \.id){ chatList in
-                            ChatListBox(loginViewModel: loginViewModel, firestoreViewModel: FirestoreViewModel(loginViewModel: loginViewModel), chatListBoxMessage: chatList, width: 350, height: 70)
+                    GeometryReader{ geometry in
+                        VStack{
+                            Rectangle()
+                                .foregroundColor(.gray)
+                                .frame(width: geometry.size.width * 1.0, height: geometry.size.height * 0.01)
+                            
+                            ScrollView{
+                                ForEach(firestoreViewModel.pushButtonMessages, id: \.id){ pushMessage in
+                                    ChatListBox(loginViewModel: loginViewModel, firestoreViewModel: FirestoreViewModel(loginViewModel: loginViewModel), chatListBoxMessage: pushMessage)
+                                        .shadow(color: .black, radius: 4, x: 5, y: 5)
+                                        .padding(.vertical, 2)
+                                }
+                                ForEach(firestoreViewModel.acceptButtonMessages, id: \.id){ acceptMessage in
+                                    ChatListBox(loginViewModel: loginViewModel, firestoreViewModel: FirestoreViewModel(loginViewModel: loginViewModel), chatListBoxMessage: acceptMessage)
+                                        .shadow(color: .black, radius: 4, x: 5, y: 5)
+                                        .padding(.vertical, 2)
+                                }
+                            }
+                            .scrollContentBackground(.hidden)
+                            .listStyle(.plain)
+                            NavigationLink(destination: ChatPage(loginViewModel: loginViewModel, firestoreViewModel: FirestoreViewModel(loginViewModel: loginViewModel), chatListToChatPageActive: $chatListToChatPageActive), isActive: $chatListToChatPageActive, label: {EmptyView()})
                         }
                     }
-                    .scrollContentBackground(.hidden)
-                    .listStyle(.plain)
-                    NavigationLink(destination: ChatPage(loginViewModel: loginViewModel, firestoreViewModel: FirestoreViewModel(loginViewModel: loginViewModel), chatListToChatPageActive: $chatListToChatPageActive), isActive: $chatListToChatPageActive, label: {EmptyView()})
                 }//zstack
-            }
         }
         .onAppear{
             

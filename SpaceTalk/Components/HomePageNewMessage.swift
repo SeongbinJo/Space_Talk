@@ -12,7 +12,7 @@ struct HomePageNewMessage: View {
     @ObservedObject var loginViewModel: LoginViewModel
     @ObservedObject var firestoreViewModel: FirestoreViewModel
     
-    var newMessage: PostBoxMessages
+    var newMessage: Messages
     
     @State var width: CGFloat
     @State var height: CGFloat
@@ -24,7 +24,11 @@ struct HomePageNewMessage: View {
                         .padding(.horizontal, 10)
                     Spacer()
                     Button(action: {
-                        firestoreViewModel.acceptNewMessage(roomid: newMessage.roomId, messageText: newMessage.messageText, sendtime: newMessage.sendTime, isread: newMessage.isRead, senderid: newMessage.senderId, receiverid: newMessage.receiverId, sendernickname: newMessage.senderNickName, messageid: newMessage.messageId)
+                        //'O' 버튼 눌렀을때, 해당 메시지를 따로 저장후 해당 위치에 후에 쌓일 메시지들 저장.(해당 수신,발신자)
+                        firestoreViewModel.acceptNewMessage(roomid: newMessage.roomId)
+                        //'O' 버튼 눌렀을때, ChatListPage에 채팅방 생성을 위한 데이터 전달.
+//                        firestoreViewModel.deliverNewMessageData(roomid: newMessage.roomId, messageText: newMessage.messageText, sendtime: newMessage.sendTime, isread: newMessage.isRead, senderid: newMessage.senderId, receiverid: newMessage.receiverId, sendernickname: newMessage.senderNickName, messageid: newMessage.messageId)
+
                     }){
                         Text("O")
                             .foregroundColor(.black)
@@ -47,8 +51,8 @@ struct HomePageNewMessage: View {
     }
 
 
-struct HomePageNewMessage_Previews: PreviewProvider {
-    static var previews: some View {
-        HomePageNewMessage(loginViewModel: LoginViewModel(), firestoreViewModel: FirestoreViewModel(loginViewModel: LoginViewModel()), newMessage: PostBoxMessages(senderNickName: "조성빈", messageText: "안녕하세요!", messageId: "asdf", senderId: "123asdf", receiverId: "asdf123", isFirstMessage: true, isRead: false, roomId: "123123", sendTime: Date()), width: 350, height: 70)
-    }
-}
+//struct HomePageNewMessage_Previews: PreviewProvider {
+//    static var previews: some View {
+//        HomePageNewMessage(loginViewModel: LoginViewModel(), firestoreViewModel: FirestoreViewModel(loginViewModel: LoginViewModel()), newMessage: PostBoxMessages(senderNickName: "조성빈", messageText: "안녕하세요!", messageId: "asdf", senderId: "123asdf", receiverId: "asdf123", isFirstMessage: true, isRead: false, roomId: "123123", sendTime: Date()), width: 350, height: 70)
+//    }
+//}

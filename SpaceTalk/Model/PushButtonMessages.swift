@@ -1,14 +1,13 @@
 //
-//  Message.swift
+//  PostBoxMessages.swift
 //  SpaceTalk
 //
-//  Created by 조성빈 on 2023/04/27.
+//  Created by 조성빈 on 2023/05/29.
 //
 
 import Foundation
-import Firebase
 
-struct Messages: Identifiable, Codable{
+struct PushButtonMessages: Identifiable, Codable{
     var id: String { messageId }
     var messageId: String // 메시지 id
     var roomId: String // 채팅방 id
@@ -18,6 +17,11 @@ struct Messages: Identifiable, Codable{
     var receiverId: String // 메시지 받는 사람 id
     var isRead: Bool // 메시지 읽었는지.
     var senderNickName: String // 메시지 발신자 닉네임
+    var receiverNickName: String // 메시지 수신자 닉네임
+    var firstSenderId: String // 처음 메시지 보낸사람 id
+    var firstReceiverId: String // 처음 메시지 받는사람 id
+    var isAvailable: Bool // 상대방이 'O' 버튼 눌렀는지 여부.
+
     
     
     var formattedTime: String {
@@ -33,4 +37,6 @@ struct Messages: Identifiable, Codable{
             dateFormatter.dateFormat = "yyyy년 M월 d일"
             return dateFormatter.string(from: sendTime)
         }
+
 }
+

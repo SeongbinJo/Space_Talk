@@ -31,10 +31,12 @@ struct HomePage: View {
                                 .cornerRadius(10, corners: [.topRight, .topLeft])
                                 .padding(.trailing, geometry.size.width * 0.35)
                                 .foregroundColor(Color(uiColor: UIColor(r: 49, g: 49, b: 49, a: 1)))
+                                .shadow(color: .black, radius: 4, x: 5, y: 5)
                             Rectangle()
                                 .frame(width: geometry.size.width * 0.11, height: geometry.size.height * 0.13)
                                 .cornerRadius(10, corners: [.topRight, .topLeft])
                                 .foregroundColor(Color(uiColor: UIColor(r: 49, g: 49, b: 49, a: 1)))
+                                .shadow(color: .black, radius: 4, x: 5, y: 5)
                         }
                         ZStack{
                             Rectangle()
@@ -46,7 +48,9 @@ struct HomePage: View {
                                         .foregroundColor(Color(UIColor(r: 132, g: 141, b: 136, a: 1.0)))
                                         .padding(.trailing)
                                         .padding(.bottom)
+                                    
                                 }
+                            
                             VStack{
                                 TextEditor(text: $firestoreViewModel.firstSendText)
                                     .scrollContentBackground(.hidden)
@@ -70,8 +74,8 @@ struct HomePage: View {
                                         }){
                                             //새롭게 받은 메시지가 존재할 경우
                                             //true, false 대체해야함.
-                                            Image(systemName: false ? "envelope.fill" : "envelope")
-                                                .foregroundColor(false ? Color(UIColor(r: 49, g: 49, b: 49, a: 1.0)) : Color(UIColor(r: 79, g: 88, b: 83, a: 1.0)))
+                                            Image(systemName: firestoreViewModel.newmessages.count > 0 ? "envelope.fill" : "envelope")
+                                                .foregroundColor(firestoreViewModel.newmessages.count > 0 ? Color(UIColor(r: 49, g: 49, b: 49, a: 1.0)) : Color(UIColor(r: 79, g: 88, b: 83, a: 1.0)))
                                                 .font(.system(size: geometry.size.width * 0.06))
                                                 .padding(.trailing, 10)
                                                 .padding(.bottom, 30)

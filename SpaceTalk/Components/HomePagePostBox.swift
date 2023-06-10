@@ -44,8 +44,8 @@ struct HomePagePostBox: View {
     }
 }
 
-struct HomePagePostBox_Previews: PreviewProvider {
-    static var previews: some View {
-        HomePagePostBox(loginViewModel: LoginViewModel(), firestoreViewModel: FirestoreViewModel(loginViewModel: LoginViewModel()), postBoxZindex: .constant(-1))
-    }
-}
+//struct HomePagePostBox_Previews: PreviewProvider {
+//    static var previews: some View {
+//        HomePagePostBox(loginViewModel: LoginViewModel(), firestoreViewModel: FirestoreViewModel(loginViewModel: LoginViewModel()), postBoxZindex: .constant(-1))
+//    }
+//}
