@@ -13,7 +13,7 @@ struct ChatPage: View {
     @ObservedObject var loginViewModel: LoginViewModel
     @ObservedObject var firestoreViewModel: FirestoreViewModel
     
-    @Binding var chatListToChatPageActive: Bool
+    @Binding var chatListToChatPageActiveAccept: Bool
     
     var body: some View{
         NavigationView{
@@ -39,11 +39,12 @@ struct ChatPage: View {
                         Color(UIColor(r: 132, g: 141, b: 136, a: 1.0)),
                         for: .navigationBar)
                     .toolbarBackground(.visible, for: .navigationBar)
-        .navigationBarTitle("상대방 닉네임", displayMode: .inline)
+//                    .navigationBarTitle(firestoreViewModel.currentUserNickName() == firestoreViewModel.clickChatListData.senderNickName ? firestoreViewModel.clickChatListData.senderNickName : firestoreViewModel.clickChatListData.receiverNickName)
         .navigationBarBackButtonHidden(true)
         .navigationBarItems(leading: Button(action: {
-            chatListToChatPageActive = false
+            chatListToChatPageActiveAccept = false
             loginViewModel.isChatRoomOpenedToggle()
+//            print("chatListToChatPageActive 는 현재 : \(chatListToChatPageActive)입니다.")
         }){
             HStack{
                 Image(systemName: "chevron.left")
@@ -51,7 +52,9 @@ struct ChatPage: View {
             }
         })
         .navigationBarItems(trailing: Menu {
-            Button(role: .destructive, action: {}) {
+            Button(role: .destructive, action: {
+//                print(firestoreViewModel.clickChatListData)
+            }) {
                 Label("신고하기", systemImage: "exclamationmark.bubble.fill")
             }
             .foregroundColor(.red)
@@ -68,11 +71,11 @@ struct ChatPage: View {
     }//body
 }
 
-struct ChatPage_Previews: PreviewProvider {
-    static var previews: some View {
-        NavigationView{
-            ChatPage(loginViewModel: LoginViewModel(), firestoreViewModel: FirestoreViewModel(loginViewModel: LoginViewModel()), chatListToChatPageActive: .constant(false))
-        }
-
-    }
-}
+//struct ChatPage_Previews: PreviewProvider {
+//    static var previews: some View {
+//        NavigationView{
+//            ChatPage(loginViewModel: LoginViewModel(), firestoreViewModel: FirestoreViewModel(loginViewModel: LoginViewModel()), chatListToChatPageActive: .constant(false))
+//        }
+//
+//    }
+//}

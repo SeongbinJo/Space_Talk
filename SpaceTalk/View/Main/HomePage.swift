@@ -48,7 +48,6 @@ struct HomePage: View {
                                         .foregroundColor(Color(UIColor(r: 132, g: 141, b: 136, a: 1.0)))
                                         .padding(.trailing)
                                         .padding(.bottom)
-                                    
                                 }
                             
                             VStack{

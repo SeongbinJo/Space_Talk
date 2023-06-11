@@ -34,12 +34,6 @@ class FirestoreViewModel: ObservableObject{
     //무전기의 우편함에 첫 메시지 데이터들을 담을 배열 newmessages.
     @Published private(set) var newmessages: [Messages] = []
     
-    //acceptNewMessage()에서 roomid를 따로 담아두기위한 변수.
-//    @Published var clickedRoomId: String = ""
-    
-    //우편함에서 ChatListPage에 전달할 새 메시지 데이터 담아두는 배열.
-//    @Published private(set) var deliverMessageData: [Messages] = []
-
     
     init(loginViewModel: LoginViewModel) {
         self.loginViewModel = loginViewModel
@@ -144,7 +138,7 @@ class FirestoreViewModel: ObservableObject{
             for document in documents {
                 if let newMessage = try? document.data(as: PushButtonMessages.self) {
                     self.pushButtonMessages.append(newMessage)
-                    print("푸시해서 추가된 메시지 배열 : \(self.pushButtonMessages)")
+//                    print("푸시해서 추가된 메시지 배열 : \(self.pushButtonMessages)")
                 }else{
                     print("123")
                 }
@@ -174,7 +168,7 @@ class FirestoreViewModel: ObservableObject{
             for document in documents {
                 if let newMessage = try? document.data(as: PushButtonMessages.self) {
                     self.acceptButtonMessages.append(newMessage)
-                    print("수락해서 추가된 메시지 배열 : \(self.acceptButtonMessages)")
+//                    print("수락해서 추가된 메시지 배열 : \(self.acceptButtonMessages)")
                 }else{
                     print("123")
                 }

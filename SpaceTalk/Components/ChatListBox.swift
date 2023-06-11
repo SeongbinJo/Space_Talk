@@ -13,6 +13,9 @@ struct ChatListBox: View {
     @ObservedObject var loginViewModel: LoginViewModel
     @ObservedObject var firestoreViewModel: FirestoreViewModel
     
+    //해당 채팅방으로 이동 위한 변수.
+    @Binding var chatListToChatPageActiveAccept: Bool
+    
     var chatListBoxMessage: PushButtonMessages
     
     @State var geometryHeight: CGFloat = 0
@@ -21,7 +24,8 @@ struct ChatListBox: View {
         GeometryReader{ geometry in
             VStack{
                 Button(action: {
-                    print("지금 클릭한 채팅방의 정보입니다. roomid: \(chatListBoxMessage.roomId), messageid: \(chatListBoxMessage.messageId), senderid: \(chatListBoxMessage.senderId), receiverid: \(chatListBoxMessage.receiverId), messagetext: \(chatListBoxMessage.messageText), sendtime: \(chatListBoxMessage.sendTime), isread: \(chatListBoxMessage.isRead), sendernickname: \(chatListBoxMessage.senderNickName), firstSenderId: \(chatListBoxMessage.firstSenderId), firstReceiverId: \(chatListBoxMessage.firstReceiverId), isAvailable: \(chatListBoxMessage.isAvailable), senderNickName: \(chatListBoxMessage.senderNickName), receiverNickName: \(chatListBoxMessage.receiverNickName)")
+//                    firestoreViewModel.saveClickChatListData(messageid: chatListBoxMessage.messageId, roomid: chatListBoxMessage.roomId, messagetext: chatListBoxMessage.messageText, sendtime: chatListBoxMessage.sendTime, senderid: chatListBoxMessage.senderId, receiverid: chatListBoxMessage.receiverId, isread: chatListBoxMessage.isRead, sendernickname: chatListBoxMessage.senderNickName, receivernickname: chatListBoxMessage.receiverNickName, firstsenderid: chatListBoxMessage.firstSenderId, firstreceiverid: chatListBoxMessage.firstReceiverId, isavailable: chatListBoxMessage.isAvailable)
+                    chatListToChatPageActiveAccept = true
                 }){
                     //geometryreader 사용으로 겹침방지 위해 넣은 text
                     Text("")

@@ -181,7 +181,6 @@ struct SignUpPage: View {
                             loginToSignUpPageActive = false
                         }
                     }
-//                    loginViewModel.writeFirestoreUser()
                 }
                     .padding(10)
                     .background(!loginViewModel.isAlreadyNickName && !loginViewModel.isAlreadyEmail&&loginViewModel.pwdCheck&&loginViewModel.pwdSecondCheck ? .blue : .gray)
