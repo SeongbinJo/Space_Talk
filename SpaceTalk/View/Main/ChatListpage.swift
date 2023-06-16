@@ -17,8 +17,10 @@ struct ChatListpage: View {
     @ObservedObject var firestoreViewModel: FirestoreViewModel
 
     //해당 채팅방으로 이동 위한 변수.
-//    @State var chatListToChatPageActivePush: Bool = false
+
     @State var chatListToChatPageActiveAccept: Bool = false
+    
+    @State var selectChatListData: [String : Any] = ["roomid" : "testroomid", "nickname" : "testnickname"]
     
     var body: some View{
         NavigationView{
@@ -32,18 +34,18 @@ struct ChatListpage: View {
                             ScrollView{
                                 //push
                                 ForEach(firestoreViewModel.pushButtonMessages, id: \.id){ pushMessage in
-                                    ChatListBox(loginViewModel: loginViewModel, firestoreViewModel: FirestoreViewModel(loginViewModel: loginViewModel), chatListToChatPageActiveAccept: $chatListToChatPageActiveAccept, chatListBoxMessage: pushMessage)
+                                    ChatListBox(loginViewModel: loginViewModel, firestoreViewModel: FirestoreViewModel(loginViewModel: loginViewModel), chatListToChatPageActiveAccept: $chatListToChatPageActiveAccept, chatListBoxMessage: pushMessage, selectChatListData: $selectChatListData)
                                         .shadow(color: .black, radius: 4, x: 5, y: 5)
                                         .padding(.vertical, 2)
                                 }
                                 ForEach(firestoreViewModel.acceptButtonMessages, id: \.id){ acceptMessage in
-                                    ChatListBox(loginViewModel: loginViewModel, firestoreViewModel: FirestoreViewModel(loginViewModel: loginViewModel), chatListToChatPageActiveAccept: $chatListToChatPageActiveAccept, chatListBoxMessage: acceptMessage)
+                                    ChatListBox(loginViewModel: loginViewModel, firestoreViewModel: FirestoreViewModel(loginViewModel: loginViewModel), chatListToChatPageActiveAccept: $chatListToChatPageActiveAccept, chatListBoxMessage: acceptMessage, selectChatListData: $selectChatListData)
                                         .shadow(color: .black, radius: 4, x: 5, y: 5)
                                         .padding(.vertical, 2)
                                 }
                             }
                             .background{
-                                NavigationLink(destination: ChatPage(loginViewModel: loginViewModel, firestoreViewModel: FirestoreViewModel(loginViewModel: loginViewModel), chatListToChatPageActiveAccept: $chatListToChatPageActiveAccept), isActive: $chatListToChatPageActiveAccept, label: {EmptyView()})
+                                NavigationLink(destination: ChatPage(loginViewModel: loginViewModel, firestoreViewModel: FirestoreViewModel(loginViewModel: loginViewModel), chatListToChatPageActiveAccept: $chatListToChatPageActiveAccept, selectChatListData: $selectChatListData), isActive: $chatListToChatPageActiveAccept, label: {EmptyView()})
                             }
                             .scrollContentBackground(.hidden)
                         }
@@ -56,10 +58,10 @@ struct ChatListpage: View {
     }//body
 }
 
-struct ChatListpage_Previews: PreviewProvider {
-    static var previews: some View {
-        ChatListpage(loginViewModel: LoginViewModel(), firestoreViewModel: FirestoreViewModel(loginViewModel: LoginViewModel()))
-    }
-}
+//struct ChatListpage_Previews: PreviewProvider {
+//    static var previews: some View {
+//        ChatListpage(loginViewModel: LoginViewModel(), firestoreViewModel: FirestoreViewModel(loginViewModel: LoginViewModel()))
+//    }
+//}
 
 

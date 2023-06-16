@@ -33,4 +33,28 @@ struct Messages: Identifiable, Codable{
             dateFormatter.dateFormat = "yyyy년 M월 d일"
             return dateFormatter.string(from: sendTime)
         }
+    
+    init?(dictionaryData: [String: Any]){
+        guard let messageId = dictionaryData["messageId"] as? String,
+              let roomId = dictionaryData["roomId"] as? String,
+              let messageText = dictionaryData["messageText"] as? String,
+              let sendTime = dictionaryData["sendTime"] as? Timestamp,
+              let senderId = dictionaryData["senderId"] as? String,
+              let receiverId = dictionaryData["receiverId"] as? String,
+              let isRead = dictionaryData["isRead"] as? Bool,
+              let senderNickName = dictionaryData["senderNickName"] as? String else{
+            return nil
+        }
+        
+        self.messageId = messageId
+        self.roomId = roomId
+        self.messageText = messageText
+        self.sendTime = sendTime.dateValue()
+        self.senderId = senderId
+        self.receiverId = receiverId
+        self.isRead = isRead
+        self.senderNickName = senderNickName
+        
+    }
+    
 }

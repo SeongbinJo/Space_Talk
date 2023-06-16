@@ -23,6 +23,7 @@ struct SpaceTalkApp: App {
     
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
     
+    
     var body: some Scene {
         WindowGroup {
             ContentView(loginViewModel: LoginViewModel(), firestoreViewModel: FirestoreViewModel(loginViewModel: LoginViewModel()))

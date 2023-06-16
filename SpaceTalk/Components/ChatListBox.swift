@@ -11,7 +11,7 @@ import SwiftUI
 struct ChatListBox: View {
     
     @ObservedObject var loginViewModel: LoginViewModel
-    @ObservedObject var firestoreViewModel: FirestoreViewModel
+    @StateObject var firestoreViewModel = FirestoreViewModel(loginViewModel: LoginViewModel())
     
     //해당 채팅방으로 이동 위한 변수.
     @Binding var chatListToChatPageActiveAccept: Bool
@@ -19,12 +19,18 @@ struct ChatListBox: View {
     var chatListBoxMessage: PushButtonMessages
     
     @State var geometryHeight: CGFloat = 0
+
+    @Binding var selectChatListData: [String : Any]
     
     var body: some View {
         GeometryReader{ geometry in
             VStack{
                 Button(action: {
-//                    firestoreViewModel.saveClickChatListData(messageid: chatListBoxMessage.messageId, roomid: chatListBoxMessage.roomId, messagetext: chatListBoxMessage.messageText, sendtime: chatListBoxMessage.sendTime, senderid: chatListBoxMessage.senderId, receiverid: chatListBoxMessage.receiverId, isread: chatListBoxMessage.isRead, sendernickname: chatListBoxMessage.senderNickName, receivernickname: chatListBoxMessage.receiverNickName, firstsenderid: chatListBoxMessage.firstSenderId, firstreceiverid: chatListBoxMessage.firstReceiverId, isavailable: chatListBoxMessage.isAvailable)
+                    let selectChatNickName = loginViewModel.currentUser?.uid == chatListBoxMessage.firstSenderId ? chatListBoxMessage.receiverNickName : chatListBoxMessage.senderNickName
+                    selectChatListData = ["roomid" : chatListBoxMessage.roomId, "nickname" : selectChatNickName]
+//                    firestoreViewModel.selectChatRoomId = chatListBoxMessage.roomId
+//                    firestoreViewModel.getMessages(roomid: chatListBoxMessage.roomId)
+                    print("현재 선택한 채팅방의 roomid는 \(firestoreViewModel.selectChatRoomId)입니다. 클릭당시.")
                     chatListToChatPageActiveAccept = true
                 }){
                     //geometryreader 사용으로 겹침방지 위해 넣은 text
@@ -44,7 +50,7 @@ struct ChatListBox: View {
                         HStack{
                             VStack(alignment: .leading){
                                 HStack{
-                                    Text(loginViewModel.currentUser?.uid == chatListBoxMessage.senderId ? "\(chatListBoxMessage.receiverNickName)님과의 대화" : "\(chatListBoxMessage.senderNickName)님과의 대화")
+                                    Text(loginViewModel.currentUser?.uid == chatListBoxMessage.firstSenderId ? "\(chatListBoxMessage.receiverNickName)님과의 대화" : "\(chatListBoxMessage.senderNickName)님과의 대화")
                                         .font(.system(size: 18))
                                         .fontWeight(.semibold)
                                     Spacer()

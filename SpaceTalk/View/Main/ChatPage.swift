@@ -15,6 +15,8 @@ struct ChatPage: View {
     
     @Binding var chatListToChatPageActiveAccept: Bool
     
+    @Binding var selectChatListData: [String : Any]
+    
     var body: some View{
         NavigationView{
                 ZStack{
@@ -34,12 +36,13 @@ struct ChatPage: View {
         }
         .onAppear{
             loginViewModel.isChatRoomOpenedToggle()
+            print("현재 선택한 채팅방의 roomid는 \(firestoreViewModel.selectChatRoomId)입니다. 채팅방.")
         }
         .toolbarBackground(
                         Color(UIColor(r: 132, g: 141, b: 136, a: 1.0)),
                         for: .navigationBar)
                     .toolbarBackground(.visible, for: .navigationBar)
-//                    .navigationBarTitle(firestoreViewModel.currentUserNickName() == firestoreViewModel.clickChatListData.senderNickName ? firestoreViewModel.clickChatListData.senderNickName : firestoreViewModel.clickChatListData.receiverNickName)
+                    .navigationBarTitle(String(describing: selectChatListData["nickname"]!))
         .navigationBarBackButtonHidden(true)
         .navigationBarItems(leading: Button(action: {
             chatListToChatPageActiveAccept = false

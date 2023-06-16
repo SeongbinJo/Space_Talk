@@ -7,7 +7,6 @@
 
 import Foundation
 
-//현재 사용 x
 struct Users: Identifiable, Codable{
     var uid: String
     var nickName: String
