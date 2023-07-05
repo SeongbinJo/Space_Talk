@@ -99,7 +99,7 @@ class LoginViewModel: ObservableObject{
     }
     
     func writeFirestoreUser(){
-        db.collection("users").document(currentUser?.uid ?? "정보없음").setData(["uid" : currentUser?.uid ?? "정보없음", "email" : self.signUpEmail, "nickname" : self.signUpNickname, "registerDate" : Date()]) { err in
+        db.collection("users").document(currentUser?.uid ?? "정보없음").setData(["uid" : currentUser?.uid ?? "정보없음", "email" : self.signUpEmail, "nickname" : self.signUpNickname, "registerDate" : Date(), "selectChatRoomId" : "선택되지 않음"]) { err in
             if let err = err {
                 print("Error writing document: \(err)")
             } else {

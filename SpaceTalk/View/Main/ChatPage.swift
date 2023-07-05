@@ -36,7 +36,6 @@ struct ChatPage: View {
         }
         .onAppear{
             loginViewModel.isChatRoomOpenedToggle()
-            print("현재 선택한 채팅방의 roomid는 \(firestoreViewModel.selectChatRoomId)입니다. 채팅방.")
         }
         .toolbarBackground(
                         Color(UIColor(r: 132, g: 141, b: 136, a: 1.0)),

@@ -28,10 +28,17 @@ struct ChatListBox: View {
                 Button(action: {
                     let selectChatNickName = loginViewModel.currentUser?.uid == chatListBoxMessage.firstSenderId ? chatListBoxMessage.receiverNickName : chatListBoxMessage.senderNickName
                     selectChatListData = ["roomid" : chatListBoxMessage.roomId, "nickname" : selectChatNickName]
+                    //클릭한 채팅방의 roomid를 firestore에 저장함. 저장이 완료되면 채팅페이지로 넘어감.
+                    firestoreViewModel.selectRoomIdSave(roomid: chatListBoxMessage.roomId){
+                        completion in
+                        if completion{
+                            chatListToChatPageActiveAccept = true
+                        }
+                    }
 //                    firestoreViewModel.selectChatRoomId = chatListBoxMessage.roomId
-//                    firestoreViewModel.getMessages(roomid: chatListBoxMessage.roomId)
-                    print("현재 선택한 채팅방의 roomid는 \(firestoreViewModel.selectChatRoomId)입니다. 클릭당시.")
-                    chatListToChatPageActiveAccept = true
+//                    $firestoreViewModel.selectChatRoomId = Binding(chatListBoxMessage.roomId)
+//                    print("현재 클릭한 채팅방의 roomid: \(firestoreViewModel.selectChatRoomId)")
+//                    firestoreViewModel.getMessages()
                 }){
                     //geometryreader 사용으로 겹침방지 위해 넣은 text
                     Text("")

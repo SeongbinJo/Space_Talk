@@ -53,7 +53,7 @@ struct ChatListpage: View {
                 }//zstack
         }
         .onAppear{
-            
+//            print("현재 선택한 채팅방의 roomid는 \(firestoreViewModel.selectChatRoomId)입니다. 채팅방.")
         }
     }//body
 }

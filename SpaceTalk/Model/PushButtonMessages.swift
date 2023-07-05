@@ -10,7 +10,7 @@ import FirebaseFirestoreSwift
 import FirebaseFirestore
 
 struct PushButtonMessages: Identifiable, Codable{
-    var id: String?
+    var id: String {messageId}
     var messageId: String // 메시지 id
     var roomId: String // 채팅방 id
     var messageText: String // 메시지 내용
@@ -40,7 +40,6 @@ struct PushButtonMessages: Identifiable, Codable{
             return dateFormatter.string(from: sendTime)
         }
 
-    //
     init?(dictionaryData: [String: Any]) {
         guard let messageId = dictionaryData["messageId"] as? String,
             let roomId = dictionaryData["roomId"] as? String,
@@ -71,6 +70,7 @@ struct PushButtonMessages: Identifiable, Codable{
         self.isAvailable = isAvailable
         self.sendTime = sendTime.dateValue() //초기화 할 때, dateValue()를 사용하여 timestamp -> date로 형 변환.
         
+//        print(dictionaryData)
     }
     
 }
