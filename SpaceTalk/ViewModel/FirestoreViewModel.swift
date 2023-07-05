@@ -60,38 +60,56 @@ class FirestoreViewModel: ObservableObject{
 
 
     ///////////////////////////////////////////////////메시지 관련/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    ///
+    
+    //homepage의 무전기 PUSH버튼 눌렀을때 상대방 지정 후, 상대방의 닉네임 구해주는 함수.
+    func firstMessageReceiverNickName(completion: @escaping (Bool) -> Void){
+        db.collection("users").document("2yvpif9E77XWowvqPSz5rvMJ9Gx2").getDocument(){  snapshot, error in
+            guard error == nil else {
+                print("상대방 닉네임 조회 Error : \(error!)")
+                completion(false)
+                return
+            }
+            self.receiverNickName = snapshot?.get("nickname") as! String
+            completion(true)
+        }
+    }
+    
     //homepage의 무전기 PUSH버튼 함수.
     //해당 버튼으로 메시지를 전송하는 경우는 isFirstMsg필드가 true로 새로 추가되어 저장되어야한다.
     //Sender가 PUSH를 눌러 첫 메시지를 발송하면 채팅방도 같이 생성시킨다. (생성된 채팅방의 활성화 여부는 Receiver의 'O'버튼에 따라 달라지게끔.
     func sendFirstMessageInHomePage(completion: @escaping (Bool) -> Void){
-        guard let currentUser = loginViewModel.currentUser?.uid else {
-            print("현재 유저의 uid가 비어있습니다.")
-            return
-        }
+        firstMessageReceiverNickName(){ complete in
+            if complete{
+                guard let currentUser = self.loginViewModel.currentUser?.uid else {
+                    print("현재 유저의 uid가 비어있습니다.")
+                    return
+                }
+                let chatDoc = self.db.collection("chatroom").document()
+                let chatroomDoc = chatDoc.collection(chatDoc.documentID).document()
+                //chatroom/roomid 의 필드 저장.(postbox 생성위함)
+                //이때 firstSenderId 필드를 추가해서 sender가 PUSH눌렀을때 이 필드 값을 참조해서 뷰에 채팅방 추가되게끔.
+                //isAvailable 필드도 추가해서 'o'눌렀을때 true로 바뀌고 이 값이 true 일 경우에 채팅 텍스트필드가 활성화 되게끔.
+                chatDoc.setData(["roomId" : chatDoc.documentID, "messageId" : chatroomDoc.documentID, "messageText" : self.firstSendText, "sendTime" : Date(), "senderId" : currentUser, "receiverId" : "2yvpif9E77XWowvqPSz5rvMJ9Gx2", "isRead" : false, "senderNickName" : self.currentUserNickName(), "receiverNickName" : self.receiverNickName, "firstSenderId" : currentUser, "firstReceiverId" : "2yvpif9E77XWowvqPSz5rvMJ9Gx2", "isAvailable" : false]){ error in
+                    if let error = error {
+                        print("무전기 메시지 발송 에러1 : \(error)")
+                        completion(false)
+                    }else{
+                        print("무전기 메시지 발송 성공!")
+                        completion(true)
+                    }
+                }
 
-        let chatDoc = db.collection("chatroom").document()
-        let chatroomDoc = chatDoc.collection(chatDoc.documentID).document()
-        //chatroom/roomid 의 필드 저장.(postbox 생성위함)
-        //이때 firstSenderId 필드를 추가해서 sender가 PUSH눌렀을때 이 필드 값을 참조해서 뷰에 채팅방 추가되게끔.
-        //isAvailable 필드도 추가해서 'o'눌렀을때 true로 바뀌고 이 값이 true 일 경우에 채팅 텍스트필드가 활성화 되게끔.
-        chatDoc.setData(["roomId" : chatDoc.documentID, "messageId" : chatroomDoc.documentID, "messageText" : self.firstSendText, "sendTime" : Date(), "senderId" : currentUser, "receiverId" : "2yvpif9E77XWowvqPSz5rvMJ9Gx2", "isRead" : false, "senderNickName" : self.currentUserNickName(), "receiverNickName" : "니모1", "firstSenderId" : currentUser, "firstReceiverId" : "2yvpif9E77XWowvqPSz5rvMJ9Gx2", "isAvailable" : false]){ error in
-            if let error = error {
-                print("무전기 메시지 발송 에러1 : \(error)")
-                completion(false)
-            }else{
-                print("무전기 메시지 발송 성공!")
-                completion(true)
-            }
-        }
-
-        //chatroom/roomid/roomid/ 필드 저장.
-        chatroomDoc.setData(["roomId" : chatDoc.documentID, "messageId" : chatroomDoc.documentID, "messageText" : self.firstSendText, "sendTime" : Date(), "senderId" : currentUser, "receiverId" : "2yvpif9E77XWowvqPSz5rvMJ9Gx2", "isRead" : false, "senderNickName" : self.currentUserNickName()]){ error in
-            if let error = error {
-                print("무전기 메시지 발송 에러2 : \(error)")
-                completion(false)
-            }else{
-                print("첫 메시지 저장완료.")
-                completion(true)
+                //chatroom/roomid/roomid/ 필드 저장.
+                chatroomDoc.setData(["roomId" : chatDoc.documentID, "messageId" : chatroomDoc.documentID, "messageText" : self.firstSendText, "sendTime" : Date(), "senderId" : currentUser, "receiverId" : "2yvpif9E77XWowvqPSz5rvMJ9Gx2", "isRead" : false, "senderNickName" : self.currentUserNickName()]){ error in
+                    if let error = error {
+                        print("무전기 메시지 발송 에러2 : \(error)")
+                        completion(false)
+                    }else{
+                        print("첫 메시지 저장완료.")
+                        completion(true)
+                    }
+                }
             }
         }
     }
@@ -124,7 +142,7 @@ class FirestoreViewModel: ObservableObject{
                 PushButtonMessages(dictionaryData: document.data())
             }
             
-            self.pushButtonMessages.sort { $0.sendTime < $1.sendTime }
+            self.pushButtonMessages.sort { $0.sendTime > $1.sendTime }
 
         }
 
@@ -148,7 +166,7 @@ class FirestoreViewModel: ObservableObject{
                 PushButtonMessages(dictionaryData: document.data())
             }
 
-            self.acceptButtonMessages.sort { $0.sendTime < $1.sendTime }
+            self.acceptButtonMessages.sort { $0.sendTime > $1.sendTime }
 
         }
     }
@@ -202,6 +220,8 @@ class FirestoreViewModel: ObservableObject{
             print("currentUser.uid 가 비어있습니다.")
             return
         }
+        
+        //chatroom/roomid/roomid 에 전체 메시지 저장.
         let chatRoomDoc = db.collection("chatroom").document(self.selectChatRoomId).collection(self.selectChatRoomId).document()
         chatRoomDoc.setData(["roomId" : self.selectChatRoomId, "messageText" : self.sendMessageText, "sendTime" : Date(), "senderId" : currentUser, "receiverId" : "2yvpif9E77XWowvqPSz5rvMJ9Gx2", "isRead" : false, "messageId" : chatRoomDoc.documentID, "senderNickName" : self.currentUserNickName()]){ err in
             if let err = err {
@@ -211,6 +231,10 @@ class FirestoreViewModel: ObservableObject{
                 print("현재 메시지를 보낸 채팅방의 roomid : \(self.selectChatRoomId)")
             }
         }
+        
+        //chatroom/roomid 에 최신 메시지 업데이트.
+        let lastMessageDoc = db.collection("chatroom").document(self.selectChatRoomId)
+        lastMessageDoc.updateData(["messageId" : chatRoomDoc.documentID, "messageText" : self.sendMessageText, "sendTime" : Date(), "senderId" : currentUser, "receiverId" : "2yvpif9E77XWowvqPSz5rvMJ9Gx2", "isRead" : false])
     }
     
     func selectRoomIdSave(roomid: String, completion: @escaping (Bool) -> Void){
@@ -267,9 +291,6 @@ class FirestoreViewModel: ObservableObject{
                         Messages(dictionaryData: document.data())
                     }
                     self.messages.sort { $0.sendTime < $1.sendTime }
-                    print("getMessages() 정상 호출.")
-                    print("getMessages 내용 : \(self.messages)")
-                    
                 }
             }
         }
