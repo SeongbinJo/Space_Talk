@@ -26,7 +26,7 @@ struct MainPage: View {
             GeometryReader{ geometry in
                 ZStack{
                     //버튼을 클릭하여 str값이 변경되면, 하단의 버튼은 남고 화면만 바뀐다. zstack 덕분!
-                    loginViewModel.changeTabView(tabindex: str, loginViewModel: loginViewModel, firestoreViewModel: FirestoreViewModel(loginViewModel: loginViewModel), loginToMainPageActive: $loginToMainPageActive)
+                    loginViewModel.changeTabView(tabindex: str, loginViewModel: loginViewModel, firestoreViewModel: firestoreViewModel, loginToMainPageActive: $loginToMainPageActive)
                     HStack(spacing: 0){
                         Button(action:{
                             withAnimation{

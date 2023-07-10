@@ -11,14 +11,12 @@ import SwiftUI
 struct ChatListBox: View {
     
     @ObservedObject var loginViewModel: LoginViewModel
-    @StateObject var firestoreViewModel = FirestoreViewModel(loginViewModel: LoginViewModel())
+    @ObservedObject var firestoreViewModel: FirestoreViewModel
     
     //해당 채팅방으로 이동 위한 변수.
     @Binding var chatListToChatPageActiveAccept: Bool
     
     var chatListBoxMessage: PushButtonMessages
-    
-    @State var geometryHeight: CGFloat = 0
 
     @Binding var selectChatListData: [String : Any]
     
@@ -29,12 +27,16 @@ struct ChatListBox: View {
                     let selectChatNickName = loginViewModel.currentUser?.uid == chatListBoxMessage.firstSenderId ? chatListBoxMessage.receiverNickName : chatListBoxMessage.senderNickName
                     selectChatListData = ["roomid" : chatListBoxMessage.roomId, "nickname" : selectChatNickName]
                     //클릭한 채팅방의 roomid를 firestore에 저장함. 저장이 완료되면 채팅페이지로 넘어감.
-                    firestoreViewModel.selectRoomIdSave(roomid: chatListBoxMessage.roomId){
-                        completion in
-                        if completion{
-                            chatListToChatPageActiveAccept = true
-                        }
-                    }
+//                    firestoreViewModel.getMessages()
+                    
+                            firestoreViewModel.selectRoomIdSave(roomid: chatListBoxMessage.roomId){
+                                completion in
+                                if completion{
+                                    firestoreViewModel.getMessages()
+                                    chatListToChatPageActiveAccept = true
+                                }
+                            }
+
 //                    firestoreViewModel.selectChatRoomId = chatListBoxMessage.roomId
 //                    $firestoreViewModel.selectChatRoomId = Binding(chatListBoxMessage.roomId)
 //                    print("현재 클릭한 채팅방의 roomid: \(firestoreViewModel.selectChatRoomId)")
@@ -43,15 +45,6 @@ struct ChatListBox: View {
                     //geometryreader 사용으로 겹침방지 위해 넣은 text
                     Text("")
                         .padding()
-                        .background{
-                            GeometryReader{ geo in
-                                Text("")
-                                    .onAppear{
-                                        geometryHeight = geo.size.height * 2.3
-                                    }
-                                    .frame(width: 0)
-                            }
-                        }
                         .frame(width: 0)
                     Spacer()
                         HStack{
@@ -81,7 +74,6 @@ struct ChatListBox: View {
                 }
             }
         }
-        .frame(height: geometryHeight)
     }
 }
     

@@ -34,6 +34,8 @@ class FirestoreViewModel: ObservableObject{
     @Published private(set) var acceptButtonMessages: [PushButtonMessages] = []
     //무전기의 우편함에 첫 메시지 데이터들을 담을 배열 newmessages.
     @Published private(set) var newmessages: [Messages] = []
+    
+//    var listener: ListenerRegistration? = nil
 
     //클릭한 채팅방의 roomid -> 해당 채팅 메시지 불러오기위함.
     @Published var selectChatRoomId: String = "testid123"
@@ -188,7 +190,6 @@ class FirestoreViewModel: ObservableObject{
                 return
             }
             guard !documents.isEmpty else {
-                //                print("신규 메시지가 없음.")
                 self.newmessages.removeAll()
                 return
             }
@@ -198,9 +199,10 @@ class FirestoreViewModel: ObservableObject{
             }
 
             self.newmessages.sort { $0.sendTime < $1.sendTime }
-
+            print("첫 메시지 불러오기 완료.")
         }
     }
+
 
     //수신자가 postbox에서 'o'버튼을 눌렀을경우.
     func acceptNewMessage(roomid: String){
@@ -269,8 +271,6 @@ class FirestoreViewModel: ObservableObject{
         //appsnapshotListener를 사용해서 데이터에 업데이트가 있을시 바로바로 뷰에서 변경된다.
         //지금은 senderId로 구분하지만, 나중에 roomId로 구분하게되면  roomId값으로 데이터들을 담은 후, senderId가 현재유저 uid와 동일하면 뷰 우측에, 아니면 좌측에 붙게 만들면 될 듯함.
         //룸id가 같은 데이터들을 전부다 불러와서 MessageBubble파일에서 senderId가 currentuser.uid인지에 따라 왼쪽 오른쪽 구분.!!
-//        let roomidid = self.selectChatRoomId
-//        print("이거닷! : \(roomidid)")
         loadSelectRoomId(){ completion in
             if completion{
                 self.db.collection("chatroom").document(self.selectChatRoomId).collection(self.selectChatRoomId).addSnapshotListener { snapshot, error in
@@ -284,13 +284,23 @@ class FirestoreViewModel: ObservableObject{
                     }
                     guard !(documents.isEmpty) else {
                         self.messages.removeAll()
-                        print("내용이 없음.")
                         return
                     }
                     self.messages = documents.compactMap(){ document -> Messages? in
                         Messages(dictionaryData: document.data())
                     }
                     self.messages.sort { $0.sendTime < $1.sendTime }
+//                snapshot?.documentChanges.forEach{ diff in
+//                    if(diff.type == .added){
+//                        print("데이터에 추가가 일어남. : \(diff.document.data())")
+//                    }
+//                    if(diff.type == .modified){
+//                        print("데이터에 변화가 일어남. : \(diff.document.data())")
+//                    }
+//                    if(diff.type == .removed){
+//                        print("데이터에 삭제가 일어남. : \(diff.document.data())")
+//                    }
+//                }
                 }
             }
         }

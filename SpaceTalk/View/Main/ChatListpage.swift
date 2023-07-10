@@ -17,13 +17,12 @@ struct ChatListpage: View {
     @ObservedObject var firestoreViewModel: FirestoreViewModel
 
     //해당 채팅방으로 이동 위한 변수.
-
     @State var chatListToChatPageActiveAccept: Bool = false
     
     @State var selectChatListData: [String : Any] = ["roomid" : "testroomid", "nickname" : "testnickname"]
     
     var body: some View{
-        NavigationView{
+//        NavigationView{
                 ZStack{
                     Color.gray.ignoresSafeArea()
                     GeometryReader{ geometry in
@@ -34,24 +33,24 @@ struct ChatListpage: View {
                             ScrollView{
                                 //push
                                 ForEach(firestoreViewModel.pushButtonMessages, id: \.id){ pushMessage in
-                                    ChatListBox(loginViewModel: loginViewModel, firestoreViewModel: FirestoreViewModel(loginViewModel: loginViewModel), chatListToChatPageActiveAccept: $chatListToChatPageActiveAccept, chatListBoxMessage: pushMessage, selectChatListData: $selectChatListData)
+                                    ChatListBox(loginViewModel: loginViewModel, firestoreViewModel: firestoreViewModel, chatListToChatPageActiveAccept: $chatListToChatPageActiveAccept, chatListBoxMessage: pushMessage, selectChatListData: $selectChatListData)
+                                        .frame(height: geometry.size.height * 0.1)
                                         .shadow(color: .black, radius: 4, x: 5, y: 5)
-                                        .padding(.vertical, 2)
                                 }
                                 ForEach(firestoreViewModel.acceptButtonMessages, id: \.id){ acceptMessage in
-                                    ChatListBox(loginViewModel: loginViewModel, firestoreViewModel: FirestoreViewModel(loginViewModel: loginViewModel), chatListToChatPageActiveAccept: $chatListToChatPageActiveAccept, chatListBoxMessage: acceptMessage, selectChatListData: $selectChatListData)
+                                    ChatListBox(loginViewModel: loginViewModel, firestoreViewModel: firestoreViewModel, chatListToChatPageActiveAccept: $chatListToChatPageActiveAccept, chatListBoxMessage: acceptMessage, selectChatListData: $selectChatListData)
+                                        .frame(height: geometry.size.height * 0.1)
                                         .shadow(color: .black, radius: 4, x: 5, y: 5)
-                                        .padding(.vertical, 2)
                                 }
                             }
                             .background{
-                                NavigationLink(destination: ChatPage(loginViewModel: loginViewModel, firestoreViewModel: FirestoreViewModel(loginViewModel: loginViewModel), chatListToChatPageActiveAccept: $chatListToChatPageActiveAccept, selectChatListData: $selectChatListData), isActive: $chatListToChatPageActiveAccept, label: {EmptyView()})
+                                NavigationLink(destination: ChatPage(loginViewModel: loginViewModel, firestoreViewModel: firestoreViewModel, chatListToChatPageActiveAccept: $chatListToChatPageActiveAccept, selectChatListData: $selectChatListData), isActive: $chatListToChatPageActiveAccept, label: {EmptyView()})
                             }
                             .scrollContentBackground(.hidden)
                         }
                     }
                 }//zstack
-        }
+//        }
         .onAppear{
 //            print("현재 선택한 채팅방의 roomid는 \(firestoreViewModel.selectChatRoomId)입니다. 채팅방.")
         }

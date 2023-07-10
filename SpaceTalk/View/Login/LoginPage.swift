@@ -10,6 +10,7 @@ import SwiftUI
 
 struct LoginPage: View {
     @ObservedObject var loginViewModel: LoginViewModel
+    @ObservedObject var firestoreViewModel: FirestoreViewModel
     
     @State var loginToSignUpPageActive: Bool = false
     @State var loginToMainPageActive: Bool = false
@@ -21,7 +22,6 @@ struct LoginPage: View {
     var body: some View {
         NavigationView{
             ZStack{
-//                Color(UIColor(r: 79, g: 88, b: 83, a: 1.0)).ignoresSafeArea()
                 VStack(alignment: .trailing){
                     Spacer()
                     Spacer()
@@ -48,7 +48,8 @@ struct LoginPage: View {
                                     Button(action:{
                                         loginViewModel.loginUser(email: userEmail, password: userPassword){ success in
                                             if success {
-                                                loginToMainPageActive = true
+                                                firestoreViewModel.getFirstMessage()
+                                                    loginToMainPageActive = true
                                             }
                                         }
                                     }){
@@ -59,7 +60,7 @@ struct LoginPage: View {
                                             .foregroundColor(.black)
                                     }
                                     .padding()
-                                    NavigationLink(destination: MainPage(loginViewModel: loginViewModel, firestoreViewModel: FirestoreViewModel(loginViewModel: loginViewModel), loginToMainPageActive: $loginToMainPageActive),isActive: $loginToMainPageActive, label: {EmptyView()})
+                                    NavigationLink(destination: MainPage(loginViewModel: loginViewModel, firestoreViewModel: firestoreViewModel, loginToMainPageActive: $loginToMainPageActive),isActive: $loginToMainPageActive, label: {EmptyView()})
                                     Spacer()
                                 }
                             }
@@ -106,6 +107,6 @@ struct LoginPage: View {
 
 struct LoginPage_Previews: PreviewProvider {
     static var previews: some View {
-        LoginPage(loginViewModel: LoginViewModel())
+        LoginPage(loginViewModel: LoginViewModel(), firestoreViewModel: FirestoreViewModel(loginViewModel: LoginViewModel()))
     }
 }

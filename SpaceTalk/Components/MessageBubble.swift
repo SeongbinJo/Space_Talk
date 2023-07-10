@@ -36,7 +36,7 @@ struct MessageBubble: View {
                             GeometryReader{ geo in
                                 Text("")
                                     .onAppear{
-                                        geoHeight = geo.size.height + 5
+                                        geoHeight = geo.size.height
                                     }
                             }
                         }

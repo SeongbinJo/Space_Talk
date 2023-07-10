@@ -46,7 +46,6 @@ struct ChatPage: View {
         .navigationBarItems(leading: Button(action: {
             chatListToChatPageActiveAccept = false
             loginViewModel.isChatRoomOpenedToggle()
-//            print("chatListToChatPageActive 는 현재 : \(chatListToChatPageActive)입니다.")
         }){
             HStack{
                 Image(systemName: "chevron.left")

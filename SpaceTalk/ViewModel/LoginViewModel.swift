@@ -178,6 +178,7 @@ class LoginViewModel: ObservableObject{
         switch tabindex{
         case "home":
             return AnyView(HomePage(loginViewModel: loginViewModel, firestoreViewModel: firestoreViewModel, loginToMainPageActive: loginToMainPageActive))
+//            return AnyView(HomePagePostBox(loginViewModel: loginViewModel, firestoreViewModel: firestoreViewModel, postBoxZindex: .constant(1)))
         case "chatList":
             return AnyView(ChatListpage(loginViewModel: loginViewModel, firestoreViewModel: firestoreViewModel))
         case "setting":

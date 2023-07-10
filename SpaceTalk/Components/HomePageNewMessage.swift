@@ -26,9 +26,6 @@ struct HomePageNewMessage: View {
                     Button(action: {
                         //'O' 버튼 눌렀을때, 해당 메시지를 따로 저장후 해당 위치에 후에 쌓일 메시지들 저장.(해당 수신,발신자)
                         firestoreViewModel.acceptNewMessage(roomid: newMessage.roomId)
-                        //'O' 버튼 눌렀을때, ChatListPage에 채팅방 생성을 위한 데이터 전달.
-//                        firestoreViewModel.deliverNewMessageData(roomid: newMessage.roomId, messageText: newMessage.messageText, sendtime: newMessage.sendTime, isread: newMessage.isRead, senderid: newMessage.senderId, receiverid: newMessage.receiverId, sendernickname: newMessage.senderNickName, messageid: newMessage.messageId)
-
                     }){
                         Text("O")
                             .foregroundColor(.black)
