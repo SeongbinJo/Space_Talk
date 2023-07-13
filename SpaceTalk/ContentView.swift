@@ -10,7 +10,6 @@ import SwiftUI
 struct ContentView: View {
     
     @ObservedObject var loginViewModel: LoginViewModel
-    @ObservedObject var firestoreViewModel: FirestoreViewModel
     
     var body: some View {
         if loginViewModel.currentUser == nil {
@@ -23,6 +22,6 @@ struct ContentView: View {
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        ContentView(loginViewModel: LoginViewModel(), firestoreViewModel: FirestoreViewModel(loginViewModel: LoginViewModel()))
+        ContentView(loginViewModel: LoginViewModel())
     }
 }
