@@ -48,7 +48,6 @@ struct LoginPage: View {
                                     Button(action:{
                                         loginViewModel.loginUser(email: userEmail, password: userPassword){ success in
                                             if success {
-                                                firestoreViewModel.getFirstMessage()
                                                     loginToMainPageActive = true
                                             }
                                         }

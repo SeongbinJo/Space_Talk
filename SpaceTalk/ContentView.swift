@@ -14,9 +14,9 @@ struct ContentView: View {
     
     var body: some View {
         if loginViewModel.currentUser == nil {
-            LoginPage(loginViewModel: loginViewModel, firestoreViewModel: firestoreViewModel)
+            LoginPage(loginViewModel: loginViewModel, firestoreViewModel: FirestoreViewModel(loginViewModel: loginViewModel))
         }else{
-            MainPage(loginViewModel: loginViewModel, firestoreViewModel: firestoreViewModel, loginToMainPageActive: .constant(true))
+            MainPage(loginViewModel: loginViewModel, firestoreViewModel: FirestoreViewModel(loginViewModel: loginViewModel), loginToMainPageActive: .constant(true))
         }
     }
 }
