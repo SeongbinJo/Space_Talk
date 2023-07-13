@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>282051238574-pvlmkjvtsrca1ad5a2ebl5vt69hn9fqn.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.282051238574-pvlmkjvtsrca1ad5a2ebl5vt69hn9fqn</string>
+	<key>API_KEY</key>
+	<string>AIzaSyB6pUlFEQec_D7zK05BtVRxTJ_RqWYQMZ0</string>
+	<key>GCM_SENDER_ID</key>
+	<string>282051238574</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>kr.Bin.SpaceTalk</string>
+	<key>PROJECT_ID</key>
+	<string>spacetalk-4639f</string>
+	<key>STORAGE_BUCKET</key>
+	<string>spacetalk-4639f.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:282051238574:ios:00c34a4967c66d100c6b3f</string>
+</dict>
+</plist>

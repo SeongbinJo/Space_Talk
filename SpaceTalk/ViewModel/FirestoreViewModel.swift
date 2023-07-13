@@ -34,6 +34,7 @@ class FirestoreViewModel: ObservableObject{
     @Published private(set) var acceptButtonMessages: [PushButtonMessages] = []
     //무전기의 우편함에 첫 메시지 데이터들을 담을 배열 newmessages.
     @Published private(set) var newmessages: [Messages] = []
+    //랜덤유저를 뽑기위해
     
 //    var listener: ListenerRegistration? = nil
 
@@ -50,7 +51,8 @@ class FirestoreViewModel: ObservableObject{
 
     //현재 유저의 닉네임 불러오는 함수.
     func currentUserNickName() -> String {
-        db.collection("users").document(loginViewModel.currentUser!.uid).getDocument(){ snapshot, error in
+        guard let currentuser = loginViewModel.currentUser?.uid else { return "" }
+        db.collection("users").document(currentuser).getDocument(){ snapshot, error in
             guard error == nil else {
                 print("현재 유저 닉네임 조회 Error : \(error!)")
                 return
@@ -290,17 +292,6 @@ class FirestoreViewModel: ObservableObject{
                         Messages(dictionaryData: document.data())
                     }
                     self.messages.sort { $0.sendTime < $1.sendTime }
-//                snapshot?.documentChanges.forEach{ diff in
-//                    if(diff.type == .added){
-//                        print("데이터에 추가가 일어남. : \(diff.document.data())")
-//                    }
-//                    if(diff.type == .modified){
-//                        print("데이터에 변화가 일어남. : \(diff.document.data())")
-//                    }
-//                    if(diff.type == .removed){
-//                        print("데이터에 삭제가 일어남. : \(diff.document.data())")
-//                    }
-//                }
                 }
             }
         }
@@ -310,9 +301,30 @@ class FirestoreViewModel: ObservableObject{
     //    func deleteMessage() {
     //        db.collection("chatroom").whereField("senderId", isEqualTo: loginViewModel.currentUser!.uid)
     //    }
-    func deleteMessagesFromFirestore() {
-
+    func deleteMessagesFromFirestore(){
         self.messages.removeAll()
     }
 
+    //랜덤으로 유저 uid 뽑기
+    func randomUser() -> String{
+        var userCount = 0
+        var randomUser = ""
+        guard let currentUser = self.loginViewModel.currentUser?.uid else {
+                            print("현재 유저의 uid가 비어있습니다.")
+                            return ""
+                        }
+        db.collection("totalusercount").document("totalusercount").getDocument{ snapshot, error in
+                    guard error == nil else {
+                        print("현재 유저 닉네임 조회 Error : \(error!)")
+                        return
+                    }
+            //총 유저수.
+            userCount = snapshot?.get("usercount") as! Int
+                }
+        //0~총 유저수 중 랜덤숫자.
+        userCount = Int.random(in: 0...userCount-1)
+        
+        return randomUser
+    }
+    
 }

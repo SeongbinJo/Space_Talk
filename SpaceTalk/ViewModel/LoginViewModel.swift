@@ -84,8 +84,14 @@ class LoginViewModel: ObservableObject{
                 print("Error : \(error!.localizedDescription)")
                 return
             }
+            //writeFirestoreUser()에서 currentUser를 사용하기때문에 currentUser에 가입된 계정의 정보를 담아둔다.
             self.currentUser = newUser
-            self.writeFirestoreUser()
+            self.writeFirestoreUser(){ complete in
+                if complete{
+                    self.currentUser = nil
+                    self.plusTotalUserCount()
+                }
+            }
             newUser.sendEmailVerification{ error in
                 if let error = error {
                     print("이메일 전송 에러 : \(error.localizedDescription)")
@@ -98,14 +104,45 @@ class LoginViewModel: ObservableObject{
         }
     }
     
-    func writeFirestoreUser(){
+    //회원가입 페이지에서 입력된 정보 firestore에 저장.
+    func writeFirestoreUser(completion: @escaping (Bool) -> Void){
         db.collection("users").document(currentUser?.uid ?? "정보없음").setData(["uid" : currentUser?.uid ?? "정보없음", "email" : self.signUpEmail, "nickname" : self.signUpNickname, "registerDate" : Date(), "selectChatRoomId" : "선택되지 않음"]) { err in
             if let err = err {
                 print("Error writing document: \(err)")
+                completion(false)
             } else {
                 print("Firestore 쓰기 완료!!")
+                completion(true)
                 //회원가입 후, 로그아웃 처리를 해주지 않으면 앱 재시작 또는 앱 재설치 했을 때 회원가입했던 정보로 자동 로그인 되어 버린다.
-                self.logoutUser()
+//                self.logoutUser()
+            }
+        }
+    }
+    
+    //회원가입되면 totalusercount의 숫자를 1씩 올림.
+    func plusTotalUserCount(){
+        var usercount = 0
+        db.collection("totalusercount").document("totalusercount").getDocument{ snapshot, error in
+            if let error = error{
+                print("totalusercount 에러입니다.")
+            }else{
+                usercount = snapshot?.get("usercount") as! Int
+                usercount = usercount + 1
+                self.db.collection("totalusercount").document("totalusercount").updateData(["usercount" : usercount])
+            }
+        }
+    }
+    
+    //회원탈퇴할때 totalusercount의 숫자를 1씩 내림.
+    func minusTotalUserCount(){
+        var usercount = 0
+        db.collection("totalusercount").document("totalusercount").getDocument{ snapshot, error in
+            if let error = error{
+                print("totalusercount 에러입니다.")
+            }else{
+                usercount = snapshot?.get("usercount") as! Int
+                usercount = usercount - 1
+                self.db.collection("totalusercount").document("totalusercount").updateData(["usercount" : usercount])
             }
         }
     }
@@ -116,18 +153,25 @@ class LoginViewModel: ObservableObject{
     //@escaping -> 일반적으로 비동기 처리할때 사용한다 -> 예를들어 http요청시 언제 답이 올지 모른다 -> loginUser함수 밖에서 비동기적으로 실행이 가능하다!
     func loginUser(email: String, password: String, completion: @escaping (Bool) -> Void){
         Auth.auth().signIn(withEmail: email, password: password) { loginResult, error in
-            if error == nil {
-                self.currentUser = loginResult?.user
-                if self.currentUser!.isEmailVerified {
-                    completion(true)
-                    print("이메일 인증을 완료한 이용자 입니다. 로그인 합니다.")
-                    
+            if error == nil{
+                if loginResult!.user.isEmailVerified{
+                    self.currentUser = loginResult?.user
+                    self.db.collection("users").document(self.currentUser!.uid).getDocument{ snapshot, error in
+                        if error != nil{
+                            print("로그인 에러.. 입력한 정보가 firestore에 존재하지않음.")
+                        }else{
+                            if snapshot?.data()?.count == 1{
+                                completion(true)
+                                print("이메일 인증을 완료한 이용자 입니다. 로그인 합니다.")
+                            }
+                        }
+                    }
                 }else{
-                    print("이메일 인증을 하지않은 이용자 입니다.")
+                    completion(false)
+                    print("이메일 미인증 유저입니다. 로그인 불가!")
                 }
             }else{
                 completion(false)
-                print("Error : \(error!.localizedDescription)")
                 print("ID 또는 PASSWORD가 잘못되었습니다.")
             }
         }
@@ -142,6 +186,15 @@ class LoginViewModel: ObservableObject{
     }
     
     //회원탈퇴
+//    func deleteUser(){
+//        db.collection("users").document(self.currentUser!.uid).updateData(["uid" : "nil", "email" : "nil", "nickname" : "nil", "registerDate" : Date(), "selectChatRoomId" : "선택되지 않음"])
+//                    self.minusTotalUserCount()
+//                    self.logoutUser()
+//        print("계정삭제 완료")
+//        print("내 현재정보 : \(self.currentUser?.uid ?? "정보없음")")
+//    }
+    
+    //회원탈퇴
     func deleteUser(){
         if currentUser != nil {
             db.collection("users").document(self.currentUser!.uid).delete(){ error in
@@ -150,6 +203,7 @@ class LoginViewModel: ObservableObject{
                 }else{
                     print("해당 유저 Firestore 정보 삭제완료!")
                     self.currentUser?.delete()
+                    self.minusTotalUserCount()
                     self.logoutUser()
                 }
             }

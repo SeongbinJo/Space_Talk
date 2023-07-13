@@ -1,0 +1,6 @@
+framework module Pods_SpaceTalk {
+  umbrella header "Pods-SpaceTalk-umbrella.h"
+
+  export *
+  module * { export * }
+}
