@@ -13,5 +13,6 @@ struct Users: Identifiable, Codable{
     var email: String
     var registerDate: Date
     var selectChatRoomId: String
+    var userNumber: Int
     var id: String { uid }
 }

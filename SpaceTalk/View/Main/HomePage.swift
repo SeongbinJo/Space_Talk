@@ -83,12 +83,12 @@ struct HomePage: View {
                                 }
                             Button(action:{
 //                                firestoreViewModel.ran
-//                                firestoreViewModel.sendFirstMessageInHomePage(){ completion in
-//                                    if completion{
-//                                        pushButtonAlert = true
-//                                        firestoreViewModel.firstSendText = ""
-//                                    }
-//                                }
+                                firestoreViewModel.sendFirstMessageInHomePage(){ completion in
+                                    if completion{
+                                        pushButtonAlert = true
+                                        firestoreViewModel.firstSendText = ""
+                                    }
+                                }
                             }){
                                 Circle()
                                     .frame(width: geometry.size.width * 0.6, height: geometry.size.height * 0.3)
