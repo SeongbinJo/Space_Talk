@@ -10,6 +10,7 @@ import SwiftUI
 
 struct SettingPage: View {
     @ObservedObject var loginViewModel: LoginViewModel
+    @ObservedObject var firestoreViewModel: FirestoreViewModel
     
     @Binding var loginToMainPageActive: Bool
     
@@ -43,10 +44,11 @@ struct SettingPage: View {
                 }
                 .alert("주의!", isPresented: $showDeleteAlert) {
                     Button("취소", role: .cancel) {}
-                    Button("계정탈퇴") {
+                    Button(action: {
                         loginViewModel.deleteUser()
                         loginToMainPageActive = false
-                        print(loginToMainPageActive)
+                    }) {
+                        Text("탈퇴하기")
                     }
                 } message: {
                     Text("정말로 계정탈퇴 하시겠습니까?")
@@ -59,7 +61,7 @@ struct SettingPage: View {
     
     struct SettingPage_Previews: PreviewProvider {
         static var previews: some View {
-            SettingPage(loginViewModel: LoginViewModel(), loginToMainPageActive: .constant(true))
+            SettingPage(loginViewModel: LoginViewModel(), firestoreViewModel: FirestoreViewModel(loginViewModel: LoginViewModel()), loginToMainPageActive: .constant(true))
         }
     }
 }

@@ -31,7 +31,7 @@ struct HomePageNewMessage: View {
                             .foregroundColor(.black)
                     }
                     Button(action: {
-                        firestoreViewModel.refuseNewMessage(roomid: newMessage.roomId)
+                        firestoreViewModel.refuseNewMessage(roomid: newMessage.roomId, messageid: newMessage.messageId)
                     }){
                         Text("X")
                             .foregroundColor(.black)

@@ -82,13 +82,18 @@ struct HomePage: View {
                                     }
                                 }
                             Button(action:{
-//                                firestoreViewModel.ran
-//                                firestoreViewModel.sendFirstMessageInHomePage(){ completion in
-//                                    if completion{
-//                                        pushButtonAlert = true
-//                                        firestoreViewModel.firstSendText = ""
-//                                    }
-//                                }
+                                firestoreViewModel.randomUser(){complete in
+                                    if complete{
+                                        print("랜덤뽑기 유저 당첨 : \(firestoreViewModel.randomUserUid)")
+                                        firestoreViewModel.sendFirstMessageInHomePage(){ completion in
+                                            if completion{
+                                                pushButtonAlert = true
+                                                firestoreViewModel.firstSendText = ""
+                                            }
+                                        }
+                                    }
+                                }
+                                
                             }){
                                 Circle()
                                     .frame(width: geometry.size.width * 0.6, height: geometry.size.height * 0.3)

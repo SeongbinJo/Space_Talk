@@ -35,7 +35,10 @@ class FirestoreViewModel: ObservableObject{
     //무전기의 우편함에 첫 메시지 데이터들을 담을 배열 newmessages.
     @Published private(set) var newmessages: [Messages] = []
     //랜덤유저를 뽑기위해
-    
+    @Published var userCount = 0
+    @Published var randomUserUid = ""
+    @Published var myUserNumber = 0
+    @Published var whileBool = true
 //    var listener: ListenerRegistration? = nil
 
     //클릭한 채팅방의 roomid -> 해당 채팅 메시지 불러오기위함.
@@ -57,7 +60,7 @@ class FirestoreViewModel: ObservableObject{
                 print("현재 유저 닉네임 조회 Error : \(error!)")
                 return
             }
-            self.currentNickName = snapshot?.get("nickname") as! String
+            self.currentNickName = snapshot?.get("nickname") as? String ?? "정보가 없음"
         }
         return currentNickName
     }
@@ -68,7 +71,7 @@ class FirestoreViewModel: ObservableObject{
     
     //homepage의 무전기 PUSH버튼 눌렀을때 상대방 지정 후, 상대방의 닉네임 구해주는 함수.
     func firstMessageReceiverNickName(completion: @escaping (Bool) -> Void){
-        db.collection("users").document("2yvpif9E77XWowvqPSz5rvMJ9Gx2").getDocument(){  snapshot, error in
+        db.collection("users").document(self.randomUserUid).getDocument(){  snapshot, error in
             guard error == nil else {
                 print("상대방 닉네임 조회 Error : \(error!)")
                 completion(false)
@@ -94,7 +97,7 @@ class FirestoreViewModel: ObservableObject{
                 //chatroom/roomid 의 필드 저장.(postbox 생성위함)
                 //이때 firstSenderId 필드를 추가해서 sender가 PUSH눌렀을때 이 필드 값을 참조해서 뷰에 채팅방 추가되게끔.
                 //isAvailable 필드도 추가해서 'o'눌렀을때 true로 바뀌고 이 값이 true 일 경우에 채팅 텍스트필드가 활성화 되게끔.
-                chatDoc.setData(["roomId" : chatDoc.documentID, "messageId" : chatroomDoc.documentID, "messageText" : self.firstSendText, "sendTime" : Date(), "senderId" : currentUser, "receiverId" : "2yvpif9E77XWowvqPSz5rvMJ9Gx2", "isRead" : false, "senderNickName" : self.currentUserNickName(), "receiverNickName" : self.receiverNickName, "firstSenderId" : currentUser, "firstReceiverId" : "2yvpif9E77XWowvqPSz5rvMJ9Gx2", "isAvailable" : false]){ error in
+                chatDoc.setData(["roomId" : chatDoc.documentID, "messageId" : chatroomDoc.documentID, "messageText" : self.firstSendText, "sendTime" : Date(), "senderId" : currentUser, "receiverId" : self.randomUserUid, "isRead" : false, "senderNickName" : self.currentUserNickName(), "receiverNickName" : self.receiverNickName, "firstSenderId" : currentUser, "firstReceiverId" : self.randomUserUid, "isAvailable" : false]){ error in
                     if let error = error {
                         print("무전기 메시지 발송 에러1 : \(error)")
                         completion(false)
@@ -105,7 +108,7 @@ class FirestoreViewModel: ObservableObject{
                 }
 
                 //chatroom/roomid/roomid/ 필드 저장.
-                chatroomDoc.setData(["roomId" : chatDoc.documentID, "messageId" : chatroomDoc.documentID, "messageText" : self.firstSendText, "sendTime" : Date(), "senderId" : currentUser, "receiverId" : "2yvpif9E77XWowvqPSz5rvMJ9Gx2", "isRead" : false, "senderNickName" : self.currentUserNickName()]){ error in
+                chatroomDoc.setData(["roomId" : chatDoc.documentID, "messageId" : chatroomDoc.documentID, "messageText" : self.firstSendText, "sendTime" : Date(), "senderId" : currentUser, "receiverId" : self.randomUserUid, "isRead" : false, "senderNickName" : self.currentUserNickName()]){ error in
                     if let error = error {
                         print("무전기 메시지 발송 에러2 : \(error)")
                         completion(false)
@@ -213,7 +216,8 @@ class FirestoreViewModel: ObservableObject{
     }
 
     //수신자가 postbox에서 'X'버튼을 눌렀을경우.
-    func refuseNewMessage(roomid: String){
+    func refuseNewMessage(roomid: String, messageid: String){
+        self.db.collection("chatroom").document(roomid).collection(roomid).document(messageid).delete()
         self.db.collection("chatroom").document(roomid).delete()
     }
 
@@ -227,7 +231,7 @@ class FirestoreViewModel: ObservableObject{
         
         //chatroom/roomid/roomid 에 전체 메시지 저장.
         let chatRoomDoc = db.collection("chatroom").document(self.selectChatRoomId).collection(self.selectChatRoomId).document()
-        chatRoomDoc.setData(["roomId" : self.selectChatRoomId, "messageText" : self.sendMessageText, "sendTime" : Date(), "senderId" : currentUser, "receiverId" : "2yvpif9E77XWowvqPSz5rvMJ9Gx2", "isRead" : false, "messageId" : chatRoomDoc.documentID, "senderNickName" : self.currentUserNickName()]){ err in
+        chatRoomDoc.setData(["roomId" : self.selectChatRoomId, "messageText" : self.sendMessageText, "sendTime" : Date(), "senderId" : currentUser, "receiverId" : self.randomUserUid, "isRead" : false, "messageId" : chatRoomDoc.documentID, "senderNickName" : self.currentUserNickName()]){ err in
             if let err = err {
                 print("메시지 전송 에러: \(err)")
             } else {
@@ -238,7 +242,7 @@ class FirestoreViewModel: ObservableObject{
         
         //chatroom/roomid 에 최신 메시지 업데이트.
         let lastMessageDoc = db.collection("chatroom").document(self.selectChatRoomId)
-        lastMessageDoc.updateData(["messageId" : chatRoomDoc.documentID, "messageText" : self.sendMessageText, "sendTime" : Date(), "senderId" : currentUser, "receiverId" : "2yvpif9E77XWowvqPSz5rvMJ9Gx2", "isRead" : false])
+        lastMessageDoc.updateData(["messageId" : chatRoomDoc.documentID, "messageText" : self.sendMessageText, "sendTime" : Date(), "senderId" : currentUser, "receiverId" : self.randomUserUid, "isRead" : false])
     }
     
     func selectRoomIdSave(roomid: String, completion: @escaping (Bool) -> Void){
@@ -263,7 +267,7 @@ class FirestoreViewModel: ObservableObject{
                 print("Error : \(error!)")
                 return
             }
-            self.selectChatRoomId = snapshot?.get("selectChatRoomId") as! String
+            self.selectChatRoomId = snapshot?.get("selectChatRoomId") as? String ?? "정보없음"
             completion(true)
         }
     }
@@ -306,25 +310,68 @@ class FirestoreViewModel: ObservableObject{
     }
 
     //랜덤으로 유저 uid 뽑기
-    func randomUser() -> String{
-        var userCount = 0
-        var randomUser = ""
+    func randomUser(complete1: @escaping (Bool) -> Void){
+        self.loginViewModel.getMaxUserCount(){ complete in
+            if complete{
+                    //0~총 유저수 중 랜덤숫자.
+                    self.userCount = Int.random(in: 1...self.loginViewModel.maxUserCount)
+                print("랜덤으로 뽑은 유저넘버 : \(self.userCount)")
+                    //내 userNumber 가져오기.
+                    self.getMyUserNumber(){ completion in
+                        if completion{
+                            //내 userNumber와 랜덤으로 뽑은 숫자와 비교. -> 같으면 다시 뽑아야함.
+                            if self.myUserNumber == self.userCount{
+                                print("랜덤으로 뽑은 userNumber와 나의 userNumber가 같습니다. 번호를 다시 뽑습니다.")
+                                self.randomUser(complete1: complete1)
+                            }else{
+                                print("랜덤으로 뽑은 userNumber와 나의 userNumber가 다릅니다. 뽑은 userNumber의 Uid를 가져옵니다.")
+                                //랜덤으로 뽑은 userNumber의 uid 가져오기.
+                                self.getRandomUid(){ useruid in
+                                    self.randomUserUid = useruid
+                                    complete1(true)
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+    
+    func getMyUserNumber(completion: @escaping (Bool) -> Void){
         guard let currentUser = self.loginViewModel.currentUser?.uid else {
                             print("현재 유저의 uid가 비어있습니다.")
-                            return ""
+                            return
                         }
-        db.collection("totalusercount").document("totalusercount").getDocument{ snapshot, error in
-                    guard error == nil else {
-                        print("현재 유저 닉네임 조회 Error : \(error!)")
-                        return
-                    }
-            //총 유저수.
-            userCount = snapshot?.get("usercount") as! Int
-                }
-        //0~총 유저수 중 랜덤숫자.
-        userCount = Int.random(in: 0...userCount-1)
-        
-        return randomUser
+        db.collection("users").whereField("uid", isEqualTo: currentUser).getDocuments{ snapshot, error in
+            if error != nil{
+                print("내 유저넘버 가져오기 실패.")
+                completion(false)
+            }else if snapshot == nil{
+                print("내 uid를 가진 데이터 없음.")
+                completion(false)
+            }else{
+                self.myUserNumber = snapshot?.documents.first?.data()["userNumber"] as! Int
+                completion(true)
+            }
+        }
+    }
+    
+    func getRandomUid(completion: @escaping (String) -> Void){
+        var useruid = ""
+        db.collection("users").whereField("userNumber", isEqualTo: self.userCount).getDocuments{ snapshot, error in
+            if error != nil{
+                print("getRandomUid Error!!!")
+                completion("nil")
+            }else if snapshot == nil{
+                print("해당 숫자를 가진 userNumber는 존재하지 않습니다.")
+                completion("nil")
+            }else{
+                useruid = snapshot?.documents.first?.data()["uid"] as? String ?? "정보없음."
+                print("헤헤~ : \(useruid)")
+                completion(useruid)
+            }
+        }
     }
     
 }

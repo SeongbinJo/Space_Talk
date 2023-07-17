@@ -43,6 +43,13 @@ class LoginViewModel: ObservableObject{
     @Published var isChatRoomOpened: Bool = false
     
     
+    //필드값이 nil인 도큐먼트의 UserNumber값
+    @Published var nilUserNumber = 0
+    @Published var nilUserUid = ""
+    //현재 유저들이 가진 userNumber중 가장 큰 수를 담기 위함. -> 이 수를 사용해서 랜덤으로 유저를 뽑을 것임.
+    @Published var maxUserCount = 0
+    
+    
     init() {
         currentUser = Auth.auth().currentUser
     }
@@ -75,7 +82,95 @@ class LoginViewModel: ObservableObject{
     }
     
     //firebase User 등록(회원가입)
-    func registerUser(completion: @escaping (Bool) -> Void) {
+//    func registerUser(completion: @escaping (Bool) -> Void) {
+//        Auth.auth().createUser(withEmail: signUpEmail, password: signUpPasswordCheck) { registerResult, error in
+//            //등록 성공시 result에 값이 담기고, error엔 nil이 ,, 등록 실패시 result에 nil이 error엔 에러값이 담긴다.
+//            guard let newUser = registerResult?.user else {return}
+//            guard error == nil else {
+//                completion(false)
+//                print("Error : \(error!.localizedDescription)")
+//                return
+//            }
+//            self.currentUser = newUser
+//                    self.currentUser = nil
+//            newUser.sendEmailVerification{ error in
+//                if let error = error {
+//                    print("이메일 전송 에러 : \(error.localizedDescription)")
+//                }else{
+//                    print("이메일 전송 성공!!")
+//                }
+//            }
+//            completion(true)
+//        }
+//    }
+    
+    //회원가입 페이지에서 입력된 정보 firestore에 저장.
+//    func writeFirestoreUser(completion: @escaping (Bool) -> Void){
+//        var totalusercount:Int = 0
+//        db.collection("totalusercount").document("totalusercount").getDocument{ snapshot, error in
+//            if error == nil{
+//                totalusercount = snapshot?.get("usercount") as! Int
+//            }else{
+//                print("총 유저수 가져오기 에러.")
+//            }
+//        }
+//        db.collection("users").document(currentUser?.uid ?? "정보없음").setData(["uid" : currentUser?.uid ?? "정보없음", "email" : self.signUpEmail, "nickname" : self.signUpNickname, "registerDate" : Date(), "userNumber" : totalusercount,"selectChatRoomId" : "선택되지 않음"]) { err in
+//            if let err = err {
+//                print("Error writing document: \(err)")
+//                completion(false)
+//            } else {
+//                print("Firestore 쓰기 완료!!")
+//                completion(true)
+//                //회원가입 후, 로그아웃 처리를 해주지 않으면 앱 재시작 또는 앱 재설치 했을 때 회원가입했던 정보로 자동 로그인 되어 버린다.
+////                self.logoutUser()
+//            }
+//        }
+//    }
+    
+//    func writeRegisterUser(completion: @escaping (Bool) -> Void){
+//        //필드값이 nil인 도큐먼트의 UserNumber값
+//        var nilUserNumber = 0
+//        var nilUserUid = ""
+//        //현재 유저들이 가진 userNumber중 가장 큰 수를 담기 위함. -> 이 수를 사용해서 랜덤으로 유저를 뽑을 것임.
+//        var maxUserCount = 0
+//        //uid 필드 값이 nil인 데이터 찾기.
+//        db.collection("users").order(by: "userNumber").whereField("uid", isEqualTo: "nil").limit(to: 1).getDocuments{ snapshot, error in
+//            guard error == nil else {
+//                completion(false)
+//                return
+//            }
+//            //uid 필드 값이 nil인 데이터가 있다면. -> 새로 가입되는 유저의 정보를 nil인 데이터에 업데이트 시켜준다.
+//            if !snapshot!.isEmpty{
+//                //nilUserNumber에 '계정삭제한 유저의 userNumber'를 이어받기위해 저장한다. => 새로운 유저는 계정삭제한 유저의 userNumber를 계승함으로써 빈자리를 메꿈.
+//                nilUserNumber = snapshot?.documents[0].data()["userNumber"] as! Int
+//                //nil데이터의 documentID(=uid)또한 저장한다. => 해당 데이터를 지우기 위함.
+//                nilUserUid = (snapshot?.documents[0].documentID)!
+//                //usercount 1 증가.
+//                self.plusTotalUserCount()
+//                //nilUserNumber를 얻어냈기 때문에 지워준다.
+//                self.db.collection("users").document(nilUserUid).delete()
+//                //삭제한 유저들 중 첫번째 유저의 userNumber값을 저장한 nilUserNumber를 사용하여 새로운 유저의 정보를 생성한다.
+//                self.db.collection("users").document(self.currentUser?.uid ?? "정보없음").setData(["uid" : self.currentUser?.uid ?? "정보없음", "email" : self.signUpEmail, "nickname" : self.signUpNickname, "registerDate" : Date(), "userNumber" : nilUserNumber,"selectChatRoomId" : "선택되지 않음"])
+//                completion(true)
+//            }
+//            //uid 필드 값이 nil인 데이터가 없다면. -> 새로 가입되는 유저의 정보를 새로 생성한다.
+//            else{
+//                //usercount 1 증가.
+//                self.plusTotalUserCount()
+//                //새로 가입한 유저의 정보가 새로 생성되었을때, totalusercount의 maxUserCount를 체크하기위함.
+//                self.db.collection("totalusercount").document("totalusercount").getDocument{ snapshot, error in
+//                    guard error == nil else { return }
+//                    maxUserCount = snapshot?.get("maxUserCount") as! Int
+//                }
+//                //새로 가입한 유저의 정보를 새로 생성함.
+//                self.db.collection("users").document(self.currentUser?.uid ?? "정보없음").setData(["uid" : self.currentUser?.uid ?? "정보없음", "email" : self.signUpEmail, "nickname" : self.signUpNickname, "registerDate" : Date(), "userNumber" : maxUserCount + 1,"selectChatRoomId" : "선택되지 않음"])
+//                self.db.collection("totalusercount").document("totalusercount").updateData(["maxUserCount" : maxUserCount + 1])
+//                completion(true)
+//            }
+//        }
+//    }
+    
+    func writeRegisterUser(completion: @escaping (Bool) -> Void){
         Auth.auth().createUser(withEmail: signUpEmail, password: signUpPasswordCheck) { registerResult, error in
             //등록 성공시 result에 값이 담기고, error엔 nil이 ,, 등록 실패시 result에 nil이 error엔 에러값이 담긴다.
             guard let newUser = registerResult?.user else {return}
@@ -84,12 +179,50 @@ class LoginViewModel: ObservableObject{
                 print("Error : \(error!.localizedDescription)")
                 return
             }
-            //writeFirestoreUser()에서 currentUser를 사용하기때문에 currentUser에 가입된 계정의 정보를 담아둔다.
             self.currentUser = newUser
-            self.writeFirestoreUser(){ complete in
-                if complete{
-                    self.currentUser = nil
-                    self.plusTotalUserCount()
+        //uid 필드 값이 nil인 데이터 찾기.
+            self.db.collection("users").order(by: "userNumber").whereField("uid", isEqualTo: "nil").limit(to: 1).getDocuments{ snapshot, error in
+            guard error == nil else {
+                completion(false)
+                return
+            }
+            //uid 필드 값이 nil인 데이터가 있다면. -> 새로 가입되는 유저의 정보를 nil인 데이터에 업데이트 시켜준다.
+            if !snapshot!.isEmpty{
+                print("필드가 nil인 도큐멘트가 존재합니다!")
+                //nilUserNumber에 '계정삭제한 유저의 userNumber'를 이어받기위해 저장한다. => 새로운 유저는 계정삭제한 유저의 userNumber를 계승함으로써 빈자리를 메꿈.
+                self.nilUserNumber = snapshot?.documents[0].data()["userNumber"] as! Int
+                //nil데이터의 documentID(=uid)또한 저장한다. => 해당 데이터를 지우기 위함.
+                self.nilUserUid = (snapshot?.documents[0].documentID)!
+                //usercount 1 증가.
+                self.plusTotalUserCount()
+                //nilUserNumber를 얻어냈기 때문에 지워준다.
+                self.db.collection("users").document(self.nilUserUid).delete()
+                //삭제한 유저들 중 첫번째 유저의 userNumber값을 저장한 nilUserNumber를 사용하여 새로운 유저의 정보를 생성한다.
+                self.newUserUpdateDate(){ complete in
+                    if complete{
+                        self.logoutUser()
+                        completion(true)
+                    }
+                }
+            }
+            //uid 필드 값이 nil인 데이터가 없다면. -> 새로 가입되는 유저의 정보를 새로 생성한다.
+            else{
+                print("필드가 nil인 도큐멘트는 세상에 1도 없습니다!")
+                //usercount 1 증가.
+                self.plusTotalUserCount()
+                //새로 가입한 유저의 정보가 새로 생성되었을때, totalusercount의 maxUserCount를 체크하기위함.
+                self.getMaxUserCount(){ complete in
+                    if complete{
+                        //새로 가입한 유저의 정보를 새로 생성함.
+                        self.createNewUserData(){ complete in
+                            if complete{
+                                self.db.collection("totalusercount").document("totalusercount").updateData(["maxUserCount" : self.maxUserCount + 1])
+                                self.logoutUser()
+                                completion(true)
+                            }
+                        }
+                    }
+                }
                 }
             }
             newUser.sendEmailVerification{ error in
@@ -99,25 +232,10 @@ class LoginViewModel: ObservableObject{
                     print("이메일 전송 성공!!")
                 }
             }
-            completion(true)
-            print("계정 등록 성공, 유저UID = \(newUser.uid)")
         }
     }
     
-    //회원가입 페이지에서 입력된 정보 firestore에 저장.
-    func writeFirestoreUser(completion: @escaping (Bool) -> Void){
-        db.collection("users").document(currentUser?.uid ?? "정보없음").setData(["uid" : currentUser?.uid ?? "정보없음", "email" : self.signUpEmail, "nickname" : self.signUpNickname, "registerDate" : Date(), "selectChatRoomId" : "선택되지 않음"]) { err in
-            if let err = err {
-                print("Error writing document: \(err)")
-                completion(false)
-            } else {
-                print("Firestore 쓰기 완료!!")
-                completion(true)
-                //회원가입 후, 로그아웃 처리를 해주지 않으면 앱 재시작 또는 앱 재설치 했을 때 회원가입했던 정보로 자동 로그인 되어 버린다.
-//                self.logoutUser()
-            }
-        }
-    }
+
     
     //회원가입되면 totalusercount의 숫자를 1씩 올림.
     func plusTotalUserCount(){
@@ -129,6 +247,7 @@ class LoginViewModel: ObservableObject{
                 usercount = snapshot?.get("usercount") as! Int
                 usercount = usercount + 1
                 self.db.collection("totalusercount").document("totalusercount").updateData(["usercount" : usercount])
+                print("usercount 추가")
             }
         }
     }
@@ -143,6 +262,39 @@ class LoginViewModel: ObservableObject{
                 usercount = snapshot?.get("usercount") as! Int
                 usercount = usercount - 1
                 self.db.collection("totalusercount").document("totalusercount").updateData(["usercount" : usercount])
+            }
+        }
+    }
+    
+    func getMaxUserCount(complete: @escaping (Bool) -> Void){
+        //새로 가입한 유저의 정보가 새로 생성되었을때, totalusercount의 maxUserCount를 체크하기위함.
+        self.db.collection("totalusercount").document("totalusercount").getDocument{ snapshot, error in
+            guard error == nil else {
+                complete(false)
+                return }
+            self.maxUserCount = snapshot?.get("maxUserCount") as! Int
+            complete(true)
+        }
+    }
+    
+    func createNewUserData(complete: @escaping (Bool) -> Void){
+        //새로 가입한 유저의 정보를 새로 생성함.
+        self.db.collection("users").document(self.currentUser?.uid ?? "uid가 비었음"
+        ).setData(["uid" : self.currentUser?.uid ?? "uid가 비었음", "email" : self.signUpEmail, "nickname" : self.signUpNickname, "registerDate" : Date(), "userNumber" : self.maxUserCount + 1,"selectChatRoomId" : "선택되지 않음"]){ error in
+            if error != nil{
+                complete(false)
+            }else{
+                complete(true)
+            }
+        }
+    }
+    
+    func newUserUpdateDate(completion: @escaping (Bool) -> Void){
+        self.db.collection("users").document(self.currentUser?.uid ?? "정보없음").setData(["uid" : self.currentUser?.uid ?? "정보없음", "email" : self.signUpEmail, "nickname" : self.signUpNickname, "registerDate" : Date(), "userNumber" : self.nilUserNumber,"selectChatRoomId" : "선택되지 않음"]){ error in
+            if error != nil{
+                completion(false)
+            }else{
+                completion(true)
             }
         }
     }
@@ -185,32 +337,38 @@ class LoginViewModel: ObservableObject{
         print("내 현재정보 : \(self.currentUser?.uid ?? "정보없음")")
     }
     
+    //계정탈퇴시 해당 유저정보 업데이트.
+    func deleteUser(){
+        db.collection("users").document(self.currentUser!.uid).updateData(["uid" : "nil", "email" : "nil", "nickname" : "nil", "registerDate" : Date(), "selectChatRoomId" : "선택되지 않음"]){ error in
+            if error == nil{
+                print("계정탈퇴 업데이트 성공!")
+                self.minusTotalUserCount()
+                self.currentUser?.delete()
+                self.logoutUser()
+            }else{
+                print("계정탈퇴 업데이트 실패.")
+                print("error : \(error?.localizedDescription)")
+            }
+        }
+    }
+    
     //회원탈퇴
 //    func deleteUser(){
-//        db.collection("users").document(self.currentUser!.uid).updateData(["uid" : "nil", "email" : "nil", "nickname" : "nil", "registerDate" : Date(), "selectChatRoomId" : "선택되지 않음"])
+//        if currentUser != nil {
+//            db.collection("users").document(self.currentUser!.uid).delete(){ error in
+//                if let error = error{
+//                    print("Delete Error : \(error.localizedDescription)")
+//                }else{
+//                    print("해당 유저 Firestore 정보 삭제완료!")
+//                    self.currentUser?.delete()
 //                    self.minusTotalUserCount()
 //                    self.logoutUser()
+//                }
+//            }
+//        }
 //        print("계정삭제 완료")
 //        print("내 현재정보 : \(self.currentUser?.uid ?? "정보없음")")
 //    }
-    
-    //회원탈퇴
-    func deleteUser(){
-        if currentUser != nil {
-            db.collection("users").document(self.currentUser!.uid).delete(){ error in
-                if let error = error{
-                    print("Delete Error : \(error.localizedDescription)")
-                }else{
-                    print("해당 유저 Firestore 정보 삭제완료!")
-                    self.currentUser?.delete()
-                    self.minusTotalUserCount()
-                    self.logoutUser()
-                }
-            }
-        }
-        print("계정삭제 완료")
-        print("내 현재정보 : \(self.currentUser?.uid ?? "정보없음")")
-    }
     
     
     //인증 이메일 보내는 함수
@@ -236,7 +394,7 @@ class LoginViewModel: ObservableObject{
         case "chatList":
             return AnyView(ChatListpage(loginViewModel: loginViewModel, firestoreViewModel: firestoreViewModel))
         case "setting":
-            return AnyView(SettingPage(loginViewModel: loginViewModel, loginToMainPageActive: loginToMainPageActive))
+            return AnyView(SettingPage(loginViewModel: loginViewModel, firestoreViewModel: firestoreViewModel, loginToMainPageActive: loginToMainPageActive))
         default:
             return AnyView(HomePage(loginViewModel: loginViewModel, firestoreViewModel: firestoreViewModel, loginToMainPageActive: loginToMainPageActive))
         }

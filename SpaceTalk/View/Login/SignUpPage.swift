@@ -176,7 +176,7 @@ struct SignUpPage: View {
                     }
                 }
                 Button("가입하기"){
-                    loginViewModel.registerUser(){ success in
+                    loginViewModel.writeRegisterUser{ success in
                         if success {
                             loginToSignUpPageActive = false
                         }
