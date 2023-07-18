@@ -12,6 +12,8 @@ struct MessageTextBox: View {
     @ObservedObject var loginViewModel: LoginViewModel
     @ObservedObject var firestoreViewModel: FirestoreViewModel
     
+    @Binding var selectChatListData: [String : Any]
+    
     var body: some View {
         GeometryReader{ geomtry in
             VStack{
@@ -22,7 +24,8 @@ struct MessageTextBox: View {
                                 .font(.system(size: geomtry.size.width * 0.085))
                             
                         }
-                        TextField("메세지를 입력하세요.", text: $firestoreViewModel.sendMessageText)
+                        TextField(selectChatListData["isavailable"] as! Bool ? "메세지를 입력하세요." : "상대방의 수락을 기다리는 중입니다.", text: $firestoreViewModel.sendMessageText)
+                            .disabled(selectChatListData["isavailable"] as! Bool ? false : true)
                             .textFieldStyle(.roundedBorder)
                             .font(.system(size: geomtry.size.width * 0.05))
                             .cornerRadius(13, corners: .allCorners)
@@ -46,8 +49,8 @@ struct MessageTextBox: View {
     }
 }
 
-struct MessageTextBox_Previews: PreviewProvider {
-    static var previews: some View {
-        MessageTextBox(loginViewModel: LoginViewModel(), firestoreViewModel: FirestoreViewModel(loginViewModel: LoginViewModel()))
-    }
-}
+//struct MessageTextBox_Previews: PreviewProvider {
+//    static var previews: some View {
+//        MessageTextBox(loginViewModel: LoginViewModel(), firestoreViewModel: FirestoreViewModel(loginViewModel: LoginViewModel()))
+//    }
+//}

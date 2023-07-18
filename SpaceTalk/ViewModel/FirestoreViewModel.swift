@@ -328,7 +328,11 @@ class FirestoreViewModel: ObservableObject{
                                 //랜덤으로 뽑은 userNumber의 uid 가져오기.
                                 self.getRandomUid(){ useruid in
                                     self.randomUserUid = useruid
-                                    complete1(true)
+                                    if(self.randomUserUid == "nil"){
+                                        self.randomUser(complete1: complete1)
+                                    }else{
+                                        complete1(true)
+                                    }
                                 }
                             }
                         }

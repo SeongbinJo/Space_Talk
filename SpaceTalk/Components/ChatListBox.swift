@@ -25,10 +25,8 @@ struct ChatListBox: View {
             VStack{
                 Button(action: {
                     let selectChatNickName = loginViewModel.currentUser?.uid == chatListBoxMessage.firstSenderId ? chatListBoxMessage.receiverNickName : chatListBoxMessage.senderNickName
-                    selectChatListData = ["roomid" : chatListBoxMessage.roomId, "nickname" : selectChatNickName]
+                    selectChatListData = ["roomid" : chatListBoxMessage.roomId, "nickname" : selectChatNickName, "isavailable" : chatListBoxMessage.isAvailable]
                     //클릭한 채팅방의 roomid를 firestore에 저장함. 저장이 완료되면 채팅페이지로 넘어감.
-//                    firestoreViewModel.getMessages()
-                    
                             firestoreViewModel.selectRoomIdSave(roomid: chatListBoxMessage.roomId){
                                 completion in
                                 if completion{

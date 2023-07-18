@@ -28,7 +28,7 @@ struct ChatPage: View {
                                     MessageBubble(loginViewModel: loginViewModel, message: message)
                                 }
                             }.frame(height: geometry.size.height * 0.9)
-                            MessageTextBox(loginViewModel: loginViewModel, firestoreViewModel: FirestoreViewModel(loginViewModel: loginViewModel))
+                            MessageTextBox(loginViewModel: loginViewModel, firestoreViewModel: FirestoreViewModel(loginViewModel: loginViewModel), selectChatListData: $selectChatListData)
                         }
                     }
                     .background(.gray)

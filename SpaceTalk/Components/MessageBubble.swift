@@ -32,7 +32,7 @@ struct MessageBubble: View {
                         .font(.system(size: geometry.size.width * 0.04))
                         .padding(7)
                         .background{
-                            message.senderId == loginViewModel.currentUser!.uid ? Color.yellow : Color.pink
+                            message.senderId == loginViewModel.currentUser!.uid ? Color.yellow : Color.white
                             GeometryReader{ geo in
                                 Text("")
                                     .onAppear{
