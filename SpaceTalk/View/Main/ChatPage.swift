@@ -17,6 +17,8 @@ struct ChatPage: View {
     
     @Binding var selectChatListData: [String : Any]
     
+    @State var exitRoomAlert: Bool = false
+    
     var body: some View{
         NavigationView{
                 ZStack{
@@ -60,8 +62,8 @@ struct ChatPage: View {
             }
             .foregroundColor(.red)
             Button(action: {
-                firestoreViewModel.deleteMessagesFromFirestore()
-            }) {
+                self.exitRoomAlert = true
+            }){
                 Label("채팅방 나가기", systemImage: "trash")
             }
         } label: {
@@ -69,6 +71,16 @@ struct ChatPage: View {
                 .font(.system(size: 23))
                 .foregroundColor(.black)
         })
+        .alert("채팅방 나가기", isPresented: $exitRoomAlert){
+            Button("취소", role: .cancel, action: {})
+            Button("나가기", role: .destructive, action: {
+                firestoreViewModel.exitChatRoom()
+                chatListToChatPageActiveAccept = false
+                loginViewModel.isChatRoomOpenedToggle()
+            })
+        } message: {
+            Text("채팅방을 나가면 대화내용 및 채팅목록이 삭제됩니다.")
+        }
     }//body
 }
 

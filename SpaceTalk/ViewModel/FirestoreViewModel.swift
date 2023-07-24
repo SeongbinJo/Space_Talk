@@ -38,8 +38,10 @@ class FirestoreViewModel: ObservableObject{
     @Published var userCount = 0
     @Published var randomUserUid = ""
     @Published var myUserNumber = 0
-    @Published var whileBool = true
-//    var listener: ListenerRegistration? = nil
+    
+    //'나가기' 버튼 눌렀을때 해당 방 메시지들의 id를 담기위한 배열. 이 배열의 요소들로 문서를 찾아 삭제한다.
+    //꽤나 많은 비용이 들 수 있지만 firestore에서는 하위 컬렉션을 한번에 지우는 기능이 존재하지 않는다. ㅅㅂ;
+    var deleteChatRoomId: [String] = []
 
     //클릭한 채팅방의 roomid -> 해당 채팅 메시지 불러오기위함.
     @Published var selectChatRoomId: String = "testid123"
@@ -302,11 +304,36 @@ class FirestoreViewModel: ObservableObject{
     }
 
     //메시지 삭제 -> ex) 방 나가기, 신고 및 차단, 계정 삭제 등
-    //    func deleteMessage() {
-    //        db.collection("chatroom").whereField("senderId", isEqualTo: loginViewModel.currentUser!.uid)
-    //    }
-    func deleteMessagesFromFirestore(){
-        self.messages.removeAll()
+        func exitChatRoom() {
+            getDeleteChatRoomMessageId(){ complete in
+                if complete{
+                    guard self.deleteChatRoomId.count > 0 else {return}
+                    for i in 0...self.deleteChatRoomId.count-1{
+                        self.db.collection("chatroom").document(self.selectChatRoomId).collection(self.selectChatRoomId).document(self.deleteChatRoomId[i]).delete()
+                    }
+                    self.db.collection("chatroom").document(self.selectChatRoomId).delete()
+                }
+            }
+        }
+    
+    func getDeleteChatRoomMessageId(complete: @escaping (Bool) -> Void){
+        db.collection("chatroom").document(self.selectChatRoomId).collection(self.selectChatRoomId).getDocuments{ snapshot, error in
+            guard error == nil else {
+                complete(false)
+                return}
+            guard snapshot != nil else {
+                complete(false)
+                return
+            }
+            guard let documents = snapshot?.documents else {
+                complete(false)
+                return
+            }
+            for document in documents{
+                self.deleteChatRoomId.append(document.data()["messageId"] as! String)
+            }
+            complete(true)
+        }
     }
 
     //랜덤으로 유저 uid 뽑기
