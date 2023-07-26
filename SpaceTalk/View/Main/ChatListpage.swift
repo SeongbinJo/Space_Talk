@@ -19,7 +19,7 @@ struct ChatListpage: View {
     //해당 채팅방으로 이동 위한 변수.
     @State var chatListToChatPageActiveAccept: Bool = false
     
-    @State var selectChatListData: [String : Any] = ["roomid" : "testroomid", "nickname" : "testnickname"]
+    @State var selectChatListData: [String : Any] = ["roomid" : "testroomid", "nickname" : "testnickname", "isavailable" : false]
     
     var body: some View{
 //        NavigationView{
