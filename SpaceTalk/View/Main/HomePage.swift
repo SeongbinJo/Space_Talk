@@ -52,6 +52,17 @@ struct HomePage: View {
                         
                         VStack{
                             TextEditor(text: $firestoreViewModel.firstSendText)
+                            //키보드의 '완료'를 누르면 \n을 삭제하고 키보드를 숨겨준다.
+                                .onChange(of: firestoreViewModel.firstSendText){ sendText in
+                                    if sendText.count > 0{
+                                        if sendText.last == "\n"{
+                                            firestoreViewModel.firstSendText.removeLast()
+                                            hideKeyboard()
+                                        }
+                                    }
+                                }
+                            //키보드의 엔터를 '완료'로 바꿔줌.
+                                .submitLabel(.done)
                                 .scrollContentBackground(.hidden)
                                 .background(Color(UIColor(r: 132, g: 141, b: 136, a: 1.0)))
                                 .frame(width: geometry.size.width * 0.715, height: geometry.size.height * 0.22)
@@ -69,7 +80,6 @@ struct HomePage: View {
                                 }
                                 .overlay(alignment: .bottomTrailing){
                                     Button(action: {
-                                        //                                            firestoreViewModel.getFirstMessage()
                                         postBoxZindex = 1
                                     }){
                                         //새롭게 받은 메시지가 존재할 경우
