@@ -22,7 +22,6 @@ struct ChatListpage: View {
     @State var selectChatListData: [String : Any] = ["roomid" : "testroomid", "nickname" : "testnickname", "isavailable" : false]
     
     var body: some View{
-//        NavigationView{
                 ZStack{
                     Color.gray.ignoresSafeArea()
                     GeometryReader{ geometry in
@@ -50,10 +49,6 @@ struct ChatListpage: View {
                         }
                     }
                 }//zstack
-//        }
-        .onAppear{
-//            print("현재 선택한 채팅방의 roomid는 \(firestoreViewModel.selectChatRoomId)입니다. 채팅방.")
-        }
     }//body
 }
 
