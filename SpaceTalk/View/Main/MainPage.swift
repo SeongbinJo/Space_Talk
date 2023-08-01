@@ -74,16 +74,25 @@ struct MainPage: View {
                     //여부에 따라 커스텀 탭뷰 숨김.
                     .zIndex(loginViewModel.isChatRoomOpened ? -1 : 1)
                 }//ztack
-            }//geometry
+            }//geometryw
+            .ignoresSafeArea(.keyboard)
             .onAppear{
                 print("내 정보(uid) : \(loginViewModel.currentUser?.uid ?? "정보없음")")
             }
         }
-        .navigationBarBackButtonHidden(true)
-        .onAppear{
-            
+        .onTapGesture {
+            hideKeyboard()
         }
+        .navigationBarBackButtonHidden(true)
     }
+}
+
+//텍스트필드 외 모든 부분을 클릭하면 키보드가 dismiss되게끔.
+extension View{
+    func hideKeyboard() {
+           let resign = #selector(UIResponder.resignFirstResponder)
+           UIApplication.shared.sendAction(resign, to: nil, from: nil, for: nil)
+       }
 }
 
     struct LoginSuccess_Previews: PreviewProvider {

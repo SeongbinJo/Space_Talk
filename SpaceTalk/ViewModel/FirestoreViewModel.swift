@@ -34,6 +34,7 @@ class FirestoreViewModel: ObservableObject{
     @Published private(set) var acceptButtonMessages: [PushButtonMessages] = []
     //무전기의 우편함에 첫 메시지 데이터들을 담을 배열 newmessages.
     @Published private(set) var newmessages: [Messages] = []
+    
     //랜덤유저를 뽑기위해
     @Published var userCount = 0
     @Published var randomUserUid = ""
@@ -42,6 +43,11 @@ class FirestoreViewModel: ObservableObject{
     //'나가기' 버튼 눌렀을때 해당 방 메시지들의 id를 담기위한 배열. 이 배열의 요소들로 문서를 찾아 삭제한다.
     //꽤나 많은 비용이 들 수 있지만 firestore에서는 하위 컬렉션을 한번에 지우는 기능이 존재하지 않는다. ㅅㅂ;
     var deleteChatRoomId: [String] = []
+    
+    //'나가기' 버튼을 누른 채팅방의 firstSenderId를 가져오기위한 변수.
+    @Published var firstSenderId: String = ""
+    //'나가기' 버튼을 누른 채팅방의 isExit의 값을 가져오기위한 변수.
+    @Published var isExit: Bool = false
 
     //클릭한 채팅방의 roomid -> 해당 채팅 메시지 불러오기위함.
     @Published var selectChatRoomId: String = "testid123"
@@ -99,7 +105,7 @@ class FirestoreViewModel: ObservableObject{
                 //chatroom/roomid 의 필드 저장.(postbox 생성위함)
                 //이때 firstSenderId 필드를 추가해서 sender가 PUSH눌렀을때 이 필드 값을 참조해서 뷰에 채팅방 추가되게끔.
                 //isAvailable 필드도 추가해서 'o'눌렀을때 true로 바뀌고 이 값이 true 일 경우에 채팅 텍스트필드가 활성화 되게끔.
-                chatDoc.setData(["roomId" : chatDoc.documentID, "messageId" : chatroomDoc.documentID, "messageText" : self.firstSendText, "sendTime" : Date(), "senderId" : currentUser, "receiverId" : self.randomUserUid, "isRead" : false, "senderNickName" : self.currentUserNickName(), "receiverNickName" : self.receiverNickName, "firstSenderId" : currentUser, "firstReceiverId" : self.randomUserUid, "isAvailable" : false]){ error in
+                chatDoc.setData(["roomId" : chatDoc.documentID, "messageId" : chatroomDoc.documentID, "messageText" : self.firstSendText, "sendTime" : Date(), "senderId" : currentUser, "receiverId" : self.randomUserUid, "isRead" : false, "senderNickName" : self.currentUserNickName(), "receiverNickName" : self.receiverNickName, "firstSenderId" : currentUser, "firstReceiverId" : self.randomUserUid, "isAvailable" : false, "isExit" : false]){ error in
                     if let error = error {
                         print("무전기 메시지 발송 에러1 : \(error)")
                         completion(false)
@@ -122,10 +128,6 @@ class FirestoreViewModel: ObservableObject{
             }
         }
     }
-
-
-
-
 
     func generateChatList(){
         guard let currentUser = loginViewModel.currentUser?.uid else {
@@ -210,7 +212,6 @@ class FirestoreViewModel: ObservableObject{
         }
     }
 
-
     //수신자가 postbox에서 'o'버튼을 눌렀을경우.
     func acceptNewMessage(roomid: String){
         //해당 메시지 'O' 눌렀을 경우, isAvailable 값을 true로 변경. -> 채팅방 내 텍스트필드 활성화되게끔.
@@ -274,7 +275,7 @@ class FirestoreViewModel: ObservableObject{
         }
     }
 
-    func getMessages() {
+    func getMessages(){
         //chatroom 콜렉션에서 현재 유저의 uid와 같은 senderId를 갖는 메시지들만 나타내기.
         //appsnapshotListener를 사용해서 데이터에 업데이트가 있을시 바로바로 뷰에서 변경된다.
         //지금은 senderId로 구분하지만, 나중에 roomId로 구분하게되면  roomId값으로 데이터들을 담은 후, senderId가 현재유저 uid와 동일하면 뷰 우측에, 아니면 좌측에 붙게 만들면 될 듯함.
@@ -303,18 +304,79 @@ class FirestoreViewModel: ObservableObject{
         }
     }
 
-    //메시지 삭제 -> ex) 방 나가기, 신고 및 차단, 계정 삭제 등
-        func exitChatRoom() {
-            getDeleteChatRoomMessageId(){ complete in
-                if complete{
-                    guard self.deleteChatRoomId.count > 0 else {return}
-                    for i in 0...self.deleteChatRoomId.count-1{
-                        self.db.collection("chatroom").document(self.selectChatRoomId).collection(self.selectChatRoomId).document(self.deleteChatRoomId[i]).delete()
+    func exitChatRoom(){
+        guard let currentUser = loginViewModel.currentUser?.uid else {
+            print("currentUser.uid 가 비어있습니다.")
+            return
+        }
+        getDeleteChatRoomMessageId(){ complete in
+            if complete{
+                guard self.deleteChatRoomId.count > 0 else {return}
+                //채팅방 안의 메시지들을 삭제하는 부분.
+                for i in 0...self.deleteChatRoomId.count-1{
+                    self.db.collection("chatroom").document(self.selectChatRoomId).collection(self.selectChatRoomId).document(self.deleteChatRoomId[i]).delete()
+                }
+                //배열을 비워줌 -> 다른 채팅방을 나갈때 해당 채팅방의 메시지 id들을 담아야하기 때문.
+                self.deleteChatRoomId.removeAll()
+                //가져온 firstSenderId와 본인의 uid를 비교함. 참/거짓에 따라서 firstSenderId/firstReceiverId의 값을 nil로 바꿔준다.
+                self.getFirstSenderId{ complete in
+                    if complete{
+                        //현재 uid와 삭제할 채팅방의 firstSenderId와 같다면.
+                        if currentUser == self.firstSenderId{
+                            //firstSenderId를 nil로 수정하여 채팅방 목록에 나오지 않도록 한다.
+                            self.db.collection("chatroom").document(self.selectChatRoomId).updateData(["firstSenderId" : "nil"])
+                        }else{
+                            //현재 uid와 삭제할 채팅방의 firstSenderId가 아닌 firstReceiverId와 같다면 -> firstReceiverId를 nil로 수정해서 채팅방 목록에서 안 보이도록 한다.
+                            self.db.collection("chatroom").document(self.selectChatRoomId).updateData(["firstReceiverId" : "nil"])
+                        }
+                        //채팅방 안의 메시지들을 전부 삭제한 후에 최신 메시지 데이터에 'isExit'라는 필드의 값을 true로 바꿔놓는다. (이 필드의 값이 true일 경우 상대방이 해당 채팅방을 클릭했을 경우에 Alert창이 나오면서 채팅방 목록이 삭제된다.
+                        self.db.collection("chatroom").document(self.selectChatRoomId).updateData(["isExit" : true])
                     }
-                    self.db.collection("chatroom").document(self.selectChatRoomId).delete()
                 }
             }
         }
+    }
+    
+    func deleteChatRoom(){
+        //채팅방의 최신 메시지를 삭제하는 부분.(이 부분으로 채팅방 목록을 불러오기 때문에 채팅방 목록을 지우는 것과 같다.)
+        self.db.collection("chatroom").document(self.selectChatRoomId).delete()
+    }
+    
+    func isExitBool(complete: @escaping (Bool) -> Void){
+        self.db.collection("chatroom").document(self.selectChatRoomId).getDocument{ snapshot, error in
+            guard error == nil else {
+                complete(false)
+                return
+            }
+            guard snapshot?.data() != nil else {
+                print("isExit값이 존재하지 않습니다. isExit : \(snapshot?.data())")
+                print("클릭한 채팅방의 roomid : \(self.selectChatRoomId)")
+                complete(false)
+                return
+            }
+            self.isExit = snapshot?.data()!["isExit"] as! Bool
+            print("isExitBool의 실행후 isExit 값은 : \(self.isExit)")
+            complete(true)
+        }
+    }
+    
+    
+    //삭제할 방의 firstSenderId를 담는 함수.
+    //firstSenderId를 가져와 '나가기' 버튼을 눌렀을때 본인의 uid와 비교해서 참일 경우 firstSenderId를 nil로 바꿔주고, 거짓일 경우 firstReceiverId를 nil로 바꿔준다.
+    func getFirstSenderId(complete: @escaping (Bool) -> Void){
+        self.db.collection("chatroom").document(self.selectChatRoomId).getDocument{ snapshot, error in
+            guard error == nil else {
+                complete(false)
+                return
+            }
+            guard snapshot != nil else {
+                complete(false)
+                return
+            }
+            self.firstSenderId = snapshot?.data()!["firstSenderId"] as! String
+            complete(true)
+        }
+    }
     
     func getDeleteChatRoomMessageId(complete: @escaping (Bool) -> Void){
         db.collection("chatroom").document(self.selectChatRoomId).collection(self.selectChatRoomId).getDocuments{ snapshot, error in
@@ -341,7 +403,7 @@ class FirestoreViewModel: ObservableObject{
         self.loginViewModel.getMaxUserCount(){ complete in
             if complete{
                     //0~총 유저수 중 랜덤숫자.
-                    self.userCount = Int.random(in: 1...self.loginViewModel.maxUserCount)
+                    self.userCount = Int.random(in: 1...self.loginViewModel.maxUserNumber)
                 print("랜덤으로 뽑은 유저넘버 : \(self.userCount)")
                     //내 userNumber 가져오기.
                     self.getMyUserNumber(){ completion in

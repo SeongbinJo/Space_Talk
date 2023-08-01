@@ -20,6 +20,9 @@ struct ChatListBox: View {
 
     @Binding var selectChatListData: [String : Any]
     
+    //상대방이 채팅방을 나갔을경우 팝업창.
+    @State var chatRoomExitAlert: Bool = false
+    
     var body: some View {
         GeometryReader{ geometry in
             VStack{
@@ -30,8 +33,21 @@ struct ChatListBox: View {
                             firestoreViewModel.selectRoomIdSave(roomid: chatListBoxMessage.roomId){
                                 completion in
                                 if completion{
-                                    firestoreViewModel.getMessages()
-                                    chatListToChatPageActiveAccept = true
+                                    firestoreViewModel.loadSelectRoomId{ completion in
+                                        if completion{
+                                            firestoreViewModel.isExitBool{ complete in
+                                                if complete{
+                                                    //isExit가 false이면.
+                                                    if !firestoreViewModel.isExit{
+                                                        chatListToChatPageActiveAccept = true
+                                                    }else{
+                                                        //isExit가 true이면. = 상대방이 채팅방을 나갔으면.
+                                                        self.chatRoomExitAlert = true
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
                                 }
                             }
 
@@ -69,6 +85,13 @@ struct ChatListBox: View {
                             .frame(width: geometry.size.width * 0.95)
                         }
                     Spacer()
+                }
+                .alert("이런!", isPresented: $chatRoomExitAlert){
+                    Button("확인") {
+                        firestoreViewModel.deleteChatRoom()
+                    }
+                } message: {
+                    Text("상대방이 채팅방을 나갔습니다.")
                 }
             }
         }
