@@ -54,11 +54,11 @@
 		58B966132A238B8C00B7D15E /* HomePageNewMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58B966122A238B8C00B7D15E /* HomePageNewMessage.swift */; };
 		58B966152A23A57800B7D15E /* PushButtonMessages.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58B966142A23A57800B7D15E /* PushButtonMessages.swift */; };
 		58B966172A23E09300B7D15E /* ChatListBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58B966162A23E09300B7D15E /* ChatListBox.swift */; };
-		58BBE9902A6086CB000A82F4 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 58BBE98F2A6086CB000A82F4 /* GoogleService-Info.plist */; };
 		58C7D15529DAF9B30094C597 /* HomePage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58C7D15429DAF9B30094C597 /* HomePage.swift */; };
 		58C7D15829DAFC750094C597 /* ViewExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58C7D15729DAFC750094C597 /* ViewExtension.swift */; };
 		58C7D15A29DAFD700094C597 /* RgbExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58C7D15929DAFD700094C597 /* RgbExtension.swift */; };
 		58C7D15C29DB1BBE0094C597 /* ChatListpage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58C7D15B29DB1BBE0094C597 /* ChatListpage.swift */; };
+		58E963702A8CEE7D009BC02C /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 58E9636F2A8CEE7D009BC02C /* GoogleService-Info.plist */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -83,11 +83,11 @@
 		58B966122A238B8C00B7D15E /* HomePageNewMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomePageNewMessage.swift; sourceTree = "<group>"; };
 		58B966142A23A57800B7D15E /* PushButtonMessages.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PushButtonMessages.swift; sourceTree = "<group>"; };
 		58B966162A23E09300B7D15E /* ChatListBox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatListBox.swift; sourceTree = "<group>"; };
-		58BBE98F2A6086CB000A82F4 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../../../Downloads/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		58C7D15429DAF9B30094C597 /* HomePage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomePage.swift; sourceTree = "<group>"; };
 		58C7D15729DAFC750094C597 /* ViewExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewExtension.swift; sourceTree = "<group>"; };
 		58C7D15929DAFD700094C597 /* RgbExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RgbExtension.swift; sourceTree = "<group>"; };
 		58C7D15B29DB1BBE0094C597 /* ChatListpage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatListpage.swift; sourceTree = "<group>"; };
+		58E9636F2A8CEE7D009BC02C /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../../Downloads/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		613C9B6E72F07E5F1AB3BA46 /* Pods_SpaceTalk.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SpaceTalk.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		811294E4121ACF6E0F0422DF /* Pods-SpaceTalk.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SpaceTalk.release.xcconfig"; path = "Target Support Files/Pods-SpaceTalk/Pods-SpaceTalk.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -134,6 +134,7 @@
 		582E171829CF1EB800B47BAA = {
 			isa = PBXGroup;
 			children = (
+				58E9636F2A8CEE7D009BC02C /* GoogleService-Info.plist */,
 				582E172329CF1EB800B47BAA /* SpaceTalk */,
 				582E172229CF1EB800B47BAA /* Products */,
 				D4DBFAF3E9EDE080995912E0 /* Pods */,
@@ -160,7 +161,6 @@
 				589E522529D3A5A80074AE16 /* ViewModel */,
 				589E522429D3A5780074AE16 /* View */,
 				582E172829CF1EB900B47BAA /* Assets.xcassets */,
-				58BBE98F2A6086CB000A82F4 /* GoogleService-Info.plist */,
 				582E172A29CF1EB900B47BAA /* Preview Content */,
 			);
 			path = SpaceTalk;
@@ -354,7 +354,7 @@
 			files = (
 				582E172C29CF1EB900B47BAA /* Preview Assets.xcassets in Resources */,
 				582E172929CF1EB900B47BAA /* Assets.xcassets in Resources */,
-				58BBE9902A6086CB000A82F4 /* GoogleService-Info.plist in Resources */,
+				58E963702A8CEE7D009BC02C /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
