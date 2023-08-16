@@ -251,6 +251,7 @@ class FirestoreViewModel: ObservableObject{
         lastMessageDoc.updateData(["messageId" : chatRoomDoc.documentID, "messageText" : self.sendMessageText, "sendTime" : Date(), "senderId" : currentUser, "receiverId" : self.randomUserUid, "isRead" : false])
     }
     
+    //선택한 채팅방의 roomid를 현재 유저의 users DB에 저장함.
     func selectRoomIdSave(roomid: String, completion: @escaping (Bool) -> Void){
         guard let currentUser = loginViewModel.currentUser?.uid else {
             print("currentUser.uid 가 비어있습니다.")
@@ -259,6 +260,7 @@ class FirestoreViewModel: ObservableObject{
         }
         let userDoc = db.collection("users").document(currentUser)
         userDoc.updateData(["selectChatRoomId" : roomid])
+        
         completion(true)
     }
     
@@ -357,6 +359,17 @@ class FirestoreViewModel: ObservableObject{
             return
         }
         self.db.collection("users").document(currentUser).updateData(["selectChatRoomId" : "선택되지 않음"])
+        complete(true)
+    }
+    
+    //ChatPage에서 앱의 생명주기에 따라 selectChatRoomId 변경하기위해 roomid 다시 덮어쓰는 함수.
+    func reWriteSelectChatRoomId(complete: @escaping (Bool) -> Void){
+        guard let currentUser = loginViewModel.currentUser?.uid else {
+            print("currentUser.uid 가 비어있습니다.")
+            complete(false)
+            return
+        }
+        self.db.collection("users").document(currentUser).updateData(["selectChatRoomId" : self.selectChatRoomId])
         complete(true)
     }
 
