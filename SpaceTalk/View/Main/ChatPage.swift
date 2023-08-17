@@ -13,6 +13,9 @@ struct ChatPage: View {
     @ObservedObject var loginViewModel: LoginViewModel
     @ObservedObject var firestoreViewModel: FirestoreViewModel
     
+    //앱의 생명주기 변화(백그라운드, 액티브 등)
+    @Environment(\.scenePhase) var scenePhase
+    
     @Binding var chatListToChatPageActiveAccept: Bool
     
     @Binding var selectChatListData: [String : Any]
@@ -46,8 +49,12 @@ struct ChatPage: View {
                     .navigationBarTitle(String(describing: selectChatListData["nickname"]!))
         .navigationBarBackButtonHidden(true)
         .navigationBarItems(leading: Button(action: {
-            chatListToChatPageActiveAccept = false
-            loginViewModel.isChatRoomOpenedToggle()
+            firestoreViewModel.awayFromChatRoom(){ compeletion in
+                if compeletion{
+                    chatListToChatPageActiveAccept = false
+                    loginViewModel.isChatRoomOpenedToggle()
+                }
+            }
         }){
             HStack{
                 Image(systemName: "chevron.left")
@@ -74,12 +81,32 @@ struct ChatPage: View {
         .alert("채팅방 나가기", isPresented: $exitRoomAlert){
             Button("취소", role: .cancel, action: {})
             Button("나가기", role: .destructive, action: {
-                firestoreViewModel.exitChatRoom()
-                chatListToChatPageActiveAccept = false
-                loginViewModel.isChatRoomOpenedToggle()
+                firestoreViewModel.awayFromChatRoom(){ completion in
+                    if completion{
+                        firestoreViewModel.exitChatRoom()
+                        chatListToChatPageActiveAccept = false
+                        loginViewModel.isChatRoomOpenedToggle()
+                    }
+                }
             })
         } message: {
             Text("채팅방을 나가면 대화내용 및 채팅목록이 삭제됩니다.")
+        }
+        //ChatPage에서 앱을 백그라운드, 다시 실행 했을 때의 액션.(생명주기)
+        .onChange(of: scenePhase){ value in
+            switch value{
+            case .active:
+                print("active")
+                firestoreViewModel.reWriteSelectChatRoomId(){ complete in }
+            case .inactive:
+                print("inactive")
+                firestoreViewModel.awayFromChatRoom(){ complete in }
+            case .background:
+                print("background")
+                firestoreViewModel.awayFromChatRoom(){ complete in }
+            default:
+                print("default!")
+            }
         }
     }//body
 }

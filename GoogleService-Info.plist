@@ -3,21 +3,21 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>282051238574-pvlmkjvtsrca1ad5a2ebl5vt69hn9fqn.apps.googleusercontent.com</string>
+	<string>236287116732-9b3o8l40425qja77k91qn4ah6o9ehpp0.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.282051238574-pvlmkjvtsrca1ad5a2ebl5vt69hn9fqn</string>
+	<string>com.googleusercontent.apps.236287116732-9b3o8l40425qja77k91qn4ah6o9ehpp0</string>
 	<key>API_KEY</key>
-	<string>AIzaSyB6pUlFEQec_D7zK05BtVRxTJ_RqWYQMZ0</string>
+	<string>AIzaSyAFmOF_rxel4N6DQgCFxnRHs0Ofgh4X8V8</string>
 	<key>GCM_SENDER_ID</key>
-	<string>282051238574</string>
+	<string>236287116732</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
 	<string>kr.Bin.SpaceTalk</string>
 	<key>PROJECT_ID</key>
-	<string>spacetalk-4639f</string>
+	<string>spacetalk-4e9c5</string>
 	<key>STORAGE_BUCKET</key>
-	<string>spacetalk-4639f.appspot.com</string>
+	<string>spacetalk-4e9c5.appspot.com</string>
 	<key>IS_ADS_ENABLED</key>
 	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
@@ -29,6 +29,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:282051238574:ios:00c34a4967c66d100c6b3f</string>
+	<string>1:236287116732:ios:9910db92981fd5e90d57b9</string>
 </dict>
 </plist>

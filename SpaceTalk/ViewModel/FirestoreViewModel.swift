@@ -44,6 +44,9 @@ class FirestoreViewModel: ObservableObject{
     //꽤나 많은 비용이 들 수 있지만 firestore에서는 하위 컬렉션을 한번에 지우는 기능이 존재하지 않는다. ㅅㅂ;
     var deleteChatRoomId: [String] = []
     
+    //'isRead' 필드가 false이고 senderId가 본인이 아닌 메시지 id들을 담기위한 배열. >> 다른 방안이 생기면 교체할 것. 해당 방안은 비용이 꽤나 클 것으로 예상.
+    var isNotReadMessages: [String] = []
+    
     //'나가기' 버튼을 누른 채팅방의 firstSenderId를 가져오기위한 변수.
     @Published var firstSenderId: String = ""
     //'나가기' 버튼을 누른 채팅방의 isExit의 값을 가져오기위한 변수.
@@ -248,6 +251,7 @@ class FirestoreViewModel: ObservableObject{
         lastMessageDoc.updateData(["messageId" : chatRoomDoc.documentID, "messageText" : self.sendMessageText, "sendTime" : Date(), "senderId" : currentUser, "receiverId" : self.randomUserUid, "isRead" : false])
     }
     
+    //선택한 채팅방의 roomid를 현재 유저의 users DB에 저장함.
     func selectRoomIdSave(roomid: String, completion: @escaping (Bool) -> Void){
         guard let currentUser = loginViewModel.currentUser?.uid else {
             print("currentUser.uid 가 비어있습니다.")
@@ -256,6 +260,7 @@ class FirestoreViewModel: ObservableObject{
         }
         let userDoc = db.collection("users").document(currentUser)
         userDoc.updateData(["selectChatRoomId" : roomid])
+        
         completion(true)
     }
     
@@ -303,7 +308,73 @@ class FirestoreViewModel: ObservableObject{
             }
         }
     }
+    
+    //'senderId'가 본인이 아니고, 'isRead' 가 false인 메시지id들을 담는 함수.
+    func getIsNotReadMessageId(complete: @escaping (Bool) -> Void){
+        guard let currentUser = loginViewModel.currentUser?.uid else {
+            print("currentUser.uid 가 비어있습니다.")
+            complete(false)
+            return
+        }
+        db.collection("chatroom").document(self.selectChatRoomId).collection(self.selectChatRoomId).whereField("senderId", isNotEqualTo: currentUser).whereField("isRead", isEqualTo: false).getDocuments{ snapshot, error in
+            guard error != nil else {
+                complete(false)
+                return
+            }
+            guard let documents = snapshot?.documents else {
+                complete(false)
+                return
+            }
+            for document in documents{
+                self.isNotReadMessages.append(document.data()["messageId"] as! String)
+            }
+            complete(true)
+        }
+    }
+    
+    //메시지 읽었는지 확인하는 함수.
+    func isReadMessage(){
+        guard let currentUser = loginViewModel.currentUser?.uid else {
+            print("currentUser.uid 가 비어있습니다.")
+            return
+        }
+        self.getIsNotReadMessageId(){ completion in
+            if completion{
+                //메시지의 보낸 이가 본인이 아니고 isRead가 false인 메시지들을 isRead를 true로 바꿔준다.
+                for i in 0...self.isNotReadMessages.count-1{
+                    self.db.collection("chatroom").document(self.selectChatRoomId).collection(self.selectChatRoomId).document(self.isNotReadMessages[i]).updateData(["isRead" : true])
+                }
+                //메시지id 배열 비워주기.
+                self.isNotReadMessages.removeAll()
+            }
+        }
+    }
+    
+    //채팅방에서 뒤로가기 눌렀을때 selectChatRoomId를 nil로 바꾸는 함수.
+    //isRead처리위함.
+    func awayFromChatRoom(complete: @escaping (Bool) -> Void){
+        guard let currentUser = loginViewModel.currentUser?.uid else {
+            print("currentUser.uid 가 비어있습니다.")
+            complete(false)
+            return
+        }
+        self.db.collection("users").document(currentUser).updateData(["selectChatRoomId" : "선택되지 않음"])
+        complete(true)
+    }
+    
+    //ChatPage에서 앱의 생명주기에 따라 selectChatRoomId 변경하기위해 roomid 다시 덮어쓰는 함수.
+    func reWriteSelectChatRoomId(complete: @escaping (Bool) -> Void){
+        guard let currentUser = loginViewModel.currentUser?.uid else {
+            print("currentUser.uid 가 비어있습니다.")
+            complete(false)
+            return
+        }
+        self.db.collection("users").document(currentUser).updateData(["selectChatRoomId" : self.selectChatRoomId])
+        complete(true)
+    }
 
+    
+    //채팅방 나갔을때 메시지 데이터 처리
     func exitChatRoom(){
         guard let currentUser = loginViewModel.currentUser?.uid else {
             print("currentUser.uid 가 비어있습니다.")
