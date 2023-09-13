@@ -2,27 +2,27 @@
 //  SettingPage.swift
 //  SpaceTalk
 //
-//  Created by 조성빈 on 2023/04/06.
+//  Created by 조성빈 on 2023/08/23.
 //
 
 import Foundation
 import SwiftUI
 
 struct SettingPage: View {
-    @ObservedObject var loginViewModel: LoginViewModel
-    @ObservedObject var firestoreViewModel: FirestoreViewModel
     
-    @Binding var loginToMainPageActive: Bool
+    @EnvironmentObject var loginViewModel: LoginViewModel
     
-    @State var showLogoutAlert: Bool = false
-    @State var showDeleteAlert: Bool = false
-    //Color(uiColor: UIColor(r: 49, g: 49, b: 49, a: 1))  -> 무전기 몸통 색
-    //Color(UIColor(r: 132, g: 141, b: 136, a: 1.0))  -> 무전기 화면 색
-    var body: some View{
+    @Binding var goToMainPage: Bool
+    
+    @State var SignOutAlert: Bool = false
+    @State var deleteUserAlert: Bool = false
+    
+    var body: some View {
         Color(uiColor: UIColor(r: 49, g: 49, b: 49, a: 1)).ignoresSafeArea()
         GeometryReader{ geometry in
             ZStack{
                 Rectangle()
+                    .frame(width: geometry.size.width * 0.9, height: geometry.size.height * 0.85)
                     .foregroundColor(Color(UIColor(r: 132, g: 141, b: 136, a: 1.0)))
                     .cornerRadius(20, corners: .allCorners)
                     .padding()
@@ -42,16 +42,16 @@ struct SettingPage: View {
                                 .frame(height: geometry.size.height * 0.2)
                                 .overlay(
                                     VStack(alignment: .leading){
-                                        Text("\(firestoreViewModel.currentUserNickName())'s 무전기")
+                                        Text("\(loginViewModel.currentNickname)'s 무전기")
                                             .foregroundColor(Color(UIColor(r: 132, g: 141, b: 136, a: 1.0)))
                                             .font(.system(size: geometry.size.width * 0.06))
                                             .fontWeight(.bold)
                                         Spacer()
-                                        Text("이메일 ㅁㅁㅁㅁ@naver.com")
+                                        Text("이메일 : \(loginViewModel.currentEmail)")
                                             .foregroundColor(Color(UIColor(r: 132, g: 141, b: 136, a: 1.0)))
                                             .font(.system(size: geometry.size.width * 0.047))
                                         HStack{
-                                            Text("닉네임  \(firestoreViewModel.currentUserNickName())")
+                                            Text("닉네임 : \(loginViewModel.currentNickname)")
                                                 .foregroundColor(Color(UIColor(r: 132, g: 141, b: 136, a: 1.0)))
                                                 .font(.system(size: geometry.size.width * 0.047))
                                             Spacer()
@@ -114,7 +114,7 @@ struct SettingPage: View {
                                 }
                                 VStack(spacing: 2){
                                     Button(action: {
-                                        showLogoutAlert = true
+                                        self.SignOutAlert = true
                                     }){
                                         Rectangle()
                                             .foregroundColor(Color(UIColor(r: 49, g: 49, b: 49, a: 1.0)))
@@ -126,12 +126,11 @@ struct SettingPage: View {
                                                     .font(.system(size: geometry.size.width * 0.07))
                                             )
                                     }
-                                    .alert("로그아웃", isPresented: $showLogoutAlert) {
+                                    .alert("로그아웃", isPresented: $SignOutAlert) {
                                         Button("취소", role: .cancel) {}
                                         Button("로그아웃") {
-                                            loginViewModel.logoutUser()
-                                            loginToMainPageActive = false
-                                            print(loginToMainPageActive)
+                                            loginViewModel.signOut()
+                                            self.goToMainPage = false
                                         }
                                     } message: {
                                         Text("정말로 로그아웃 하시겠습니까?")
@@ -143,7 +142,7 @@ struct SettingPage: View {
                                 }
                                 VStack(spacing: 2){
                                     Button(action: {
-                                        showDeleteAlert = true
+                                        deleteUserAlert = true
                                     }){
                                         Rectangle()
                                             .foregroundColor(Color(UIColor(r: 49, g: 49, b: 49, a: 1.0)))
@@ -160,11 +159,11 @@ struct SettingPage: View {
                                                 }
                                             )
                                     }
-                                    .alert("주의!", isPresented: $showDeleteAlert) {
+                                    .alert("주의!", isPresented: $deleteUserAlert) {
                                         Button("취소", role: .cancel) {}
                                         Button(role: .destructive, action: {
                                             loginViewModel.deleteUser()
-                                            loginToMainPageActive = false
+                                            self.goToMainPage = false
                                         }) {
                                             Text("탈퇴하기")
                                         }
@@ -221,12 +220,5 @@ struct SettingPage: View {
 //                }
 //                .foregroundColor(.red)
 //            }
-    }//body
-    
-    
-    struct SettingPage_Previews: PreviewProvider {
-        static var previews: some View {
-            SettingPage(loginViewModel: LoginViewModel(), firestoreViewModel: FirestoreViewModel(loginViewModel: LoginViewModel()), loginToMainPageActive: .constant(true))
-        }
     }
 }

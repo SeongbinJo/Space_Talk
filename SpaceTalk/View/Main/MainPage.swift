@@ -1,90 +1,88 @@
 //
-//  LoginSuccess.swift
+//  MainPage.swift
 //  SpaceTalk
 //
-//  Created by 조성빈 on 2023/03/29.
+//  Created by 조성빈 on 2023/08/22.
 //
 
 import Foundation
 import SwiftUI
-import FirebaseAuth
 
 struct MainPage: View {
     
-    @ObservedObject var loginViewModel: LoginViewModel
-    @ObservedObject var firestoreViewModel: FirestoreViewModel
+    @EnvironmentObject var firestoreViewModel: FirestoreViewModel
+    @EnvironmentObject var loginViewModel: LoginViewModel
     
-    //LoginPage의 네비게이션 링크
-    @Binding var loginToMainPageActive: Bool
+    @StateObject var tapBarViewModel = BottomTabBarViewModel()
     
-    @State var str: String = "home"
+    @State var tabIndex: String = "home"
     
-    var isChatRoomOpen: Bool = false
+    @Binding var goToMainPage: Bool
     
-    var body: some View{
-        NavigationView{
-            GeometryReader{ geometry in
-                ZStack{
-                    //버튼을 클릭하여 str값이 변경되면, 하단의 버튼은 남고 화면만 바뀐다. zstack 덕분!
-                    loginViewModel.changeTabView(tabindex: str, loginViewModel: loginViewModel, firestoreViewModel: firestoreViewModel, loginToMainPageActive: $loginToMainPageActive)
-                    HStack(spacing: 0){
-                        Button(action:{
-                            withAnimation{
-                                str = "home"
+    var body: some View {
+        NavigationView {
+            ZStack {
+                tapBarViewModel.changeMainView(tabIndex: self.tabIndex, goToMainPage: $goToMainPage)
+                GeometryReader { geometry in
+                    VStack {
+                        Spacer()
+                        HStack(spacing: 0){
+                            Button(action:{
+                                tabIndex = "home"
+                            }){
+                                Image(systemName: "house")
+                                    .foregroundColor(.black)
+                                    .font(.system(size: 25))
+                                    .scaleEffect(0.9)
                             }
-                        }){
-                            Image(systemName: str == "home" ? "house.fill" : "house")
-                                .foregroundColor(.black)
-                                .font(.system(size: 25))
-                                .scaleEffect(str == "home" ? 1.2 : 0.9)
-                        }
-                        .frame(width: geometry.size.width / 3)
-                        Button(action:{
-                            withAnimation{
-                                str = "chatList"
+                            .frame(width: geometry.size.width / 3)
+                            Button(action:{
+                                tabIndex = "chatList"
+//                                firestoreViewModel.currentChatList()
+                            }){
+                                Image(systemName: "bubble.left")
+                                    .foregroundColor(.black)
+                                    .font(.system(size: 25))
+                                    .scaleEffect(0.9)
                             }
-                        }){
-                            Image(systemName: str == "chatList" ? "bubble.left.fill" : "bubble.left")
-                                .foregroundColor(.black)
-                                .font(.system(size: 25))
-                                .scaleEffect(str == "chatList" ? 1.2 : 0.9)
-                        }
-                        .frame(width: geometry.size.width / 3)
-                        Button(action:{
-                            withAnimation{
-                                str = "setting"
+                            .frame(width: geometry.size.width / 3)
+                            Button(action:{
+                                tabIndex = "setting"
+                            }){
+                                Image(systemName: "ellipsis.circle")
+                                    .foregroundColor(.black)
+                                    .font(.system(size: 25))
+                                    .scaleEffect(0.9)
                             }
-                        }){
-                            Image(systemName: str == "setting" ? "ellipsis.circle.fill" : "ellipsis.circle")
-                                .foregroundColor(.black)
-                                .font(.system(size: 25))
-                                .scaleEffect(str == "setting" ? 1.2 : 0.9)
-                        }
-                        .frame(width: geometry.size.width / 3)
-                    }//hstack
-                    .frame(height: geometry.size.height * 0.1)
-                    .background(Color(UIColor(r: 132, g: 141, b: 136, a: 1.0)))
-                    .padding(.bottom, 9)
-                    .overlay(alignment: .top){
-                        Rectangle()
-                            .frame(height: 0.7)
-                            .foregroundColor(Color(UIColor(r: 79, g: 88, b: 83, a: 1.0)))
+                            .frame(width: geometry.size.width / 3)
+                        }//hstack
+                        .frame(height: geometry.size.height * 0.1)
+                        .background(Color(UIColor(r: 132, g: 141, b: 136, a: 1.0))) 
                     }
-                    .position(CGPoint(x: geometry.frame(in: .local).midX, y: geometry.frame(in: .local).maxY))
-                    //여부에 따라 커스텀 탭뷰 숨김.
-                    .zIndex(loginViewModel.isChatRoomOpened ? -1 : 1)
-                }//ztack
-            }//geometryw
-            .ignoresSafeArea(.keyboard)
-            .onAppear{
-                print("내 정보(uid) : \(loginViewModel.currentUser?.uid ?? "정보없음")")
+                }
             }
         }
+        .onAppear {
+            print("MainPage가 실행되었습니다!")
+            //현재 유저 정보(닉네임,이메일) 불러오기
+            loginViewModel.currentUserInformation() { complete in
+                if complete {
+                    print("현재 유저정보(닉네임, 이메일) 불러오기 완료.")
+                    firestoreViewModel.nickname = loginViewModel.currentNickname
+                    firestoreViewModel.testfunc()
+                    loginViewModel.testfunc()
+                    firestoreViewModel.getFirstMessage()
+                    firestoreViewModel.currentChatList()
+                }
+            }
+        }
+        .navigationBarBackButtonHidden(true)
+        .ignoresSafeArea(.keyboard)
         .onTapGesture {
             hideKeyboard()
         }
-        .navigationBarBackButtonHidden(true)
     }
+    
 }
 
 //텍스트필드 외 모든 부분을 클릭하면 키보드가 dismiss되게끔.
@@ -95,11 +93,8 @@ extension View{
        }
 }
 
-    struct LoginSuccess_Previews: PreviewProvider {
-        static var previews: some View {
-            MainPage(loginViewModel: LoginViewModel(), firestoreViewModel: FirestoreViewModel(loginViewModel: LoginViewModel()), loginToMainPageActive: .constant(true))
-        }
-    }
-    
-    
-
+//struct MainPage_Previews: PreviewProvider {
+//    static var previews: some View {
+//        MainPage()
+//    }
+//}

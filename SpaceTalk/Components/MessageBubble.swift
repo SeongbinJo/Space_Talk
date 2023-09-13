@@ -2,14 +2,15 @@
 //  MessageBubble.swift
 //  SpaceTalk
 //
-//  Created by 조성빈 on 2023/04/27.
+//  Created by 조성빈 on 2023/08/24.
 //
 
+import Foundation
 import SwiftUI
 
 struct MessageBubble: View {
     
-    @ObservedObject var loginViewModel: LoginViewModel
+    @EnvironmentObject var loginViewModel: LoginViewModel
 
     var message: Messages
     
@@ -63,9 +64,3 @@ struct MessageBubble: View {
     }
     
 }
-
-//struct MessageBubble_Previews: PreviewProvider {
-//    static var previews: some View {
-//        MessageBubble(loginViewModel: LoginViewModel(), message: Messages(messageId: "dd", roomId: "asdf", messageText: "hihi", sendTime: Date(), senderId: "123", receiverId: "321", isRead: false))
-//    }
-//}

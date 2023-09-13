@@ -2,23 +2,22 @@
 //  ChatListBox.swift
 //  SpaceTalk
 //
-//  Created by 조성빈 on 2023/05/29.
+//  Created by 조성빈 on 2023/08/24.
 //
-//채팅방의 메시지들을 불러올때, Messages Model을 사용하기 때문에,
-//ChatListBox에서도 Messages Model을 사용하기로 함.
+
+import Foundation
 import SwiftUI
 
 struct ChatListBox: View {
     
-    @ObservedObject var loginViewModel: LoginViewModel
-    @ObservedObject var firestoreViewModel: FirestoreViewModel
+    @EnvironmentObject var firestoreViewModel: FirestoreViewModel
     
     //해당 채팅방으로 이동 위한 변수.
-    @Binding var chatListToChatPageActiveAccept: Bool
+    @Binding var chatListToChatPageActive: Bool
+    
+    @Binding var selectChatListData: [String : Any]
     
     var chatListBoxMessage: PushButtonMessages
-
-    @Binding var selectChatListData: [String : Any]
     
     //상대방이 채팅방을 나갔을경우 팝업창.
     @State var chatRoomExitAlert: Bool = false
@@ -27,34 +26,22 @@ struct ChatListBox: View {
         GeometryReader{ geometry in
             VStack{
                 Button(action: {
-                    let selectChatNickName = loginViewModel.currentUser?.uid == chatListBoxMessage.firstSenderId ? chatListBoxMessage.receiverNickName : chatListBoxMessage.senderNickName
-                    selectChatListData = ["roomid" : chatListBoxMessage.roomId, "nickname" : selectChatNickName, "isavailable" : chatListBoxMessage.isAvailable]
-                    //클릭한 채팅방의 roomid를 firestore에 저장함. 저장이 완료되면 채팅페이지로 넘어감.
-                            firestoreViewModel.selectRoomIdSave(roomid: chatListBoxMessage.roomId){
-                                completion in
-                                if completion{
-                                    firestoreViewModel.loadSelectRoomId{ completion in
-                                        if completion{
-                                            firestoreViewModel.isExitBool{ complete in
-                                                if complete{
-                                                    //isExit가 false이면.
-                                                    if !firestoreViewModel.isExit{
-                                                        chatListToChatPageActiveAccept = true
-                                                    }else{
-                                                        //isExit가 true이면. = 상대방이 채팅방을 나갔으면.
-                                                        self.chatRoomExitAlert = true
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
+                    firestoreViewModel.currentRoomId = chatListBoxMessage.roomId
+                    //해당 채팅방의 isExit을 체크해서 참이면 alert창 띄우고 삭제, 거짓이면 chatpage 이동.
+                    firestoreViewModel.isExitBool() { isExit in
+                        if isExit {
+                            self.chatRoomExitAlert = true
+                        }
+                        else {
+                            firestoreViewModel.getMessages()
+                            firestoreViewModel.getNickname(uid: chatListBoxMessage.firstReceiverId) { complete in
+                                if complete {
+                                    self.selectChatListData = ["isAvailable" : chatListBoxMessage.isAvailable, "receiverNickname" : firestoreViewModel.nickname]
+                                    self.chatListToChatPageActive = true
                                 }
                             }
-
-//                    firestoreViewModel.selectChatRoomId = chatListBoxMessage.roomId
-//                    $firestoreViewModel.selectChatRoomId = Binding(chatListBoxMessage.roomId)
-//                    print("현재 클릭한 채팅방의 roomid: \(firestoreViewModel.selectChatRoomId)")
-//                    firestoreViewModel.getMessages()
+                        }
+                    }
                 }){
                     //geometryreader 사용으로 겹침방지 위해 넣은 text
                     Text("")
@@ -64,22 +51,22 @@ struct ChatListBox: View {
                         HStack{
                             VStack(alignment: .leading){
                                 HStack{
-                                    Text(loginViewModel.currentUser?.uid == chatListBoxMessage.firstSenderId ? "\(chatListBoxMessage.receiverNickName)님과의 대화" : "\(chatListBoxMessage.senderNickName)님과의 대화")
-                                        .font(.system(size: 18))
+                                    Text(firestoreViewModel.currentUser?.uid == chatListBoxMessage.firstSenderId ? "111님과의 대화" : "222님과의 대화")
+                                        .font(.system(size: geometry.size.height * 0.25))
                                         .fontWeight(.semibold)
                                     Spacer()
                                     Text("\(chatListBoxMessage.formattedDay)")
-                                        .font(.system(size: 13))
+                                        .font(.system(size: geometry.size.height * 0.15))
                                 }
                                 HStack{
                                     Text(chatListBoxMessage.messageText)
                                     Spacer()
                                     Text("\(chatListBoxMessage.formattedTime)")
-                                        .font(.system(size: 13))
+                                        .font(.system(size: geometry.size.height * 0.15))
                                 }
                             }
                             .foregroundColor(.black)
-                            .padding()
+                            .padding(geometry.size.height * 0.16)
                             .background(.white)
                             .cornerRadius(15, corners: .allCorners)
                             .frame(width: geometry.size.width * 0.95)
@@ -97,9 +84,3 @@ struct ChatListBox: View {
         }
     }
 }
-    
-//    struct ChatListBox_Previews: PreviewProvider {
-//        static var previews: some View {
-//            ChatListBox(loginViewModel: LoginViewModel(), firestoreViewModel: FirestoreViewModel(loginViewModel: LoginViewModel()), chatListBoxMessage: Messages(messageId: "asdf", roomId: "123", messageText: "hihi", sendTime: Date(), senderId: "sender", receiverId: "receiver", isRead: false, senderNickName: "나다이씹샊"), width: 340, height: 70)
-//        }
-//    }

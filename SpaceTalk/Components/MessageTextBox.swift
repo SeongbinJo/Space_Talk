@@ -2,15 +2,15 @@
 //  MessageTextBox.swift
 //  SpaceTalk
 //
-//  Created by 조성빈 on 2023/04/29.
+//  Created by 조성빈 on 2023/08/24.
 //
 
+import Foundation
 import SwiftUI
 
 struct MessageTextBox: View {
     
-    @ObservedObject var loginViewModel: LoginViewModel
-    @ObservedObject var firestoreViewModel: FirestoreViewModel
+    @EnvironmentObject var firestoreViewModel: FirestoreViewModel
     
     @Binding var selectChatListData: [String : Any]
     
@@ -24,20 +24,23 @@ struct MessageTextBox: View {
                                 .font(.system(size: geomtry.size.width * 0.085))
                             
                         }
-                        TextField(selectChatListData["isavailable"] as! Bool ? "메세지를 입력하세요." : "상대방의 수락을 기다리는 중입니다.", text: $firestoreViewModel.sendMessageText)
-                            .disabled(selectChatListData["isavailable"] as! Bool ? false : true)
+                        TextField(selectChatListData["isAvailable"] as! Bool ? "메세지를 입력하세요." : "상대방의 수락을 기다리는 중입니다.", text: $firestoreViewModel.messageTextBox)
+                            .disabled(selectChatListData["isAvailable"] as! Bool ? false : true)
                             .textFieldStyle(.roundedBorder)
                             .font(.system(size: geomtry.size.width * 0.05))
                             .cornerRadius(13, corners: .allCorners)
                         Button(action: {
-                            firestoreViewModel.writeMessageToFirestore()
-                            firestoreViewModel.sendMessageText = ""
+                            firestoreViewModel.sendMessage() { send in
+                                if send {
+                                    firestoreViewModel.messageTextBox = ""
+                                }
+                            }
                         }){
                             Image(systemName: "arrow.up.circle")
-                                .foregroundColor($firestoreViewModel.sendMessageText.wrappedValue.count > 0 ? Color(UIColor(r: 49, g: 49, b: 49, a: 1)) : Color(UIColor(r: 49, g: 49, b: 49, a: 0.3)))
+                                .foregroundColor($firestoreViewModel.messageTextBox.wrappedValue.count > 0 ? Color(UIColor(r: 49, g: 49, b: 49, a: 1)) : Color(UIColor(r: 49, g: 49, b: 49, a: 0.3)))
                                 .font(.system(size: geomtry.size.width * 0.085))
                         }
-                        .disabled($firestoreViewModel.sendMessageText.wrappedValue.count > 0 ? false : true)
+                        .disabled($firestoreViewModel.messageTextBox.wrappedValue.count > 0 ? false : true)
                     }
                     .padding(.horizontal, geomtry.size.width * 0.03)
                     .padding(.top, 10)
@@ -48,9 +51,3 @@ struct MessageTextBox: View {
         }
     }
 }
-
-//struct MessageTextBox_Previews: PreviewProvider {
-//    static var previews: some View {
-//        MessageTextBox(loginViewModel: LoginViewModel(), firestoreViewModel: FirestoreViewModel(loginViewModel: LoginViewModel()))
-//    }
-//}
