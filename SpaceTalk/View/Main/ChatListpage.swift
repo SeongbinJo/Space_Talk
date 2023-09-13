@@ -1,61 +1,55 @@
 //
-//  ChatListpage.swift
+//  ChatListPage.swift
 //  SpaceTalk
 //
-//  Created by 조성빈 on 2023/04/03.
+//  Created by 조성빈 on 2023/08/23.
 //
-//.shadow(color: .black, radius: 4, x: 5, y: 5)
-//.padding(.vertical, 2)
-
 
 import Foundation
 import SwiftUI
 
-struct ChatListpage: View {
+struct ChatListPage: View {
     
-    @ObservedObject var loginViewModel: LoginViewModel
-    @ObservedObject var firestoreViewModel: FirestoreViewModel
-
-    //해당 채팅방으로 이동 위한 변수.
-    @State var chatListToChatPageActiveAccept: Bool = false
+    @EnvironmentObject var firestoreViewModel: FirestoreViewModel
     
-    @State var selectChatListData: [String : Any] = ["roomid" : "testroomid", "nickname" : "testnickname", "isavailable" : false]
+    @State var chatListToChatPageActive: Bool = false
     
-    var body: some View{
-                ZStack{
-                    Color.gray.ignoresSafeArea()
-                    GeometryReader{ geometry in
-                        VStack{
-                            Rectangle()
-                                .foregroundColor(.gray)
-                                .frame(width: geometry.size.width * 1.0, height: geometry.size.height * 0.01)
-                            ScrollView{
-                                //push
-                                ForEach(firestoreViewModel.pushButtonMessages, id: \.id){ pushMessage in
-                                    ChatListBox(loginViewModel: loginViewModel, firestoreViewModel: firestoreViewModel, chatListToChatPageActiveAccept: $chatListToChatPageActiveAccept, chatListBoxMessage: pushMessage, selectChatListData: $selectChatListData)
-                                        .frame(height: geometry.size.height * 0.1)
-                                        .shadow(color: .black, radius: 4, x: 5, y: 5)
-                                }
-                                ForEach(firestoreViewModel.acceptButtonMessages, id: \.id){ acceptMessage in
-                                    ChatListBox(loginViewModel: loginViewModel, firestoreViewModel: firestoreViewModel, chatListToChatPageActiveAccept: $chatListToChatPageActiveAccept, chatListBoxMessage: acceptMessage, selectChatListData: $selectChatListData)
-                                        .frame(height: geometry.size.height * 0.1)
-                                        .shadow(color: .black, radius: 4, x: 5, y: 5)
-                                }
-                            }
-                            .background{
-                                NavigationLink(destination: ChatPage(loginViewModel: loginViewModel, firestoreViewModel: firestoreViewModel, chatListToChatPageActiveAccept: $chatListToChatPageActiveAccept, selectChatListData: $selectChatListData), isActive: $chatListToChatPageActiveAccept, label: {EmptyView()})
-                            }
-                            .scrollContentBackground(.hidden)
+    @State var selectChatListData: [String : Any] = ["isAvailable" : false, "receiverNickname" : ""]
+    
+    var body: some View {
+        ZStack{
+            Color.gray.ignoresSafeArea()
+            GeometryReader{ geometry in
+                VStack{
+                    Rectangle()
+                        .foregroundColor(.gray)
+                        .frame(width: geometry.size.width * 1.0, height: geometry.size.height * 0.01)
+                    ScrollView{
+                        ForEach(firestoreViewModel.pushButtonChatRoom, id: \.id) { pushMessage in
+                            ChatListBox(chatListToChatPageActive: $chatListToChatPageActive, selectChatListData: $selectChatListData, chatListBoxMessage: pushMessage)
+                                .frame(height: geometry.size.height * 0.1)
+                                .shadow(color: .black, radius: 4, x: 5, y: 5)
+                        }
+                        ForEach(firestoreViewModel.acceptButtonChatRoom, id: \.id) { acceptMessage in
+                            ChatListBox(chatListToChatPageActive: $chatListToChatPageActive, selectChatListData: $selectChatListData, chatListBoxMessage: acceptMessage)
+                                .frame(height: geometry.size.height * 0.1)
+                                .shadow(color: .black, radius: 4, x: 5, y: 5)
                         }
                     }
-                }//zstack
-    }//body
+                    .background{
+                        NavigationLink(destination: ChatPage(chatListToChatPageActive: $chatListToChatPageActive, selectChatListData: $selectChatListData), isActive: $chatListToChatPageActive, label: {EmptyView()})
+                    }
+                    .scrollContentBackground(.hidden)
+                }
+            }
+        }//zstack
+        .onAppear {
+        }
+    }
 }
 
-//struct ChatListpage_Previews: PreviewProvider {
-//    static var previews: some View {
-//        ChatListpage(loginViewModel: LoginViewModel(), firestoreViewModel: FirestoreViewModel(loginViewModel: LoginViewModel()))
-//    }
-//}
-
-
+struct ChatListPage_Previews: PreviewProvider {
+    static var previews: some View {
+        ChatListPage()
+    }
+}

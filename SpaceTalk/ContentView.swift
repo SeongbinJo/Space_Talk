@@ -9,19 +9,20 @@ import SwiftUI
 
 struct ContentView: View {
     
-    @ObservedObject var loginViewModel: LoginViewModel
+    @EnvironmentObject var loginViewModel: LoginViewModel
+    @EnvironmentObject var firestoreViewModel: FirestoreViewModel
     
     var body: some View {
         if loginViewModel.currentUser == nil {
-            LoginPage(loginViewModel: loginViewModel, firestoreViewModel: FirestoreViewModel(loginViewModel: loginViewModel))
+            LoginPage()
         }else{
-            MainPage(loginViewModel: loginViewModel, firestoreViewModel: FirestoreViewModel(loginViewModel: loginViewModel), loginToMainPageActive: .constant(true))
+            MainPage(goToMainPage: .constant(true))
         }
     }
 }
 
-struct ContentView_Previews: PreviewProvider {
-    static var previews: some View {
-        ContentView(loginViewModel: LoginViewModel())
-    }
-}
+//struct ContentView_Previews: PreviewProvider {
+//    static var previews: some View {
+//        ContentView().environmentObject(LoginViewModel())
+//    }
+//}

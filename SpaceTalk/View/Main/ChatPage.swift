@@ -2,7 +2,7 @@
 //  ChatPage.swift
 //  SpaceTalk
 //
-//  Created by 조성빈 on 2023/04/06.
+//  Created by 조성빈 on 2023/08/24.
 //
 
 import Foundation
@@ -10,19 +10,16 @@ import SwiftUI
 
 struct ChatPage: View {
     
-    @ObservedObject var loginViewModel: LoginViewModel
-    @ObservedObject var firestoreViewModel: FirestoreViewModel
+    @EnvironmentObject var firestoreViewModel: FirestoreViewModel
     
     //앱의 생명주기 변화(백그라운드, 액티브 등)
     @Environment(\.scenePhase) var scenePhase
     
-    @Binding var chatListToChatPageActiveAccept: Bool
-    
+    @State var exitRoomAlert: Bool = false
+    @Binding var chatListToChatPageActive: Bool
     @Binding var selectChatListData: [String : Any]
     
-    @State var exitRoomAlert: Bool = false
-    
-    var body: some View{
+    var body: some View {
         NavigationView{
                 ZStack{
                     VStack{
@@ -30,31 +27,26 @@ struct ChatPage: View {
                         GeometryReader{ geometry in
                             ScrollView{
                                 ForEach(firestoreViewModel.messages, id: \.id){ message in
-                                    MessageBubble(loginViewModel: loginViewModel, message: message)
+                                    MessageBubble(message: message)
                                 }
                             }.frame(height: geometry.size.height * 0.9)
-                            MessageTextBox(loginViewModel: loginViewModel, firestoreViewModel: FirestoreViewModel(loginViewModel: loginViewModel), selectChatListData: $selectChatListData)
+                            MessageTextBox( selectChatListData: $selectChatListData)
                         }
                     }
                     .background(.gray)
                 }
         }
         .onAppear{
-            loginViewModel.isChatRoomOpenedToggle()
+//            loginViewModel.isChatRoomOpenedToggle()
         }
         .toolbarBackground(
                         Color(UIColor(r: 132, g: 141, b: 136, a: 1.0)),
                         for: .navigationBar)
                     .toolbarBackground(.visible, for: .navigationBar)
-                    .navigationBarTitle(String(describing: selectChatListData["nickname"]!))
+                    .navigationBarTitle(selectChatListData["receiverNickname"] as! String)
         .navigationBarBackButtonHidden(true)
         .navigationBarItems(leading: Button(action: {
-            firestoreViewModel.awayFromChatRoom(){ compeletion in
-                if compeletion{
-                    chatListToChatPageActiveAccept = false
-                    loginViewModel.isChatRoomOpenedToggle()
-                }
-            }
+            self.chatListToChatPageActive = false
         }){
             HStack{
                 Image(systemName: "chevron.left")
@@ -81,11 +73,9 @@ struct ChatPage: View {
         .alert("채팅방 나가기", isPresented: $exitRoomAlert){
             Button("취소", role: .cancel, action: {})
             Button("나가기", role: .destructive, action: {
-                firestoreViewModel.awayFromChatRoom(){ completion in
-                    if completion{
-                        firestoreViewModel.exitChatRoom()
-                        chatListToChatPageActiveAccept = false
-                        loginViewModel.isChatRoomOpenedToggle()
+                firestoreViewModel.exitChatRoom() { exit in
+                    if exit {
+                        self.chatListToChatPageActive = false
                     }
                 }
             })
@@ -97,25 +87,19 @@ struct ChatPage: View {
             switch value{
             case .active:
                 print("active")
-                firestoreViewModel.reWriteSelectChatRoomId(){ complete in }
+//                firestoreViewModel.reWriteSelectChatRoomId(){ complete in }
             case .inactive:
                 print("inactive")
-                firestoreViewModel.awayFromChatRoom(){ complete in }
+//                firestoreViewModel.awayFromChatRoom(){ complete in }
             case .background:
                 print("background")
-                firestoreViewModel.awayFromChatRoom(){ complete in }
+//                firestoreViewModel.awayFromChatRoom(){ complete in }
             default:
                 print("default!")
             }
         }
-    }//body
+        .onDisappear {
+            firestoreViewModel.getMessageListener?.remove()
+        }
+    }
 }
-
-//struct ChatPage_Previews: PreviewProvider {
-//    static var previews: some View {
-//        NavigationView{
-//            ChatPage(loginViewModel: LoginViewModel(), firestoreViewModel: FirestoreViewModel(loginViewModel: LoginViewModel()), chatListToChatPageActive: .constant(false))
-//        }
-//
-//    }
-//}
