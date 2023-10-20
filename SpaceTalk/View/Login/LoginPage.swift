@@ -87,10 +87,15 @@ struct LoginPage: View {
                     .position(x: geometry.frame(in: .local).midX, y: geometry.size.height * 0.55)
                 }
             }//geometryreader
+            .ignoresSafeArea(.keyboard)
         }
+        .ignoresSafeArea(.keyboard)
         .onAppear {
             loginViewModel.email = ""
             loginViewModel.password = ""
+        }
+        .onTapGesture {
+            hideKeyboard()
         }
     }
 }

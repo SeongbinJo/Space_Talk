@@ -10,6 +10,7 @@ import Firebase
 import FirebaseFirestore
 import SwiftUI
 import FirebaseFirestoreSwift
+import FirebaseStorage
 
 
 //채팅 관련한 모든 기능
@@ -17,11 +18,16 @@ class FirestoreViewModel: ObservableObject{
     
     //Firestore DB
     let db = Firestore.firestore()
+    //Firebase Storage
+    let storage = Storage.storage()
+    
     //Firebase Auth 유저정보
     @Published var currentUser: User?
 
     //특정 유저의 닉네임(uid이용)
     @Published var nickname: String = ""
+    //랜덤으로 뽑은 유저의 닉네임
+    @Published var randomUserNickname: String = ""
     
     //HomePage 무전기 Texteditor
     @Published var firstMessageText: String = ""
@@ -47,6 +53,8 @@ class FirestoreViewModel: ObservableObject{
     
     //랜덤유저 뽑을때 5회 이상 반복될 경우 alert 띄우고 멈춤
     var randomCount : Int = 0
+    
+    var image : UIImage?
     
     init() {
         currentUser = Auth.auth().currentUser
@@ -87,28 +95,32 @@ class FirestoreViewModel: ObservableObject{
         
         self.randomUid() { randomUID in
             if randomUID != "over" {
-                //chatroom/roomid 의 필드 저장.(postbox 생성위함)
-                //이때 firstSenderId 필드를 추가해서 sender가 PUSH눌렀을때 이 필드 값을 참조해서 뷰에 채팅방 추가되게끔.
-                //isAvailable 필드도 추가해서 'o'눌렀을때 true로 바뀌고 이 값이 true 일 경우에 채팅 텍스트필드가 활성화 되게끔.
-                chatDoc.setData(["roomId" : chatDoc.documentID, "messageId" : chatroomDoc.documentID, "messageText" : self.firstMessageText, "sendTime" : Date(), "recentSenderId" : self.currentUser!.uid, "isRead" : false, "firstSenderId" : self.currentUser!.uid, "firstReceiverId" : randomUID, "isAvailable" : false, "isExit" : false, "firstSenderNickname" : self.nickname]){ error in
-                    if let error = error {
-                        print("무전기 메시지 발송 에러1 : \(error)")
-                        completion(false)
-                    }else{
-                        print("무전기 메시지 발송 성공!")
-                        isReady = true
-                    }
-                }
-                
-                //chatroom/roomid/roomid/ 필드 저장.
-                chatroomDoc.setData(["roomId" : chatDoc.documentID, "messageId" : chatroomDoc.documentID, "messageText" : self.firstMessageText, "sendTime" : Date(), "senderId" : self.currentUser!.uid, "isRead" : false]){ error in
-                    if let error = error {
-                        print("무전기 메시지 발송 에러2 : \(error)")
-                        completion(false)
-                    }else{
-                        print("첫 메시지 저장완료.")
-                        if isReady {
-                            completion(true)
+                self.getRandomUidNickname(uid: randomUID) { nicknameComplete in
+                    if nicknameComplete {
+                        //chatroom/roomid 의 필드 저장.(postbox 생성위함)
+                        //이때 firstSenderId 필드를 추가해서 sender가 PUSH눌렀을때 이 필드 값을 참조해서 뷰에 채팅방 추가되게끔.
+                        //isAvailable 필드도 추가해서 'o'눌렀을때 true로 바뀌고 이 값이 true 일 경우에 채팅 텍스트필드가 활성화 되게끔.
+                        chatDoc.setData(["roomId" : chatDoc.documentID, "messageId" : chatroomDoc.documentID, "messageText" : self.firstMessageText, "sendTime" : Date(), "recentSenderId" : self.currentUser!.uid, "isRead" : false, "firstSenderId" : self.currentUser!.uid, "firstReceiverId" : randomUID, "isAvailable" : false, "isExit" : false, "firstSenderNickname" : self.nickname, "firstReceiverNickname" : self.randomUserNickname, "imageName" : "nil"]){ error in
+                            if let error = error {
+                                print("무전기 메시지 발송 에러1 : \(error)")
+                                completion(false)
+                            }else{
+                                print("무전기 메시지 발송 성공!")
+                                isReady = true
+                            }
+                        }
+                        
+                        //chatroom/roomid/roomid/ 필드 저장.
+                        chatroomDoc.setData(["roomId" : chatDoc.documentID, "messageId" : chatroomDoc.documentID, "messageText" : self.firstMessageText, "sendTime" : Date(), "senderId" : self.currentUser!.uid, "isRead" : false, "imageName" : "nil"]){ error in
+                            if let error = error {
+                                print("무전기 메시지 발송 에러2 : \(error)")
+                                completion(false)
+                            }else{
+                                print("첫 메시지 저장완료.")
+                                if isReady {
+                                    completion(true)
+                                }
+                            }
                         }
                     }
                 }
@@ -122,19 +134,130 @@ class FirestoreViewModel: ObservableObject{
     
     
     //ChatPage에서 메시지 발신 함수
-    func sendMessage(complete: @escaping (Bool) -> Void) {
+    func sendMessage(image: UIImage, complete: @escaping (Bool) -> Void) {
         guard self.currentUser != nil else {
             print("firestoreVM currentUser 값이 비어있습니다.(sendMessage)")
             complete(false)
             return
         }
-        //chatroom/roomid/roomid 에 메시지 저장. -> messageBubble에 사용.
+        
         let messageDoc = self.db.collection("chatroom").document(self.currentRoomId).collection(self.currentRoomId).document()
-        messageDoc.setData(["roomId" : self.currentRoomId, "messageText" : self.messageTextBox, "messageId" : messageDoc.documentID, "isRead" : false, "sendTime"  : Date(), "senderId" : self.currentUser!.uid])
+        
+        if self.messageTextBox.count > 0 {
+            //chatroom/roomid/roomid 에 메시지 저장. -> messageBubble에 사용.
+            messageDoc.setData(["roomId" : self.currentRoomId, "messageText" : self.messageTextBox, "messageId" : messageDoc.documentID, "isRead" : false, "sendTime"  : Date(), "senderId" : self.currentUser!.uid, "imageName" : "nil"])
 
-        self.db.collection("chatroom").document(self.currentRoomId).updateData(["messageId" : messageDoc.documentID, "messageText" : self.messageTextBox, "sendTime" : Date(), "recentSenderId" : self.currentUser!.uid])
-        complete(true)
+            self.db.collection("chatroom").document(self.currentRoomId).updateData(["messageId" : messageDoc.documentID, "messageText" : self.messageTextBox, "sendTime" : Date(), "recentSenderId" : self.currentUser!.uid, "imageName" : "nil"])
+            complete(true)
+        }else if image != nil {
+            self.uploadImage(image: image, roomId: self.currentRoomId, msgId: messageDoc.documentID) { uploaded in
+                if uploaded {
+                    complete(true)
+                }else {
+                    complete(false)
+                }
+            }
+        }
     }//sendMessage()
+    
+    
+    //Firebase Storage에 이미지 저장하는 함수
+    func uploadImage(image: UIImage, roomId: String, msgId: String, completion: @escaping (Bool) -> Void) {
+        let data = image.jpegData(compressionQuality: 0.1)!
+        let imageName = UUID().uuidString
+        let imageReference = self.storage.reference().child("images/\(roomId)/\(imageName)")
+
+        let metaData = StorageMetadata()
+        metaData.contentType = "image/jpg"
+        imageReference.putData(data, metadata: metaData) { (metaData, error) in
+            if let error = error {
+                print("이미지 업로드 에러! : \(error.localizedDescription)")
+                completion(false)
+            }else {
+                self.db.collection("chatroom").document(roomId).collection(roomId).document().setData(["roomId" : roomId, "messageText" : "사진", "messageId" : msgId, "isRead" : false, "sendTime"  : Date(), "senderId" : self.currentUser!.uid, "imageName" : imageName])
+                self.db.collection("chatroom").document(roomId).updateData(["messageId" : msgId, "messageText" : "사진", "sendTime" : Date(), "recentSenderId" : self.currentUser!.uid, "imageName" : imageName])
+                print("이미지 업로드 성공!")
+                completion(true)
+            }
+        }
+    }
+    
+    func getImage(imageName: String, completion: @escaping (UIImage) -> Void) {
+        let imageReference = self.storage.reference().child("images/\(self.currentRoomId)/\(imageName)")
+        imageReference.getData(maxSize: 1 * 1024 * 1024) { data, error in
+            guard error == nil else {
+//                print("이미지 불러오기 에러! : \(error.localizedDescription)")
+                print("이미지 불러오기 에러! : \(String(describing: error?.localizedDescription))")
+                completion(UIImage(systemName: "photo")!)
+                return
+            }
+            guard data != nil else { 
+//                print("func getImage() data 에러 : \(error!.localizedDescription)")
+                print("이미지 불러오기 에러 2!")
+                return }
+            let image = UIImage(data: data!)
+            self.image = image
+            print(data)
+            print(UIImage(data: data!))
+            completion(self.image!)
+        }
+    }
+    
+    //해당 채팅방의 메시지들을 불러오는 함수
+    func getMessages() {
+        self.getMessageListener = self.db.collection("chatroom").document(self.currentRoomId).collection(self.currentRoomId).addSnapshotListener { snapshot, error in
+            guard error == nil else {
+                print("getMessages() 에러 : \(String(describing: error))")
+                return
+            }
+            guard let documents = snapshot?.documents else {
+                print("getMessages() 에러2 : \(String(describing: error))")
+                return
+            }
+            guard !(documents.isEmpty) else {
+                self.messages.removeAll()
+                return
+            }
+            //위 조건들을 만족하는 데이터들을 담는 코드
+            self.messages = documents.compactMap(){ document -> Messages? in
+                Messages(dictionaryData: document.data())
+            }
+            //담은 데이터들을 시간별로 정렬하는 코드
+            self.messages.sort { $0.sendTime < $1.sendTime }
+            
+        }
+    }//getMessages()
+    
+    
+    //첫 채팅 발신함(우편함) 목록 함수
+    func getFirstMessage() {
+        guard self.currentUser != nil else {
+            print("firestoreVM currentUser 값이 비어있습니다.(getFirstMessage)")
+            return
+        }
+        self.getFirstMessageListener = self.db.collection("chatroom").whereField("firstReceiverId", isEqualTo: self.currentUser!.uid).whereField("isAvailable", isEqualTo: false).addSnapshotListener { snapshot, error in
+            guard error == nil else {
+                print("getFirstMessage() 에러 : \(String(describing: error))")
+                return
+            }
+            guard let documents = snapshot?.documents else {
+                print("getFirstMessage() 에러2 : \(String(describing: error))")
+                return
+            }
+            guard !(documents.isEmpty) else {
+                self.firstMessages.removeAll()
+                return
+            }
+            //위 조건들을 만족하는 데이터들을 담는 코드
+            self.firstMessages = documents.compactMap(){ document -> PushButtonMessages? in
+                PushButtonMessages(dictionaryData: document.data())
+            }
+            //담은 데이터들을 시간별로 정렬하는 코드
+            self.firstMessages.sort { $0.sendTime < $1.sendTime }
+            print(self.firstMessages)
+        }
+    }//getFirstMessage()
+    
     
     //ChatListPage에서 채팅방 목록 생성을 위한 함수
     func currentChatList() {
@@ -192,58 +315,9 @@ class FirestoreViewModel: ObservableObject{
          
     }//currentChatList()
     
-    //해당 채팅방의 메시지들을 불러오는 함수
-    func getMessages() {
-        self.getMessageListener = self.db.collection("chatroom").document(self.currentRoomId).collection(self.currentRoomId).addSnapshotListener { snapshot, error in
-            guard error == nil else {
-                print("getMessages() 에러 : \(String(describing: error))")
-                return
-            }
-            guard let documents = snapshot?.documents else {
-                print("getMessages() 에러2 : \(String(describing: error))")
-                return
-            }
-            guard !(documents.isEmpty) else {
-                self.messages.removeAll()
-                return
-            }
-            //위 조건들을 만족하는 데이터들을 담는 코드
-            self.messages = documents.compactMap(){ document -> Messages? in
-                Messages(dictionaryData: document.data())
-            }
-            //담은 데이터들을 시간별로 정렬하는 코드
-            self.messages.sort { $0.sendTime < $1.sendTime }
-        }
-    }//getMessages()
     
-    //첫 채팅 발신함(우편함) 목록 함수
-    func getFirstMessage() {
-        guard self.currentUser != nil else {
-            print("firestoreVM currentUser 값이 비어있습니다.(getFirstMessage)")
-            return
-        }
-        self.getFirstMessageListener = self.db.collection("chatroom").whereField("firstReceiverId", isEqualTo: self.currentUser!.uid).whereField("isAvailable", isEqualTo: false).addSnapshotListener { snapshot, error in
-            guard error == nil else {
-                print("getFirstMessage() 에러 : \(String(describing: error))")
-                return
-            }
-            guard let documents = snapshot?.documents else {
-                print("getFirstMessage() 에러2 : \(String(describing: error))")
-                return
-            }
-            guard !(documents.isEmpty) else {
-                self.firstMessages.removeAll()
-                return
-            }
-            //위 조건들을 만족하는 데이터들을 담는 코드
-            self.firstMessages = documents.compactMap(){ document -> PushButtonMessages? in
-                PushButtonMessages(dictionaryData: document.data())
-            }
-            //담은 데이터들을 시간별로 정렬하는 코드
-            self.firstMessages.sort { $0.sendTime < $1.sendTime }
-            print(self.firstMessages)
-        }
-    }//getFirstMessage()
+    
+    
     
     //우편함의 리스트에서 'O'를 눌렀을 경우
     func acceptFirstMessage(roomid: String) {
@@ -354,6 +428,24 @@ class FirestoreViewModel: ObservableObject{
             }
             randomUID = snapshot?.documents[0].data()["uid"] as! String
             complete(randomUID)
+        }
+    }
+    
+    //랜덤으로 뽑은 UID의 닉네임을 알아내는 함수.(firstReceiverNickname)
+    func getRandomUidNickname(uid: String, complete: @escaping (Bool) -> Void) {
+        self.db.collection("testUser").document(uid).getDocument() { snapshot, error in
+            guard error == nil else {
+                print("getRandomUidNickname 에러!")
+                complete(false)
+                return
+            }
+            guard snapshot != nil else {
+                print("getRandomUidNickname 에러2!")
+                complete(false)
+                return
+            }
+            self.randomUserNickname = snapshot?.data()?["nickname"] as? String ?? "nil"
+            complete(true)
         }
     }
     

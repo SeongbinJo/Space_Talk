@@ -16,6 +16,7 @@ struct ChatPage: View {
     @Environment(\.scenePhase) var scenePhase
     
     @State var exitRoomAlert: Bool = false
+//    @State var 
     @Binding var chatListToChatPageActive: Bool
     @Binding var selectChatListData: [String : Any]
     

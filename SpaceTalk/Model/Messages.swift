@@ -7,6 +7,7 @@
 
 import Foundation
 import Firebase
+import FirebaseStorage
 
 struct Messages: Identifiable, Codable{
     var id: String { messageId }
@@ -18,12 +19,13 @@ struct Messages: Identifiable, Codable{
 //    var receiverId: String // 메시지 받는 사람 id
     var isRead: Bool // 메시지 읽었는지.
 //    var senderNickname: String // 메시지 발신자 닉네임
+    var imageName: String //uuid값으로 들어갈 예정(이미지)
     
     
     var formattedTime: String {
             let dateFormatter = DateFormatter()
             dateFormatter.locale = Locale(identifier: "ko")
-            dateFormatter.dateFormat = "a h시 mm분"
+            dateFormatter.dateFormat = "yy.M.d a h시 mm분"
             return dateFormatter.string(from: sendTime)
         }
     
@@ -33,6 +35,8 @@ struct Messages: Identifiable, Codable{
             dateFormatter.dateFormat = "yyyy년 M월 d일"
             return dateFormatter.string(from: sendTime)
         }
+
+    
     
     init?(dictionaryData: [String: Any]){
         guard let messageId = dictionaryData["messageId"] as? String,
@@ -40,6 +44,7 @@ struct Messages: Identifiable, Codable{
               let messageText = dictionaryData["messageText"] as? String,
               let sendTime = dictionaryData["sendTime"] as? Timestamp,
               let senderId = dictionaryData["senderId"] as? String,
+              let imageName = dictionaryData["imageName"] as? String,
 //              let receiverId = dictionaryData["receiverId"] as? String,
               let isRead = dictionaryData["isRead"] as? Bool else {
 //              let senderNickname = dictionaryData["senderNickname"] as? String else{
@@ -55,7 +60,7 @@ struct Messages: Identifiable, Codable{
 //        self.receiverId = receiverId
         self.isRead = isRead
 //        self.senderNickname = senderNickname
-        
+        self.imageName = imageName
     }
     
 }
