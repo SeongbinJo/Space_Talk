@@ -22,6 +22,7 @@ struct PushButtonMessages: Identifiable, Codable{
     var isAvailable: Bool // 상대방이 'O' 버튼 눌렀는지 여부
     var isExit: Bool //상대방이 나갔는지 여부
     var firstSenderNickname: String //처음 메시지 보낸 사람의 닉네임
+    var firstReceiverNickname: String //처음 메시지 받은 사람의 닉네임
 
     
     
@@ -50,6 +51,7 @@ struct PushButtonMessages: Identifiable, Codable{
             let firstReceiverId = dictionaryData["firstReceiverId"] as? String,
             let isAvailable = dictionaryData["isAvailable"] as? Bool,
             let isExit = dictionaryData["isExit"] as? Bool,
+            let firstReceiverNickname = dictionaryData["firstReceiverNickname"] as? String,
             let firstSenderNickname = dictionaryData["firstSenderNickname"] as? String else {
             print("PushButtonMessages 모델 에러 : \(dictionaryData)")
                 return nil
@@ -65,6 +67,7 @@ struct PushButtonMessages: Identifiable, Codable{
         self.isAvailable = isAvailable
         self.isExit = isExit
         self.firstSenderNickname = firstSenderNickname
+        self.firstReceiverNickname = firstReceiverNickname
         self.sendTime = sendTime.dateValue() //초기화 할 때, dateValue()를 사용하여 timestamp -> date로 형 변환.
     }
     

@@ -18,6 +18,8 @@ struct HomePage: View {
     
     @State var postBoxZIndex: Double = -2
     
+//    @State var pushButtonAvailable: Bool = false
+    
     var body: some View {
                 GeometryReader { geometry in
                     ZStack {
@@ -127,6 +129,7 @@ struct HomePage: View {
                     PostBox(postBoxZIndex: $postBoxZIndex)
                         .zIndex(postBoxZIndex)
                 }
+                .ignoresSafeArea(.keyboard)
     }
     
 }

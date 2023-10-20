@@ -14,8 +14,6 @@ struct SignUpPage: View {
     
     @Binding var goToSignUpPage : Bool
     
-    
-    
     var body: some View {
         NavigationView {
             GeometryReader { geometry in
@@ -141,7 +139,7 @@ struct SignUpPage: View {
                         }
                     }
                     Button(action: {
-                        loginViewModel.signUp(){ complete in
+                        loginViewModel.signUp() { complete in
                             if complete {
                                 self.goToSignUpPage = false
                             }
@@ -159,7 +157,7 @@ struct SignUpPage: View {
                 }
             }//geometry
         }
-        .navigationTitle("회원가입")
+        .navigationTitle("회원가입1")
         .onAppear {
             loginViewModel.signUpEmail = ""
             loginViewModel.signUpNickname = ""

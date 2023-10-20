@@ -56,12 +56,14 @@ struct MainPage: View {
                             }
                             .frame(width: geometry.size.width / 3)
                         }//hstack
-                        .frame(height: geometry.size.height * 0.1)
+                        .frame(height: geometry.size.height * 0.085)
                         .background(Color(UIColor(r: 132, g: 141, b: 136, a: 1.0))) 
                     }
                 }
             }
+            .ignoresSafeArea(.keyboard)
         }
+        .ignoresSafeArea(.keyboard)
         .onAppear {
             print("MainPage가 실행되었습니다!")
             //현재 유저 정보(닉네임,이메일) 불러오기
@@ -77,7 +79,6 @@ struct MainPage: View {
             }
         }
         .navigationBarBackButtonHidden(true)
-        .ignoresSafeArea(.keyboard)
         .onTapGesture {
             hideKeyboard()
         }

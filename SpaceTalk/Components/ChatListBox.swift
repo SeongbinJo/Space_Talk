@@ -34,12 +34,12 @@ struct ChatListBox: View {
                         }
                         else {
                             firestoreViewModel.getMessages()
-                            firestoreViewModel.getNickname(uid: chatListBoxMessage.firstReceiverId) { complete in
-                                if complete {
-                                    self.selectChatListData = ["isAvailable" : chatListBoxMessage.isAvailable, "receiverNickname" : firestoreViewModel.nickname]
+//                            firestoreViewModel.getNickname(uid: chatListBoxMessage.firstReceiverId) { complete in
+//                                if complete {
+                            self.selectChatListData = ["isAvailable" : chatListBoxMessage.isAvailable, "receiverNickname" : firestoreViewModel.currentUser?.uid == chatListBoxMessage.firstSenderId ? "\(chatListBoxMessage.firstReceiverNickname)" : "\(chatListBoxMessage.firstSenderNickname)"]
                                     self.chatListToChatPageActive = true
-                                }
-                            }
+//                                }
+//                            }
                         }
                     }
                 }){
@@ -51,7 +51,7 @@ struct ChatListBox: View {
                         HStack{
                             VStack(alignment: .leading){
                                 HStack{
-                                    Text(firestoreViewModel.currentUser?.uid == chatListBoxMessage.firstSenderId ? "111님과의 대화" : "222님과의 대화")
+                                    Text(firestoreViewModel.currentUser?.uid == chatListBoxMessage.firstSenderId ? "\(chatListBoxMessage.firstReceiverNickname)" : "\(chatListBoxMessage.firstSenderNickname)")
                                         .font(.system(size: geometry.size.height * 0.25))
                                         .fontWeight(.semibold)
                                     Spacer()

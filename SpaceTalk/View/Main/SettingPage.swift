@@ -165,7 +165,7 @@ struct SettingPage: View {
                                             loginViewModel.deleteUser()
                                             self.goToMainPage = false
                                         }) {
-                                            Text("탈퇴하기")
+                                            Text("탈퇴")
                                         }
                                     } message: {
                                         Text("정말로 계정탈퇴 하시겠습니까?")
