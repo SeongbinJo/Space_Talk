@@ -54,7 +54,8 @@ class FirestoreViewModel: ObservableObject{
     //랜덤유저 뽑을때 5회 이상 반복될 경우 alert 띄우고 멈춤
     var randomCount : Int = 0
     
-    var image : UIImage?
+    //getImage() 의 image
+    @Published var image : UIImage?
     
     init() {
         currentUser = Auth.auth().currentUser
@@ -169,12 +170,15 @@ class FirestoreViewModel: ObservableObject{
 
         let metaData = StorageMetadata()
         metaData.contentType = "image/jpg"
+        
+        let ref = self.db.collection("chatroom").document(roomId).collection(roomId).document()
+        
         imageReference.putData(data, metadata: metaData) { (metaData, error) in
             if let error = error {
                 print("이미지 업로드 에러! : \(error.localizedDescription)")
                 completion(false)
             }else {
-                self.db.collection("chatroom").document(roomId).collection(roomId).document().setData(["roomId" : roomId, "messageText" : "사진", "messageId" : msgId, "isRead" : false, "sendTime"  : Date(), "senderId" : self.currentUser!.uid, "imageName" : imageName])
+                ref.setData(["roomId" : roomId, "messageText" : "사진", "messageId" : ref.documentID, "isRead" : false, "sendTime"  : Date(), "senderId" : self.currentUser!.uid, "imageName" : imageName])
                 self.db.collection("chatroom").document(roomId).updateData(["messageId" : msgId, "messageText" : "사진", "sendTime" : Date(), "recentSenderId" : self.currentUser!.uid, "imageName" : imageName])
                 print("이미지 업로드 성공!")
                 completion(true)
@@ -182,24 +186,33 @@ class FirestoreViewModel: ObservableObject{
         }
     }
     
-    func getImage(imageName: String, completion: @escaping (UIImage) -> Void) {
+    func getImage(imageName: String, completion: @escaping (Bool) -> Void) {
+        if imageName != "nil" {
+            let imageReference = self.storage.reference().child("images/\(self.currentRoomId)/\(imageName)")
+            imageReference.getData(maxSize: 1 * 1024 * 1024) { data, error in
+                guard error == nil else {
+                    print("이미지 불러오기 에러! : \(String(describing: error?.localizedDescription))")
+                    completion(false)
+                    return
+                }
+                guard data != nil else {
+                    print("이미지 불러오기 에러 2!")
+                    return }
+                let image = UIImage(data: data!)
+                self.image = image
+                completion(true)
+            }
+        }
+    }
+    
+    func deleteImage(imageName: String) {
         let imageReference = self.storage.reference().child("images/\(self.currentRoomId)/\(imageName)")
-        imageReference.getData(maxSize: 1 * 1024 * 1024) { data, error in
+        imageReference.delete { error in
             guard error == nil else {
-//                print("이미지 불러오기 에러! : \(error.localizedDescription)")
-                print("이미지 불러오기 에러! : \(String(describing: error?.localizedDescription))")
-                completion(UIImage(systemName: "photo")!)
+                print("이미지 삭제 에러! : \(String(describing: error?.localizedDescription))")
                 return
             }
-            guard data != nil else { 
-//                print("func getImage() data 에러 : \(error!.localizedDescription)")
-                print("이미지 불러오기 에러 2!")
-                return }
-            let image = UIImage(data: data!)
-            self.image = image
-            print(data)
-            print(UIImage(data: data!))
-            completion(self.image!)
+            print("이미지 삭제 성공.")
         }
     }
     
@@ -457,13 +470,15 @@ class FirestoreViewModel: ObservableObject{
             print("firestoreVM currentUser 값이 비어있습니다.(exitChatRoom)")
             return
         }
-        self.getDeleteChatRoomMessageId() { deleteMessageID in
+        self.getDeleteChatRoomMessageId() { deleteMessageID, deleteImageID in
             print("현재 삭제할 채팅방의 채팅 메시지 ID들입니다. \(deleteMessageID)")
             if deleteMessageID.count > 0 {
                 for i in 0...deleteMessageID.count - 1 {
                     self.db.collection("chatroom").document(self.currentRoomId).collection(self.currentRoomId).document(deleteMessageID[i]).delete()
                 }
-//                deleteMessageID.removeAll()
+                for i in 0...deleteImageID.count - 1 {
+                    self.deleteImage(imageName: deleteImageID[i])
+                }
                 self.getFirstSenderId() { firstSenderId in
                     if self.currentUser!.uid == firstSenderId {
                         self.db.collection("chatroom").document(self.currentRoomId).updateData(["firstSenderId" : "nil"])
@@ -516,8 +531,9 @@ class FirestoreViewModel: ObservableObject{
         }
     }
     
-    func getDeleteChatRoomMessageId(complete: @escaping ([String]) -> Void) {
+    func getDeleteChatRoomMessageId(complete: @escaping ([String], [String]) -> Void) {
         var messageID : [String] = []
+        var imageID : [String] = []
         db.collection("chatroom").document(self.currentRoomId).collection(self.currentRoomId).getDocuments{ snapshot, error in
             guard error == nil else {
                 print("getDeleteChatRoomMessageId 에러!")
@@ -531,9 +547,12 @@ class FirestoreViewModel: ObservableObject{
                 return
             }
             for document in documents{
+                if document.data()["imageName"] as! String != "nil" {
+                    imageID.append(document.data()["imageName"] as! String)
+                }
                 messageID.append(document.data()["messageId"] as! String)
             }
-            complete(messageID)
+            complete(messageID, imageID)
         }
     }
     
