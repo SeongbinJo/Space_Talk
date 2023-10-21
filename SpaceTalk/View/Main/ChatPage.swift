@@ -26,11 +26,12 @@ struct ChatPage: View {
                     VStack{
                         Spacer()
                         GeometryReader{ geometry in
-                            ScrollView{
-                                ForEach(firestoreViewModel.messages, id: \.id){ message in
-                                    MessageBubble(message: message)
+                                ScrollView{
+                                    ForEach(firestoreViewModel.messages, id: \.id){ message in
+                                        MessageBubble(message: message)
+                                    }
                                 }
-                            }.frame(height: geometry.size.height * 0.9)
+                                .frame(height: geometry.size.height * 0.932)
                             MessageTextBox( selectChatListData: $selectChatListData)
                         }
                     }
@@ -38,7 +39,7 @@ struct ChatPage: View {
                 }
         }
         .onAppear{
-//            loginViewModel.isChatRoomOpenedToggle()
+            
         }
         .toolbarBackground(
                         Color(UIColor(r: 132, g: 141, b: 136, a: 1.0)),
