@@ -71,7 +71,6 @@ struct MainPage: View {
                 if complete {
                     print("현재 유저정보(닉네임, 이메일) 불러오기 완료.")
                     firestoreViewModel.nickname = loginViewModel.currentNickname
-                    firestoreViewModel.testfunc()
                     loginViewModel.testfunc()
                     firestoreViewModel.getFirstMessage()
                     firestoreViewModel.currentChatList()

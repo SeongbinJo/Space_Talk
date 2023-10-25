@@ -15,8 +15,8 @@ struct ChatPage: View {
     //앱의 생명주기 변화(백그라운드, 액티브 등)
     @Environment(\.scenePhase) var scenePhase
     
-    @State var exitRoomAlert: Bool = false
-//    @State var 
+    @State var exitRoomAlert : Bool = false
+    @State var blockUserAlert : Bool = false
     @Binding var chatListToChatPageActive: Bool
     @Binding var selectChatListData: [String : Any]
     
@@ -26,12 +26,24 @@ struct ChatPage: View {
                     VStack{
                         Spacer()
                         GeometryReader{ geometry in
-                                ScrollView{
-                                    ForEach(firestoreViewModel.messages, id: \.id){ message in
-                                        MessageBubble(message: message)
+                                ScrollViewReader { proxy in
+                                    ScrollView {
+                                        ForEach(firestoreViewModel.messages, id: \.id){ message in
+                                            MessageBubble(message: message)
+                                        }
+                                    }
+                                    .frame(height: geometry.size.height * 0.932)
+                                    .onAppear {
+                                        withAnimation {
+                                            proxy.scrollTo(firestoreViewModel.lastMessageId, anchor: .bottom)
+                                        }
+                                    }
+                                    .onChange(of: firestoreViewModel.lastMessageId) { id in
+                                        withAnimation {
+                                            proxy.scrollTo(id, anchor: .bottom)
+                                        }
                                     }
                                 }
-                                .frame(height: geometry.size.height * 0.932)
                             MessageTextBox( selectChatListData: $selectChatListData)
                         }
                     }
@@ -57,9 +69,9 @@ struct ChatPage: View {
         })
         .navigationBarItems(trailing: Menu {
             Button(role: .destructive, action: {
-//                print(firestoreViewModel.clickChatListData)
+                self.blockUserAlert = true
             }) {
-                Label("신고하기", systemImage: "exclamationmark.bubble.fill")
+                Label("차단하기", systemImage: "exclamationmark.bubble.fill")
             }
             .foregroundColor(.red)
             Button(action: {
@@ -83,6 +95,29 @@ struct ChatPage: View {
             })
         } message: {
             Text("채팅방을 나가면 대화내용 및 채팅목록이 삭제됩니다.")
+        }
+        .alert("주의!", isPresented: $blockUserAlert){
+            Button("취소", role: .cancel, action: {})
+            Button("차단하기", role: .destructive, action: {
+                firestoreViewModel.getBlockUserUid(nickname: selectChatListData["receiverNickname"] as! String) { blockUID in
+                    if blockUID != "error" {
+                        firestoreViewModel.blockUser(blockUserUid: blockUID) { complete in
+                            if complete {
+                                firestoreViewModel.exitChatRoom() { exit in
+                                    if exit {
+                                        self.chatListToChatPageActive = false
+                                    }
+                                }
+                            }
+                        }
+                    }else {
+                        print("차단 실패 ㅋㅋㅋ")
+                    }
+                }
+                
+            })
+        } message: {
+            Text("상대방을 차단하면 채팅방은 자동으로 삭제됩니다.")
         }
         //ChatPage에서 앱을 백그라운드, 다시 실행 했을 때의 액션.(생명주기)
         .onChange(of: scenePhase){ value in
