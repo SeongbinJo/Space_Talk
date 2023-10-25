@@ -11,6 +11,7 @@ import SwiftUI
 struct SettingPage: View {
     
     @EnvironmentObject var loginViewModel: LoginViewModel
+    @EnvironmentObject var firestoreViewModel: FirestoreViewModel
     
     @Binding var goToMainPage: Bool
     
@@ -81,7 +82,8 @@ struct SettingPage: View {
                             HStack(spacing: geometry.size.width * 0.06){
 //                                Spacer()
                                 VStack(spacing: 2){
-                                    Button(action: {}){
+                                    Button(action: {
+                                    }){
                                         Rectangle()
                                             .foregroundColor(Color(UIColor(r: 49, g: 49, b: 49, a: 1.0)))
                                             .frame(width: geometry.size.width * 0.15, height: geometry.size.width * 0.15)
@@ -182,6 +184,7 @@ struct SettingPage: View {
                         ,
                         alignment: .top
                     )
+                    .position(x: geometry.frame(in: .local).midX, y: geometry.frame(in: .local).midY)
             }
         }
     }

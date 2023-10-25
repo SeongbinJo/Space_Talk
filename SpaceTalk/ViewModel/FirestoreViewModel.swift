@@ -46,6 +46,7 @@ class FirestoreViewModel: ObservableObject{
     @Published var acceptButtonChatRoom: [PushButtonMessages] = []
     //채팅방 안의 메시지들을 담을 배열 messages.
     @Published var messages: [Messages] = []
+    @Published var lastMessageId: String = "" // ChatPage에서 신규 메시지 생성될때 이를 참조해서 스크롤 맨 밑으로 이동.
     
     //getMessage()의 addsnapshotlistener
     @Published var getMessageListener: ListenerRegistration?
@@ -53,6 +54,7 @@ class FirestoreViewModel: ObservableObject{
     
     //랜덤유저 뽑을때 5회 이상 반복될 경우 alert 띄우고 멈춤
     var randomCount : Int = 0
+    var userNumberSet : Set<Int> = []
     
     //getImage() 의 image
     @Published var image : UIImage?
@@ -63,6 +65,8 @@ class FirestoreViewModel: ObservableObject{
         getMessages()
         getFirstMessage()
     }
+    
+    
     
     //UID를 사용해서 해당 유저의 닉네임을 가져오는 함수
     func getNickname(uid: String, complete: @escaping (Bool) -> Void) {
@@ -238,6 +242,11 @@ class FirestoreViewModel: ObservableObject{
             //담은 데이터들을 시간별로 정렬하는 코드
             self.messages.sort { $0.sendTime < $1.sendTime }
             
+            //마지막 메시지 id 담아둠 => 이 값이 바뀔 때 마다 신규 메시지 생성되었다는 것. => 스크롤 밑으로 당김.
+            if let id = self.messages.last?.id {
+                self.lastMessageId = id
+            }
+            
         }
     }//getMessages()
     
@@ -278,7 +287,6 @@ class FirestoreViewModel: ObservableObject{
             print("firestoreVM currentUser 값이 비어있습니다.(currentChatList)")
             return
         }
-        print("\(self.currentUser!.uid) 나다 임마!")
         //PUSH 버튼을 누른 유저가 본인인 경우.(첫 메시지 발신자 = 본인)
         let listener = self.db.collection("chatroom").whereField("firstSenderId", isEqualTo: self.currentUser!.uid).addSnapshotListener() { snapshot, error in
             guard error == nil else {
@@ -346,62 +354,71 @@ class FirestoreViewModel: ObservableObject{
     
     //random으로 유저 정하는 함수
     func randomUid(complete: @escaping (String) -> Void) {
-        var randomNumber: Int = 0
-        self.maxUserNumber { maxUserNumber in
-            randomNumber = Int.random(in: 1...maxUserNumber)
-            print("랜덤으로 뽑은 숫자는?!(1부터 \(maxUserNumber)까지) : \(randomNumber)")
+        var randomNumber : Int = 0
+        
+        self.getMaxUserCount { maxUserNumber in
+            for i in 1...maxUserNumber {
+                self.userNumberSet.insert(i)
+            }
             //내 userNumber를 가져옴
             self.myUserNumber() { myUserNumber in
-                //랜덤으로 뽑은 숫자와 나의 userNumber와 같다면 -> 다시 뽑아야함
-                if randomNumber == myUserNumber {
-                    if self.randomCount < 5 {
-                        print("랜덤으로 뽑은 숫자와 나의 userNumber가 같습니다. 다시 뽑습니다.")
-                        //함수 다시 실행.
-                        self.randomCount += 1  //randomUid 횟수 1 증가.
-                        print(self.randomCount)
-                        self.randomUid(complete: complete)
-                    }else {
-                        self.randomCount = 0
-                        complete("over")
-                    }
-                }
-                else {
-                    print("랜덤으로 숫자를 뽑았습니다! 해당 userNumber를 가진 유저의 UID를 가져옵니다!")
+                //랜덤으로 뽑은 숫자와 나의 userNumber와 같다면 set에서 삭제
+                self.userNumberSet.remove(myUserNumber)
+                randomNumber = self.userNumberSet.first!
+                print("현재 유저넘버 Set 현황 : \(self.userNumberSet)")
+                print("현재 Set에서 뽑은 랜덤숫자 현황 : \(randomNumber)")
                     //랜덤으로 뽑은 userNumber의 UID 가져오기
                     self.getRandomUID(userNumber: randomNumber) { randomUID in
-                        print("랜덤으로 뽑은 유저의 UID는 : \(randomUID) 입니다!")
-                        if randomUID == "nil" {
-                            if self.randomCount < 5 {
-                                print("랜덤으로 뽑은 유저의 UID가 잘못되었습니다! 다시 뽑습니다!")
-                                self.randomCount += 1 //randomUid 횟수 1 증가.
-                                print(self.randomCount)
-                                self.randomUid(complete: complete)
-                            }else {
-                                self.randomCount = 0
-                                complete("over")
+                        self.isBlock(uid: randomUID) { isblock in
+                            if randomUID == "nil" {
+                                if self.randomCount < 5 {
+                                    self.randomCount += 1 //randomUid 횟수 1 증가.d
+                                    self.userNumberSet.removeAll()
+                                    self.randomUid(complete: complete)
+                                }else {
+                                    self.randomCount = 0
+                                    self.userNumberSet.removeAll()
+                                    complete("over")
+                                }
+                            }
+                            else if isblock {
+                                if self.randomCount < 5 {
+                                    print("차단한 상대를 뽑았습니다. 다시 뽑습니다.")
+                                    self.randomCount += 1
+                                    print(self.randomCount)
+                                    self.userNumberSet.removeAll()
+                                    self.randomUid(complete: complete)
+                                }else {
+                                    self.randomCount = 0
+                                    self.userNumberSet.removeAll()
+                                    complete("over")
+                                }
+                            }
+                            else {
+                                self.randomCount = 0 //randomUid가 6회 반복되기 전에 잘 마무리 되었을 경우 0으로 초기화.
+                                self.userNumberSet.removeAll()
+                                complete(randomUID)
                             }
                         }
-                        else {
-                            print("랜덤으로 뽑은 유저의 UID는 : \(randomUID) 입니다!")
-                            self.randomCount = 0 //randomUid가 6회 반복되기 전에 잘 마무리 되었을 경우 0으로 초기화.
-                            print(self.randomCount)
-                            complete(randomUID)
-                        }
                     }
-                }
             }
         }
     }
     
     //현재 maxUserNumber를 가져오는 함수
-    func maxUserNumber(complete: @escaping (Int) -> Void) {
+    func getMaxUserCount(complete: @escaping (Int) -> Void){
         var maxUserNumber : Int = 0
-        //maxUserNumber를 통해서 현재 유저가 가진 가장 높은 userNumber를 알아내고, 1~maxUserNumber까지의 숫자 중 랜덤으로 하나 골라 UID를 가져오기위함.
-        self.db.collection("totalUserCount").document("totalUserCount").getDocument{ snapshot, error in
+        //새로 가입한 유저의 정보가 새로 생성되었을때, totalusercount의 maxUserCount를 체크하기위함.
+        self.db.collection("testUser").order(by: "userNumber", descending: true).limit(to: 1).getDocuments { snapshot, error in
             guard error == nil else {
-                print("maxUserNumber 에러")
-                return }
-            maxUserNumber = snapshot?.get("maxUserNumber") as! Int
+                print("getRandomUID 에러!")
+                return
+            }
+            guard snapshot != nil else {
+                print("getRandomUID 에러!2")
+                return
+            }
+            maxUserNumber = snapshot?.documents[0].data()["userNumber"] as! Int
             complete(maxUserNumber)
         }
     }
@@ -476,8 +493,10 @@ class FirestoreViewModel: ObservableObject{
                 for i in 0...deleteMessageID.count - 1 {
                     self.db.collection("chatroom").document(self.currentRoomId).collection(self.currentRoomId).document(deleteMessageID[i]).delete()
                 }
-                for i in 0...deleteImageID.count - 1 {
-                    self.deleteImage(imageName: deleteImageID[i])
+                if deleteImageID.count > 0 {
+                    for i in 0...deleteImageID.count - 1 {
+                        self.deleteImage(imageName: deleteImageID[i])
+                    }
                 }
                 self.getFirstSenderId() { firstSenderId in
                     if self.currentUser!.uid == firstSenderId {
@@ -556,11 +575,59 @@ class FirestoreViewModel: ObservableObject{
         }
     }
     
-    func testfunc() {
-        self.db.collection("testUser").document(self.currentUser?.uid ?? "정보가 없음.").getDocument { snapshot, error in
-            guard error == nil else {return}
-            print("현재 로그인한 유저의 정보입니다. : \(snapshot?.data())")
+    
+    //차단 관련 함수//////////////////////////
+    
+    //상대방 차단함수. (상대방을 차단하게되면 상대방의 db 차단목록에 내 uid가 올라가게 됨.
+    func blockUser(blockUserUid: String, completion: @escaping (Bool) -> Void) {
+        guard self.currentUser != nil else {
+            print("firestoreVM currentUser 값이 비어있습니다.(blockUser)")
+            completion(false)
+            return
+        }
+        self.db.collection("testUser").document(self.currentUser!.uid).updateData(["blockUser" : FieldValue.arrayUnion([blockUserUid])])
+        completion(true)
+    }
+    
+    //상대방 닉네임으로 상대방의 uid 알아내는 함수
+    func getBlockUserUid(nickname: String, completion: @escaping (String) -> Void) {
+        var blockUserNickName : String = ""
+        self.db.collection("testUser").whereField("nickname", isEqualTo: nickname).getDocuments { snapshot, error in
+            guard error == nil else {
+                print("getBlockUserUid error1 : \(error?.localizedDescription)")
+                completion("error")
+                return}
+            guard snapshot != nil else {
+                print("getBlockUserUid error2")
+                completion("error")
+                return}
+            blockUserNickName = snapshot?.documents[0].get("uid") as! String
+            completion(blockUserNickName)
         }
     }
+    
+    //랜덤으로 뽑은 유저(uid)의 blockUser 배열에 '내'가 포함되어있는지 확인하는 함수
+    func isBlock(uid: String, completion: @escaping (Bool) -> Void) {
+        var isBlock : Bool = false
+        var blockArray : [String] = []
+        guard self.currentUser != nil else {
+            print("firestoreVM currentUser 값이 비어있습니다.(blockUser)")
+            completion(false)
+            return
+        }
+        self.db.collection("testUser").document(self.currentUser!.uid).getDocument { snapshot, error in
+            guard error == nil else {
+                print("차단 불러오기 에러 : \(error?.localizedDescription)")
+                return}
+            guard snapshot != nil else {
+                print("차단 목록 비어있음!")
+                return}
+            
+            blockArray = snapshot?.data()!["blockUser"] as! Array<String>
+            isBlock = blockArray.contains(uid)
+            completion(isBlock)
+        }
+    }
+    
     
 }

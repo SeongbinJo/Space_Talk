@@ -10,15 +10,18 @@ import SwiftUI
 
 struct MessageBubble: View {
     
-    @EnvironmentObject var loginViewModel: LoginViewModel
-    @EnvironmentObject var firestoreViewModel: FirestoreViewModel
+    @EnvironmentObject var loginViewModel : LoginViewModel
+    @EnvironmentObject var firestoreViewModel : FirestoreViewModel
 
     var message: Messages
     
-    @State var geoHeight: CGFloat = 0 // 사진에 따른 높이
-    @State var textHeight: CGFloat = 0 // 텍스트에 따른 높이
-    @State var nilImageHeight: CGFloat = 0 // 사진이 로딩되기 전 'photo' 이미지의 높이
-    @State var uiImage: UIImage?
+    @State var geoHeight : CGFloat = 0 // 사진에 따른 높이
+    @State var textHeight : CGFloat = 0 // 텍스트에 따른 높이
+    @State var nilImageHeight : CGFloat = 0 // 사진이 로딩되기 전 'photo' 이미지의 높이
+    @State var uiImage : UIImage?
+    
+    @State var selectedImage : UIImage?
+    @State var goToImagePage : Bool = false
 
 
     var body: some View {
@@ -45,6 +48,8 @@ struct MessageBubble: View {
                                                 self.textHeight = geo.size.height
                                             }
                                     }
+                                }
+                                .onTapGesture {
                                 }
                                 .cornerRadius(5, corners: .allCorners)
                                 .padding(message.senderId != loginViewModel.currentUser!.uid ? .leading : .trailing, 10)

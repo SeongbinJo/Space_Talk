@@ -85,8 +85,6 @@ class LoginViewModel: ObservableObject{
                     self.plusTotalUserCount()
                     //현재 가장 높은 maxUserNumber 가져옴
                     self.getMaxUserCount() { maxUserNumber in
-                        //maxUserNumber에 += 1 해서 저장한다.
-                        self.updateMaxNumber(maxUserNumber: maxUserNumber + 1)
                         //maxUserNumber + 1을 userNumber로 사용해 데이터 생성
                         self.createNewUserData(maxUserNumber: maxUserNumber + 1) { create in
                             if create {
@@ -129,11 +127,6 @@ class LoginViewModel: ObservableObject{
         }
     }
     
-    func updateMaxNumber(maxUserNumber: Int) {
-        self.db.collection("totalUserCount").document("totalUserCount").updateData(["maxUserNumber" : maxUserNumber])
-        print("실행되었다! maxUserNumber!!!")
-    }
-    
     //유저 수 관리(signUP과 연관)//////////////////////////////////
     //새로운 유저의 데이터가 생성되면 userCount를 1 올림
     func plusTotalUserCount(){
@@ -163,25 +156,49 @@ class LoginViewModel: ObservableObject{
         }
     }
     
-    //현재 제일 높은 userNumber를 구하는 함수 -> 제일 높은 userNumber에 1을 더해서 새로 생성되는 유저의 userNumber로 부여.
-    func getMaxUserCount(complete: @escaping (Int) -> Void){
-        var maxUserNumber : Int = 0
-        //새로 가입한 유저의 정보가 새로 생성되었을때, totalusercount의 maxUserCount를 체크하기위함.
-        self.db.collection("totalUserCount").document("totalUserCount").getDocument{ snapshot, error in
-            guard error == nil else {
+    func getUserCount(complete: @escaping (Int) -> Void) {
+        var userCount : Int = 0
+        self.db.collection("totalUserCount").document("totalUserCount").getDocument { snapshot, error in
+            guard error == nil else {return}
+            guard snapshot != nil else {return}
+            userCount = snapshot?.data()!["userCount"] as! Int
+            complete(userCount)
+        }
+    }
+    
+    //현재 제일 높은 userNumber를 구하는 함수
+    func getMaxUserCount(complete: @escaping (Int) -> Void) {
+        self.getUserCount { userCount in
+            if userCount > 0 {
+                var maxUserNumber : Int = 0
+                //새로 가입한 유저의 정보가 새로 생성되었을때, totalusercount의 maxUserCount를 체크하기위함.
+                self.db.collection("testUser").order(by: "userNumber", descending: true).limit(to: 1).getDocuments { snapshot, error in
+                    guard error == nil else {
+                        print("getRandomUID 에러!")
+                        return
+                    }
+                    guard snapshot != nil else {
+                        print("getRandomUID 에러!2")
+                        complete(maxUserNumber)
+                        return
+                    }
+                    maxUserNumber = snapshot?.documents[0].data()["userNumber"] as! Int
+                    print("현재 유저넘버다! : \(maxUserNumber)")
+                    complete(maxUserNumber)
+                }
+            }else {
                 complete(0)
-                return }
-            maxUserNumber = snapshot?.get("maxUserNumber") as! Int
-            complete(maxUserNumber)
+            }
         }
     }
     
     
     //유저의 데이터를 새로 생성하는 함수
     func createNewUserData(maxUserNumber: Int, complete: @escaping (Bool) -> Void){
+        let blockUserArray : [String] = []
         //새로 가입한 유저의 정보를 새로 생성함.
         self.db.collection("testUser").document(self.currentUser?.uid ?? "uid가 비었음"
-        ).setData(["uid" : self.currentUser?.uid ?? "uid가 비었음", "email" : self.signUpEmail, "nickname" : self.signUpNickname, "signUpDate" : Date(), "userNumber" : maxUserNumber]){ error in
+        ).setData(["uid" : self.currentUser?.uid ?? "uid가 비었음", "email" : self.signUpEmail, "nickname" : self.signUpNickname, "signUpDate" : Date(), "userNumber" : maxUserNumber, "blockUser" : blockUserArray]){ error in
             if error != nil{
                 complete(false)
             }else{
@@ -192,7 +209,8 @@ class LoginViewModel: ObservableObject{
     
     //빈자리 유저 데이터의 userNumber를 이용해 새 유저 데이터 생성
     func newUserUpdateDate(completion: @escaping (Bool) -> Void){
-        self.db.collection("testUser").document(self.currentUser?.uid ?? "정보없음").setData(["uid" : self.currentUser?.uid ?? "정보없음", "email" : self.signUpEmail, "nickname" : self.signUpNickname, "signUpDate" : Date(), "userNumber" : self.nilUserNumber]){ error in
+        let blockUserArray : [String] = []
+        self.db.collection("testUser").document(self.currentUser?.uid ?? "정보없음").setData(["uid" : self.currentUser?.uid ?? "정보없음", "email" : self.signUpEmail, "nickname" : self.signUpNickname, "signUpDate" : Date(), "userNumber" : self.nilUserNumber, "blockUser" : blockUserArray]){ error in
             if error != nil{
                 completion(false)
             }else{
@@ -239,7 +257,8 @@ class LoginViewModel: ObservableObject{
     
     //계정탈퇴////////////////////
     func deleteUser(){
-        db.collection("testUser").document(self.currentUser!.uid).updateData(["uid" : "nil", "email" : "nil", "nickname" : "nil"]){ error in
+        let blockUserArray : [String] = []
+        db.collection("testUser").document(self.currentUser!.uid).updateData(["uid" : "nil", "email" : "nil", "nickname" : "nil", "blockUser" : blockUserArray]){ error in
             if error == nil{
                 print("계정탈퇴 업데이트 성공!")
 
