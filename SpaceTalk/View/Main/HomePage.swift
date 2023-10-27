@@ -58,7 +58,7 @@ struct HomePage: View {
                                     .padding(.bottom, geometry.size.height * 0.01)
                                     .autocapitalization(.none)
                                     .overlay(alignment: .topLeading){
-                                        Text($firestoreViewModel.firstMessageText.wrappedValue.count > 0 ? "" : "100자 이내")
+                                        Text($firestoreViewModel.firstMessageText.wrappedValue.count > 0 ? "" : "메시지를 입력하세요.")
                                             .padding(.top, -geometry.size.height * 0.06)
                                             .padding(.leading, 7)
                                             .foregroundColor(.black)
@@ -94,7 +94,7 @@ struct HomePage: View {
                                     }){
                                         Circle()
                                             .frame(width: geometry.size.width * 0.6, height: geometry.size.height * 0.3)
-                                            .foregroundColor(Color(UIColor(r: 79, g: 88, b: 83, a: 1.0)))
+                                            .foregroundColor(firestoreViewModel.firstMessageText.count > 0 ? Color(UIColor(r: 79, g: 88, b: 83, a: 1.0)) : Color(UIColor(r: 211, g: 78, b: 78, a: 0.5)))
                                             .overlay(alignment: .center){
                                                 Text("PUSH")
                                                     .fontWeight(.bold)
@@ -112,6 +112,7 @@ struct HomePage: View {
                                                 Text("무전에 실패하였습니다. 다시 시도해주세요!")
                                             }
                                     }
+                                    .disabled(firestoreViewModel.firstMessageText.count > 0 ? false : true)
                                     .contentShape(Circle())
                                     .padding(.bottom, -20)}//vstack
                             }//텍스트에디터, 푸시버튼 zstack

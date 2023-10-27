@@ -24,6 +24,7 @@
 		582E7D002A94EDEC00573CFB /* HomePage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 582E7CFF2A94EDEC00573CFB /* HomePage.swift */; };
 		58358CEC29FAB9F900F14F97 /* Messages.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58358CEB29FAB9F900F14F97 /* Messages.swift */; };
 		585653F32AE536AF0044EFC2 /* ImagePage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 585653F22AE536AF0044EFC2 /* ImagePage.swift */; };
+		585E05DB2AEBEF79000930B4 /* BlockUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 585E05DA2AEBEF79000930B4 /* BlockUser.swift */; };
 		586CB9E829D5C8850034A210 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 586CB9E729D5C8850034A210 /* FirebaseAnalytics */; };
 		586CB9EA29D5C8850034A210 /* FirebaseAnalyticsOnDeviceConversion in Frameworks */ = {isa = PBXBuildFile; productRef = 586CB9E929D5C8850034A210 /* FirebaseAnalyticsOnDeviceConversion */; };
 		586CB9EC29D5C8850034A210 /* FirebaseAnalyticsSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 586CB9EB29D5C8850034A210 /* FirebaseAnalyticsSwift */; };
@@ -82,6 +83,7 @@
 		582E7CFF2A94EDEC00573CFB /* HomePage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomePage.swift; sourceTree = "<group>"; };
 		58358CEB29FAB9F900F14F97 /* Messages.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Messages.swift; sourceTree = "<group>"; };
 		585653F22AE536AF0044EFC2 /* ImagePage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePage.swift; sourceTree = "<group>"; };
+		585E05DA2AEBEF79000930B4 /* BlockUser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockUser.swift; sourceTree = "<group>"; };
 		587634692A9390CC0074D95F /* SignUpPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpPage.swift; sourceTree = "<group>"; };
 		58892F8A29D2FAFC00BD402D /* LoginPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginPage.swift; sourceTree = "<group>"; };
 		589E522629D3A6260074AE16 /* LoginViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewModel.swift; sourceTree = "<group>"; };
@@ -196,6 +198,7 @@
 				58358CEB29FAB9F900F14F97 /* Messages.swift */,
 				582379E129FE826C006D1079 /* Users.swift */,
 				58B966142A23A57800B7D15E /* PushButtonMessages.swift */,
+				585E05DA2AEBEF79000930B4 /* BlockUser.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -400,6 +403,7 @@
 				582E172729CF1EB800B47BAA /* ContentView.swift in Sources */,
 				58204A332A977A770035434B /* ChatListBox.swift in Sources */,
 				5876346A2A9390CC0074D95F /* SignUpPage.swift in Sources */,
+				585E05DB2AEBEF79000930B4 /* BlockUser.swift in Sources */,
 				58892F8B29D2FAFC00BD402D /* LoginPage.swift in Sources */,
 				589E522729D3A6260074AE16 /* LoginViewModel.swift in Sources */,
 				582379E229FE826C006D1079 /* Users.swift in Sources */,
