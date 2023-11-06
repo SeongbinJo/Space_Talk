@@ -63,8 +63,7 @@ struct MessageTextBox: View {
                     .padding(.horizontal, geomtry.size.width * 0.03)
                     .padding(.top, 10)
                     .padding(.bottom, geomtry.size.height * 0.01)
-                    .background(Color(UIColor(r: 132, g: 141, b: 136, a: 1.0)))
-                    .position(x: geomtry.frame(in: .local).midX, y: geomtry.size.height * 0.98)
+                    .position(x: geomtry.frame(in: .local).midX, y: geomtry.frame(in: .local).midY)
                     if self.isImage {
                         ZStack(alignment: .topTrailing){
                             ZStack{

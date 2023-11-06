@@ -18,12 +18,15 @@ struct ChatListPage: View {
     
     var body: some View {
         ZStack{
-            Color.gray.ignoresSafeArea()
             GeometryReader{ geometry in
+                Image("chatlist")
+                    .resizable()
+                                .aspectRatio(contentMode: .fill)
+                                .frame(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height + 100)
+                                .clipped()
+                                .position(x: geometry.frame(in: .local).midX, y: geometry.frame(in: .local).midY)
+                                .zIndex(0)
                 VStack{
-                    Rectangle()
-                        .foregroundColor(.gray)
-                        .frame(width: geometry.size.width * 1.0, height: geometry.size.height * 0.01)
                     ScrollView{
                         ForEach(firestoreViewModel.pushButtonChatRoom, id: \.id) { pushMessage in
                             ChatListBox(chatListToChatPageActive: $chatListToChatPageActive, selectChatListData: $selectChatListData, chatListBoxMessage: pushMessage)
@@ -41,6 +44,21 @@ struct ChatListPage: View {
                     }
                     .scrollContentBackground(.hidden)
                 }
+                .zIndex(2)
+                VStack {
+                    Text("Background Author - Alvish Baldha")
+                        .font(.system(size: geometry.size.width * 0.02))
+                        .foregroundColor(Color(uiColor: UIColor(r: 187, g: 187, b: 187, a: 1)))
+                    Text("Original Link - https://www.figma.com/community/file/786982732117165587/space")
+                        .font(.system(size: geometry.size.width * 0.02))
+                        .foregroundColor(Color(uiColor: UIColor(r: 187, g: 187, b: 187, a: 1)))
+                        .accentColor(Color(uiColor: UIColor(r: 187, g: 187, b: 187, a: 1)))
+                    Text("Licensed under CC BY 4.0")
+                        .font(.system(size: geometry.size.width * 0.02))
+                        .foregroundColor(Color(uiColor: UIColor(r: 187, g: 187, b: 187, a: 1)))
+                }
+                .zIndex(1)
+                .position(x: geometry.frame(in: .local).midX, y: geometry.frame(in: .local).height * 0.839)
             }
         }//zstack
         .onAppear {

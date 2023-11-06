@@ -209,6 +209,9 @@ struct SettingPage: View {
                         .onDelete(perform: firestoreViewModel.removeList)
                         .listRowBackground(Color.clear)
                     }
+                    .onAppear {
+                        firestoreViewModel.blockedUserList.removeAll()
+                    }
                         .frame(width: geometry.size.width * 0.85, height: geometry.size.height * 0.5)
                         .scrollContentBackground(.hidden)
                         .background(Color(uiColor: UIColor(r: 49, g: 49, b: 49, a: 0.7)))
@@ -217,13 +220,16 @@ struct SettingPage: View {
                             RoundedRectangle(cornerRadius: 20)
                                 .stroke(Color(uiColor: UIColor(r: 49, g: 49, b: 49, a: 1)), lineWidth: 1)
                         )
+                        .shadow(color: .black, radius: 7, x: 3, y: 3)
                     Button(action: {
                         firestoreViewModel.blockedUserList.removeAll()
+                        print("firestoreviewmodel.blockeduserlist = \(firestoreViewModel.blockedUserList)")
                         self.blockUserPageZindex = -1
                     }) {
                         Circle()
                             .frame(width: geometry.size.width * 0.13)
                             .foregroundColor(Color(uiColor: UIColor(r: 49, g: 49, b: 49, a: 1)))
+                            .shadow(color: .black, radius: 7, x: 3, y: 3)
                             .overlay(
                                 Image(systemName: "xmark")
                                     .font(.system(size: geometry.size.width * 0.05))
