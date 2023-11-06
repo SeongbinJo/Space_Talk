@@ -22,41 +22,67 @@ struct ChatPage: View {
     
     var body: some View {
         NavigationView{
-                ZStack{
-                    VStack{
-                        Spacer()
-                        GeometryReader{ geometry in
-                                ScrollViewReader { proxy in
-                                    ScrollView {
-                                        ForEach(firestoreViewModel.messages, id: \.id){ message in
-                                            MessageBubble(message: message)
-                                        }
-                                    }
-                                    .frame(height: geometry.size.height * 0.932)
-                                    .onAppear {
-                                        withAnimation {
-                                            proxy.scrollTo(firestoreViewModel.lastMessageId, anchor: .bottom)
-                                        }
-                                    }
-                                    .onChange(of: firestoreViewModel.lastMessageId) { id in
-                                        withAnimation {
-                                            proxy.scrollTo(id, anchor: .bottom)
-                                        }
-                                    }
-                                }
-                            MessageTextBox( selectChatListData: $selectChatListData)
-                        }
+            GeometryReader{ geometry in
+                ZStack {
+                    Image("chatlist")
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .frame(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height + 100)
+                        .clipped()
+                        .position(x: geometry.frame(in: .local).midX, y: geometry.frame(in: .local).midY)
+                    VStack {
+                        Text("Background Author - Alvish Baldha")
+                            .font(.system(size: geometry.size.width * 0.02))
+                            .foregroundColor(Color(uiColor: UIColor(r: 187, g: 187, b: 187, a: 1)))
+                        Text("Original Link - https://www.figma.com/community/file/786982732117165587/space")
+                            .font(.system(size: geometry.size.width * 0.02))
+                            .foregroundColor(Color(uiColor: UIColor(r: 187, g: 187, b: 187, a: 1)))
+                            .accentColor(Color(uiColor: UIColor(r: 187, g: 187, b: 187, a: 1)))
+                        Text("Licensed under CC BY 4.0")
+                            .font(.system(size: geometry.size.width * 0.02))
+                            .foregroundColor(Color(uiColor: UIColor(r: 187, g: 187, b: 187, a: 1)))
                     }
-                    .background(.gray)
+                    .position(x: geometry.frame(in: .local).midX, y: geometry.frame(in: .local).height * 0.839)
+                    Rectangle()
+                        .frame(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height + 100)
+                        .position(x: geometry.frame(in: .local).midX, y: geometry.frame(in: .local).midY)
+                        .foregroundColor(Color.gray.opacity(0.6))
+                    VStack{
+                        //                    Spacer()
+                        ScrollViewReader { proxy in
+                            ScrollView {
+                                ForEach(firestoreViewModel.messages, id: \.id){ message in
+                                    MessageBubble(message: message)
+                                }
+                            }
+                            .frame(height: geometry.size.height * 0.932)
+                            .onAppear {
+                                withAnimation {
+                                    proxy.scrollTo(firestoreViewModel.lastMessageId, anchor: .bottom)
+                                }
+                            }
+                            .onChange(of: firestoreViewModel.lastMessageId) { id in
+                                withAnimation {
+                                    proxy.scrollTo(id, anchor: .bottom)
+                                }
+                            }
+                        }
+                        MessageTextBox(selectChatListData: $selectChatListData)
+                            .zIndex(10)
+                            .background(Color(UIColor(r: 132, g: 141, b: 136, a: 1.0)))
+                    }
                 }
+                
+            }
+                
         }
         .onAppear{
             
         }
         .toolbarBackground(
-                        Color(UIColor(r: 132, g: 141, b: 136, a: 1.0)),
+            Color.red.opacity(0.5),
                         for: .navigationBar)
-                    .toolbarBackground(.visible, for: .navigationBar)
+//                    .toolbarBackground(.visible, for: .navigationBar)
                     .navigationBarTitle(selectChatListData["receiverNickname"] as! String)
         .navigationBarBackButtonHidden(true)
         .navigationBarItems(leading: Button(action: {
@@ -64,7 +90,9 @@ struct ChatPage: View {
         }){
             HStack{
                 Image(systemName: "chevron.left")
-                Text("Back")
+                    .foregroundColor(Color.white)
+                Text("뒤로가기")
+                    .foregroundColor(Color.white)
             }
         })
         .navigationBarItems(trailing: Menu {
@@ -82,7 +110,7 @@ struct ChatPage: View {
         } label: {
             Image(systemName: "line.3.horizontal")
                 .font(.system(size: 23))
-                .foregroundColor(.black)
+                .foregroundColor(.white)
         })
         .alert("채팅방 나가기", isPresented: $exitRoomAlert){
             Button("취소", role: .cancel, action: {})

@@ -36,7 +36,7 @@ struct PostBox: View {
                 }
             }
             .frame(width: geomtry.size.width * 0.85, height: geomtry.size.height * 0.5)
-            .background(Color(UIColor(r: 94, g: 94, b: 94, a: 1)))
+            .background(Color(UIColor(r: 94, g: 94, b: 94, a: 0.7)))
             .cornerRadius(20, corners: .allCorners)
             .position(x: geomtry.frame(in: .local).midX, y: geomtry.frame(in: .local).midY)
         }

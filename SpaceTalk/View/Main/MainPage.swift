@@ -24,35 +24,49 @@ struct MainPage: View {
             ZStack {
                 tapBarViewModel.changeMainView(tabIndex: self.tabIndex, goToMainPage: $goToMainPage)
                 GeometryReader { geometry in
-                    VStack {
+                    VStack(alignment: .leading, spacing: 0) {
                         Spacer()
+                        Rectangle()
+                            .frame(width: geometry.size.width * 1.0, height: 2)
+                            .foregroundColor(Color(uiColor: UIColor(r: 187, g: 187, b: 187, a: 1)))
                         HStack(spacing: 0){
                             Button(action:{
-                                tabIndex = "home"
+                                withAnimation {
+                                    tabIndex = "home"
+                                }
                             }){
-                                Image(systemName: "house")
+                                Image(systemName: self.tabIndex == "home" ? "house.fill" : "house")
                                     .foregroundColor(.black)
                                     .font(.system(size: 25))
-                                    .scaleEffect(0.9)
+                                    .scaleEffect(self.tabIndex == "home" ? 1.1 : 0.9)
                             }
                             .frame(width: geometry.size.width / 3)
+                            Rectangle()
+                                .frame(width: 2, height: geometry.size.height * 0.065)
+                                .foregroundColor(Color(uiColor: UIColor(r: 187, g: 187, b: 187, a: 1)))
                             Button(action:{
-                                tabIndex = "chatList"
-//                                firestoreViewModel.currentChatList()
+                                withAnimation {
+                                    tabIndex = "chatList"
+                                }
                             }){
-                                Image(systemName: "bubble.left")
+                                Image(systemName: self.tabIndex == "chatList" ? "bubble.fill" : "bubble.left")
                                     .foregroundColor(.black)
                                     .font(.system(size: 25))
-                                    .scaleEffect(0.9)
+                                    .scaleEffect(self.tabIndex == "chatList" ? 1.1 : 0.9)
                             }
                             .frame(width: geometry.size.width / 3)
+                            Rectangle()
+                                .frame(width: 2, height: geometry.size.height * 0.065)
+                                .foregroundColor(Color(uiColor: UIColor(r: 187, g: 187, b: 187, a: 1)))
                             Button(action:{
-                                tabIndex = "setting"
+                                withAnimation {
+                                    tabIndex = "setting"
+                                }
                             }){
-                                Image(systemName: "ellipsis.circle")
+                                Image(systemName: self.tabIndex == "setting" ? "ellipsis.circle.fill" : "ellipsis.circle")
                                     .foregroundColor(.black)
                                     .font(.system(size: 25))
-                                    .scaleEffect(0.9)
+                                    .scaleEffect(self.tabIndex == "setting" ? 1.1 : 0.9)
                             }
                             .frame(width: geometry.size.width / 3)
                         }//hstack

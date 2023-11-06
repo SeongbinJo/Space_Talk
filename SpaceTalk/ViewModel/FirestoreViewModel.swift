@@ -695,9 +695,6 @@ class FirestoreViewModel: ObservableObject{
     }//getBlockUserList
     
     //차단유저 해제
-//    func unblockUser(at offsets: IndexSet, completion: @escaping (Bool) -> Void) {
-//        var name = self.blockedUserList[offsets]
-//    }
     func removeList(at offsets: IndexSet) {
         var uid : String = ""
         guard self.currentUser != nil else {
@@ -705,8 +702,11 @@ class FirestoreViewModel: ObservableObject{
             return
         }
         guard let index = offsets.first else {return}
+        print("deleting \(self.blockedUserList[index])")
         uid = self.blockedUserList[index].blockUserUID
+        self.blockedUserList.remove(atOffsets: offsets)
         self.db.collection("testUser").document(self.currentUser!.uid).updateData(["blockUser" : FieldValue.arrayRemove([uid])])
     }
+    
     
 }

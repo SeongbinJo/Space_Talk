@@ -41,7 +41,7 @@ struct MessageBubble: View {
                                 .resizable()
                                 .frame(width: geometry.size.width * 0.4, height: self.uiImage!.size.height * (geometry.size.width * 0.4/self.uiImage!.size.width))
                                 .background {
-                                    message.senderId == loginViewModel.currentUser!.uid ? Color.yellow : Color.white
+                                    message.senderId == loginViewModel.currentUser!.uid ? Color(UIColor(r: 254, g: 247, b: 189, a: 1)) : Color(UIColor(r: 240, g: 240, b: 240, a: 1))
                                     GeometryReader { geo in
                                         Text("")
                                             .onAppear{
@@ -59,7 +59,7 @@ struct MessageBubble: View {
                                 .padding(5)
                                 .frame(width: geometry.size.width * 0.15, height: geometry.size.width * 0.15)
                                 .background {
-                                    message.senderId == loginViewModel.currentUser!.uid ? Color.yellow : Color.white
+                                    message.senderId == loginViewModel.currentUser!.uid ? Color(UIColor(r: 254, g: 247, b: 189, a: 1)) : Color(UIColor(r: 240, g: 240, b: 240, a: 1))
                                     GeometryReader { geo in
                                         Text("")
                                             .onAppear{
@@ -75,7 +75,7 @@ struct MessageBubble: View {
                             .font(.system(size: geometry.size.width * 0.04))
                             .padding(7)
                             .background{
-                                message.senderId == loginViewModel.currentUser!.uid ? Color.yellow : Color.white
+                                message.senderId == loginViewModel.currentUser!.uid ? Color(UIColor(r: 254, g: 247, b: 189, a: 1)) : Color(UIColor(r: 240, g: 240, b: 240, a: 1))
                                 GeometryReader{ geo in
                                     Text("")
                                         .onAppear{
