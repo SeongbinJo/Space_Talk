@@ -16,9 +16,7 @@ struct Messages: Identifiable, Codable{
     var messageText: String // 메시지 내용
     var sendTime: Date // 메시지 보낸 시간
     var senderId: String // 메시지 보낸 사람 id
-//    var receiverId: String // 메시지 받는 사람 id
     var isRead: Bool // 메시지 읽었는지.
-//    var senderNickname: String // 메시지 발신자 닉네임
     var imageName: String //uuid값으로 들어갈 예정(이미지)
     
     
@@ -45,9 +43,7 @@ struct Messages: Identifiable, Codable{
               let sendTime = dictionaryData["sendTime"] as? Timestamp,
               let senderId = dictionaryData["senderId"] as? String,
               let imageName = dictionaryData["imageName"] as? String,
-//              let receiverId = dictionaryData["receiverId"] as? String,
               let isRead = dictionaryData["isRead"] as? Bool else {
-//              let senderNickname = dictionaryData["senderNickname"] as? String else{
             print("Messages 모델 에러 : \(dictionaryData)")
             return nil
         }
@@ -57,9 +53,7 @@ struct Messages: Identifiable, Codable{
         self.messageText = messageText
         self.sendTime = sendTime.dateValue()
         self.senderId = senderId
-//        self.receiverId = receiverId
         self.isRead = isRead
-//        self.senderNickname = senderNickname
         self.imageName = imageName
     }
     

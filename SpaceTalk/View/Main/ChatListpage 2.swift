@@ -27,18 +27,15 @@ struct ChatListPage: View {
                                 .position(x: geometry.frame(in: .local).midX, y: geometry.frame(in: .local).midY)
                                 .zIndex(0)
                 VStack{
-                    Rectangle()
-                        .frame(height: geometry.size.height * 0.01)
-                        .foregroundColor(Color.clear)
                     ScrollView{
                         ForEach(firestoreViewModel.pushButtonChatRoom, id: \.id) { pushMessage in
                             ChatListBox(chatListToChatPageActive: $chatListToChatPageActive, selectChatListData: $selectChatListData, chatListBoxMessage: pushMessage)
-                                .frame(width: geometry.size.width * 0.95, height: geometry.size.height * 0.1)
+                                .frame(height: geometry.size.height * 0.1)
                                 .shadow(color: .black, radius: 4, x: 5, y: 5)
                         }
                         ForEach(firestoreViewModel.acceptButtonChatRoom, id: \.id) { acceptMessage in
                             ChatListBox(chatListToChatPageActive: $chatListToChatPageActive, selectChatListData: $selectChatListData, chatListBoxMessage: acceptMessage)
-                                .frame(width: geometry.size.width * 0.95, height: geometry.size.height * 0.1)
+                                .frame(height: geometry.size.height * 0.1)
                                 .shadow(color: .black, radius: 4, x: 5, y: 5)
                         }
                     }
