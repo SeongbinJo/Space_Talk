@@ -20,70 +20,121 @@ struct ChatPage: View {
     @Binding var chatListToChatPageActive: Bool
     @Binding var selectChatListData: [String : Any]
     
+    @State var isImage : Bool = false
+    @State var getImage : UIImage? = nil
+    
+    @State var getReady : Bool = false
+    
+    
     var body: some View {
         NavigationView{
-            GeometryReader{ geometry in
+            GeometryReader { geometry in
                 ZStack {
-                    Image("chatlist")
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                        .frame(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height + 100)
-                        .clipped()
-                        .position(x: geometry.frame(in: .local).midX, y: geometry.frame(in: .local).midY)
-                    VStack {
-                        Text("Background Author - Alvish Baldha")
-                            .font(.system(size: geometry.size.width * 0.02))
-                            .foregroundColor(Color(uiColor: UIColor(r: 187, g: 187, b: 187, a: 1)))
-                        Text("Original Link - https://www.figma.com/community/file/786982732117165587/space")
-                            .font(.system(size: geometry.size.width * 0.02))
-                            .foregroundColor(Color(uiColor: UIColor(r: 187, g: 187, b: 187, a: 1)))
-                            .accentColor(Color(uiColor: UIColor(r: 187, g: 187, b: 187, a: 1)))
-                        Text("Licensed under CC BY 4.0")
-                            .font(.system(size: geometry.size.width * 0.02))
-                            .foregroundColor(Color(uiColor: UIColor(r: 187, g: 187, b: 187, a: 1)))
-                    }
-                    .position(x: geometry.frame(in: .local).midX, y: geometry.frame(in: .local).height * 0.839)
-                    Rectangle()
-                        .frame(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height + 100)
-                        .position(x: geometry.frame(in: .local).midX, y: geometry.frame(in: .local).midY)
-                        .foregroundColor(Color.gray.opacity(0.6))
-                    VStack{
-                        //                    Spacer()
+                    VStack(spacing: 0) {
                         ScrollViewReader { proxy in
                             ScrollView {
+                                Rectangle()
+                                    .frame(height: geometry.size.height * 0.003)
+                                    .foregroundColor(Color.clear)
                                 ForEach(firestoreViewModel.messages, id: \.id){ message in
-                                    MessageBubble(message: message)
+                                    MessageBubble(message: message, getReady: $getReady)
                                 }
-                            }
-                            .frame(height: geometry.size.height * 0.932)
-                            .onAppear {
-                                withAnimation {
-                                    proxy.scrollTo(firestoreViewModel.lastMessageId, anchor: .bottom)
+                                .onAppear {
+//                                    withAnimation {
+                                        proxy.scrollTo("bottom", anchor: .bottom)
+//                                    }
                                 }
+                                Rectangle()
+                                    .frame(height: geometry.size.height * 0.0003)
+                                    .foregroundColor(Color.clear)
+                                    .id("bottom")
                             }
+                            //새로운 메시지가 생길 때 그 메시지 위치로 스크롤 이동
                             .onChange(of: firestoreViewModel.lastMessageId) { id in
                                 withAnimation {
-                                    proxy.scrollTo(id, anchor: .bottom)
+                                    proxy.scrollTo("bottom", anchor: .bottom)
                                 }
                             }
+                            //MessageBubble의 이미지가 로딩되면 메시지 크기가 바뀌는데 이 크기를 담는 geoHeight, textHeight의 합을 messageHeight로 담고 messageHeight의 값이 변하면(= geo, text중의 하나 이상은 값이 바뀌었다는 뜻) 이를 감지하여 맨 밑으로 스크롤.
+                            .onChange(of: firestoreViewModel.messageHeight) { id in
+                                        withAnimation {
+                                            proxy.scrollTo("bottom", anchor: .bottom)
+                                        }
+                                }
                         }
-                        MessageTextBox(selectChatListData: $selectChatListData)
-                            .zIndex(10)
+                        MessageTextBox(selectChatListData: $selectChatListData, getImage: $getImage, isImage: $isImage)
+                            .frame(height: geometry.size.height * 0.1)
                             .background(Color(UIColor(r: 132, g: 141, b: 136, a: 1.0)))
+                        
                     }
+                    .background(
+                        ZStack {
+                            Image("chatlist")
+                                .resizable()
+                                .aspectRatio(contentMode: .fill)
+                                            .frame(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height + 100)
+                                            .clipped()
+                                            .ignoresSafeArea(.keyboard)
+                            Rectangle()
+                                .frame(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height + 100)
+                                .foregroundColor(Color.gray.opacity(0.6))
+                            VStack {
+                                Text("Background Author - Alvish Baldha")
+                                    .font(.system(size: geometry.size.width * 0.02))
+                                Text("Original Link - https://www.figma.com/community/file/786982732117165587/space")
+                                    .font(.system(size: geometry.size.width * 0.02))
+                                Text("Licensed under CC BY 4.0")
+                                    .font(.system(size: geometry.size.width * 0.02))
+                                }
+                            .foregroundColor(Color(uiColor: UIColor(r: 187, g: 187, b: 187, a: 0.6)))
+                            .accentColor(Color(uiColor: UIColor(r: 187, g: 187, b: 187, a: 0.6)))
+                                .position(x: geometry.frame(in: .local).midX, y: geometry.frame(in: .local).height * 0.97)
+                        }
+                    )
+                    //이미지 선택 미리보기
+                                    if self.isImage {
+                                            ZStack(alignment: .topTrailing){
+                                                ZStack{
+                                                    Rectangle()
+                                                        .frame(width: geometry.size.width * 0.7, height: self.getImage == nil ? geometry.size.width * 0.7 : self.getImage!.size.height * (geometry.size.width * 0.7/self.getImage!.size.width))
+                                                        .foregroundColor(Color.clear)
+                                                        Rectangle()
+                                                            .frame(width: geometry.size.width * 0.65, height: self.getImage == nil ? geometry.size.width * 0.65 : self.getImage!.size.height * (geometry.size.width * 0.65/self.getImage!.size.width))
+                                                            .foregroundColor(Color(UIColor.lightGray))
+                                                            .overlay(
+                                                                self.getImage != nil ?
+                                                                Image(uiImage: getImage!)
+                                                                    .resizable()
+                                                                : Image(systemName: "xmark")
+                                                            )
+                                                            .cornerRadius(10, corners: .allCorners)
+                                                }
+                                                .shadow(color: .black, radius: 10, x: 5, y: 5)
+                                                .padding(.leading, geometry.size.width * 0.03)
+                                                    Button(action: {
+                                                        self.getImage = nil
+                                                        self.isImage = false
+                                                    }){
+                                                        Circle()
+                                                            .frame(width: geometry.size.width * 0.08, height: geometry.size.width * 0.08)
+                                                            .foregroundColor(Color.white)
+                                                            .zIndex(1)
+                                                            .overlay(Image(systemName: "xmark"))
+                                                    }
+                                            }
+                                            .position(x: geometry.frame(in: .local).midX, y: geometry.frame(in: .local).midY)
+                                        }
                 }
-                
             }
-                
         }
         .onAppear{
             
         }
         .toolbarBackground(
-            Color.red.opacity(0.5),
-                        for: .navigationBar)
-//                    .toolbarBackground(.visible, for: .navigationBar)
-                    .navigationBarTitle(selectChatListData["receiverNickname"] as! String)
+                    Color.gray.opacity(0.3),
+                                for: .navigationBar)
+        .toolbarBackground(.visible, for: .navigationBar)
+        .navigationBarTitle(selectChatListData["receiverNickname"] as! String)
         .navigationBarBackButtonHidden(true)
         .navigationBarItems(leading: Button(action: {
             self.chatListToChatPageActive = false
@@ -146,25 +197,6 @@ struct ChatPage: View {
             })
         } message: {
             Text("상대방을 차단하면 채팅방은 자동으로 삭제됩니다.")
-        }
-        //ChatPage에서 앱을 백그라운드, 다시 실행 했을 때의 액션.(생명주기)
-        .onChange(of: scenePhase){ value in
-            switch value{
-            case .active:
-                print("active")
-//                firestoreViewModel.reWriteSelectChatRoomId(){ complete in }
-            case .inactive:
-                print("inactive")
-//                firestoreViewModel.awayFromChatRoom(){ complete in }
-            case .background:
-                print("background")
-//                firestoreViewModel.awayFromChatRoom(){ complete in }
-            default:
-                print("default!")
-            }
-        }
-        .onDisappear {
-            firestoreViewModel.getMessageListener?.remove()
         }
     }
 }

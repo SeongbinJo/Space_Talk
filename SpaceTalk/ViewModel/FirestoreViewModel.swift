@@ -52,6 +52,9 @@ class FirestoreViewModel: ObservableObject{
     @Published var getMessageListener: ListenerRegistration?
     @Published var getFirstMessageListener: ListenerRegistration?
     
+    //ChatPage의 MessageBubble 스크롤 위치 관련 변수(geoHeight + textHeight :: MessageBubble.swift)
+    @Published var messageHeight : CGFloat = 0
+    
     //랜덤유저 뽑을때 5회 이상 반복될 경우 alert 띄우고 멈춤
     var randomCount : Int = 0
     var userNumberSet : Set<Int> = []
@@ -68,7 +71,11 @@ class FirestoreViewModel: ObservableObject{
         getFirstMessage()
     }
     
-    
+    //MessageBubble의 이미지 로딩 전후의 크기를 담고있는 geoHeight와 textHeight를 더함.
+    //이 값의 변화(geo, text 중 하나 이상의 값의 변화)를 감지해서 스크롤.
+    func addHeight(geo: CGFloat, text: CGFloat) {
+        messageHeight = geo + text
+    }
     
     //UID를 사용해서 해당 유저의 닉네임을 가져오는 함수(현재 로그인 정보 전용)
     func getNickname(uid: String, complete: @escaping (Bool) -> Void) {
@@ -195,7 +202,7 @@ class FirestoreViewModel: ObservableObject{
     func getImage(imageName: String, completion: @escaping (Bool) -> Void) {
         if imageName != "nil" {
             let imageReference = self.storage.reference().child("images/\(self.currentRoomId)/\(imageName)")
-            imageReference.getData(maxSize: 1 * 1024 * 1024) { data, error in
+            imageReference.getData(maxSize: 2 * 1024 * 1024) { data, error in
                 guard error == nil else {
                     print("이미지 불러오기 에러! : \(String(describing: error?.localizedDescription))")
                     completion(false)
@@ -248,7 +255,6 @@ class FirestoreViewModel: ObservableObject{
             if let id = self.messages.last?.id {
                 self.lastMessageId = id
             }
-            
         }
     }//getMessages()
     

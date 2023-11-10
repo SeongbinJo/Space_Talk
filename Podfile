@@ -6,5 +6,6 @@ target 'SpaceTalk' do
   use_frameworks!
 
   # Pods for SpaceTalk
+  pod 'IQKeyboardManagerSwift'
 
 end
